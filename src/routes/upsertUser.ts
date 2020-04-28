@@ -7,8 +7,6 @@ type ObjectID = typeof import('mongodb').ObjectID;
 
 const router = express.Router();
 
-// - 
-
 /**
  *
  * @apiName upsertUser();
@@ -17,31 +15,47 @@ const router = express.Router();
  * @apiRoute /upsertUser
  *
  * @apiParamFormat {type} Param Format:
- * {}
+ * { property: value,
+ *   property2: value2,
+ *   etc...
+ * }
+ * 
  * @apiParamExample {type} Param Example:
  * {
-    "verified" : true,
-    "interests" : "male",
-    "ip" : "197.229.4.202",
-    "country_name" : "South Africa",
-    "region_name" : "Western Cape",
-    "city" : "Cape Town",
-    "zip_code" : "7945",
-    "longitude" : "",
-    "latitude" : "",
-    "firstname" : "Hallocoos",
-    "lastname" : "Cuatppopp",
-    "email" : "wdv@mailinator.com",
-    "username" : "Hallocoos",
-    "password" : "12345678",
-    "gender" : "male",
-    "picture" : <base64 string>
-}
+ *   "_id" : "5e1eece605fa3d2ca82c81c8",
+ *   "ip" : "197.229.4.202",
+ *   "zip_code" : "7945",
+ *   "city" : "Cape Town",
+ *   "region_name" : "Western Cape",
+ *   "country_name" : "South Africa",
+ *   "firstname" : "Hallocoos",
+ *   "lastname" : "Cuatppopp",
+ *   "email" : "wdv@mailinator.com",
+ *   "username" : "Hallocoos",
+ *   "password" : "12345678",
+ *   "gender" : "male",
+ *   "latitude" : <some weirdly formatted string>,
+ *   "longitude" : <some weirdly formatted string>,
+ *   "interests" : "male",
+ *   "picture" : <base64 string>
+ *   "verified" : true,
+ * }
  * @apiSuccessExample {type} Success-Response:
- * {}
+ * // Return value may vary depending on whether an index was inserted or updated.
+ * "result": {
+ *   "n": 1,
+ *   "nModified": 0,
+ *   "upserted": [
+ *     {
+ *       "index": 0,
+ *       "_id": "5ea837a00c98dd37783ff831"
+ *     }
+ *   ],
+ *   "ok": 1
+ * }
  */
 
-router.post('/auth/route', (request: Request, response: Response) => {
+router.post('/upsertUser', (request: Request, response: Response) => {
   const filter = { _id: ObjectID(request.body._id) };
   const query = {
     $set: {
@@ -81,7 +95,5 @@ router.post('/auth/route', (request: Request, response: Response) => {
     }
   })
 });
-
-//upsertUser - Insert or update a user. If ID is sent as a parameter, then the user will be updated
 
 export default router;
