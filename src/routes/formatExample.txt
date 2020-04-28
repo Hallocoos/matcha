@@ -1,0 +1,56 @@
+import express from 'express';
+import { Request, Response } from 'express';
+import mongodb from 'mongodb';
+import { connect } from 'mongodb';
+import { config } from 'dotenv';
+const ObjectID = require('mongodb').ObjectID;
+type ObjectID = typeof import('mongodb').ObjectID;
+const util = require('util');
+
+const router = express.Router();
+
+/**
+ *
+ * @apiName {Name of frontend "function"that call this route}
+ * @apiDescription {}
+ * @apiMethod {METHOD}
+ * @apiRoute /{route}
+ *
+ * @apiParamFormat {type} Param Format:
+ * {}
+ * @apiParamExample {type} Param Example:
+ * {}
+ * @apiSuccessExample {type} Success-Response:
+ * {}
+ */
+
+router.post('/auth/route', () => {
+    const query = ;
+    connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+        if (!err) {
+            const dbName = client.db(process.env.MONGO_DB);
+            try {
+                dbName.collection({collection}).query(query).toArray((err, data) => {
+                    if (!err && data !== undefined && data.length > 0)
+                        response.send(data);
+                    else
+                        response.send(err);
+                }); 
+            } catch (e) {
+                response.send(e);
+            }
+        } else {
+            response.send(err);
+        }
+    })
+});
+
+//findMatchesById - Will find all matches for a specific users ID
+//setUsersAsMatches - Link 2 users as matched
+//findUserImagesById - Finds all user's images by ID
+//setUserPasswordbyId - Change/Set a user's password
+//setUserAsVerifiedById - Set the user as a verified user
+//uniqueQueryFind - Queries to find by a unique object
+//uniqueQueryAggregate - Queries to aggregate by a unique object
+
+export default router;
