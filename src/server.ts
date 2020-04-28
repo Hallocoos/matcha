@@ -26,14 +26,14 @@ Routes
 */
 import login from './routes/login';
 import findUser from './routes/findUser';
-// import guest from './routes/guest';
-// import admin from './routes/admin';
+import upsertUser from './routes/upsertUser';
+// import route from './routes/route';
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
-app.use('/', login, findUser);
+app.use('/', login, findUser, upsertUser);
 
 const server = http.listen(process.env.PORT, () => {
   console.info("Server now listening on", server.address().port);
