@@ -5,7 +5,7 @@ import { connect } from 'mongodb';
 const router = express.Router();
 
 /**
- * @apiName verifyLogin({username, password});
+ * @apiName findUserByUsernameAndPassword({username, password});
  * @apiDescription Checks if password and username matches a user in the database
  * @apiMethod POST
  * @apiRoute /findUserByUsernameAndPassword

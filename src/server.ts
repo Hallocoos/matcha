@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config({ path: 'conf.env' });
 
 const app = express();
-const http = require("http").Server(app);
+const http = require('http').Server(app);
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -20,23 +20,25 @@ function loggerMiddleware(request: Request, response: Response, next): void {
 }
 app.use(loggerMiddleware);
 
-app.set("view engine", "html");
+app.set('view engine', 'html');
 /*
 Routes
 */
-import login from './routes/login';
-import findUser from './routes/findUser';
-import upsertUser from './routes/upsertUser';
+import verifyLogin from './routes/user/findUserByUsernameAndPassword';
+import findUser from './routes/user/findUserById';
+import upsertUser from './routes/user/upsertUser';
+import verifyUser from './routes/user/verifyUserById';
+import setUserPassword from './routes/user/setUserPasswordById';
 // import route from './routes/route';
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
-app.use('/', login, findUser, upsertUser);
+app.use('/', verifyLogin, findUser, upsertUser, verifyUser, setUserPassword);
 
 const server = http.listen(process.env.PORT, () => {
-  console.info("Server now listening on", server.address().port);
+  console.info('Server now listening on', server.address().port);
 });
 
 export default app;

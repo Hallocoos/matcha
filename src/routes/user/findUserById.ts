@@ -7,7 +7,7 @@ const router = express.Router();
 
 /**
  *
- * @apiName findUserById
+ * @apiName findUserById(_id)
  * @apiDescription Finds all user details by ID, removes Password from the return object
  * @apiMethod POST
  * @apiRoute /findUserById
@@ -18,21 +18,21 @@ const router = express.Router();
  * { _id: '5e1eece605fa3d2ca82c81c8'}
  * @apiSuccessExample {type} Success-Response:
  * {
-    "verified" : true,
-    "interests" : "male",
-    "ip" : "197.229.4.202",
-    "country_name" : "South Africa",
-    "region_name" : "Western Cape",
-    "city" : "Cape Town",
-    "zip_code" : "7945",
-    "longitude" : "",
-    "latitude" : "",
-    "firstname" : "Hallocoos",
-    "lastname" : "Cuatppopp",
-    "email" : "wdv@mailinator.com",
-    "username" : "Hallocoos",
-    "gender" : "male" 
-  }
+ *   'verified' : true,
+ *   'interests' : 'male',
+ *   'ip' : '197.229.4.202',
+ *   'country_name' : 'South Africa',
+ *   'region_name' : 'Western Cape',
+ *   'city' : 'Cape Town',
+ *   'zip_code' : '7945',
+ *   'longitude' : '',
+ *   'latitude' : '',
+ *   'firstname' : 'Hallocoos',
+ *   'lastname' : 'Cuatppopp',
+ *   'email' : 'wdv@mailinator.com',
+ *   'username' : 'Hallocoos',
+ *   'gender' : 'male' 
+ * }
  */
 
 router.post('/findUserById', (request: Request, response: Response) => {

@@ -3,15 +3,15 @@ import { Request, Response } from 'express';
 import mongodb from 'mongodb';
 import { connect } from 'mongodb';
 import { config } from 'dotenv';
-const ObjectID = require('mongodb').ObjectID;
-type ObjectID = typeof import('mongodb').ObjectID;
+const ObjectId = require('mongodb').ObjectId;
+type ObjectId = typeof import('mongodb').ObjectId;
 const util = require('util');
 
 const router = express.Router();
 
 /**
  *
- * @apiName {Name of frontend "function"that call this route}
+ * @apiName {Name of frontend 'function'that call this route}
  * @apiDescription {}
  * @apiMethod {METHOD}
  * @apiRoute /{route}
@@ -24,7 +24,7 @@ const router = express.Router();
  * {}
  */
 
-router.post('/auth/route', () => {
+router.post('/auth/route', (request: Request, response: Response) => {
     const query = ;
     connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
         if (!err) {
@@ -45,12 +45,12 @@ router.post('/auth/route', () => {
     })
 });
 
-//findMatchesById - Will find all matches for a specific users ID
-//setUsersAsMatches - Link 2 users as matched
-//findUserImagesById - Finds all user's images by ID
-//setUserPasswordbyId - Change/Set a user's password
-//setUserAsVerifiedById - Set the user as a verified user
-//uniqueQueryFind - Queries to find by a unique object
-//uniqueQueryAggregate - Queries to aggregate by a unique object
+// setUsersAsMatched - Link 2 users as matched, sets distance between users, matching tags and 
+// sortMatchesByIdAndCategory - Will find all matches for a specific users ID, sort by a category and returns possible matches
+    // for tags: https://docs.mongodb.com/manual/reference/operator/aggregation/setIntersection/
+// BlockMatch - Sets a boolean value in currently matched duo that represents that they can no longer be matched and can't talk
+
+// findUserImagesById - Finds all user's images by ID
+// upsertImage - Upserts an image
 
 export default router;

@@ -1,8 +1,8 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { connect } from 'mongodb';
-const ObjectID = require('mongodb').ObjectID;
-type ObjectID = typeof import('mongodb').ObjectID;
+const ObjectId = require('mongodb').ObjectId;
+type ObjectId = typeof import('mongodb').ObjectId;
 // const util = require('util');
 
 const router = express.Router();
@@ -22,41 +22,34 @@ const router = express.Router();
  * 
  * @apiParamExample {type} Param Example:
  * {
- *   "_id" : "5e1eece605fa3d2ca82c81c8",
- *   "ip" : "197.229.4.202",
- *   "zip_code" : "7945",
- *   "city" : "Cape Town",
- *   "region_name" : "Western Cape",
- *   "country_name" : "South Africa",
- *   "firstname" : "Hallocoos",
- *   "lastname" : "Cuatppopp",
- *   "email" : "wdv@mailinator.com",
- *   "username" : "Hallocoos",
- *   "password" : "12345678",
- *   "gender" : "male",
- *   "latitude" : <some weirdly formatted string>,
- *   "longitude" : <some weirdly formatted string>,
- *   "interests" : "male",
- *   "picture" : <base64 string>
- *   "verified" : true,
+ *   '_id' : '5e1eece605fa3d2ca82c81c8',
+ *   'ip' : '197.229.4.202',
+ *   'zip_code' : '7945',
+ *   'city' : 'Cape Town',
+ *   'region_name' : 'Western Cape',
+ *   'country_name' : 'South Africa',
+ *   'firstname' : 'Hallocoos',
+ *   'lastname' : 'Cuatppopp',
+ *   'email' : 'wdv@mailinator.com',
+ *   'username' : 'Hallocoos',
+ *   'password' : '12345678',
+ *   'gender' : 'male',
+ *   'latitude' : <some weirdly formatted string>,
+ *   'longitude' : <some weirdly formatted string>,
+ *   'interests' : 'male',
+ *   'picture' : <base64 string>
+ *   'verified' : true,
  * }
  * @apiSuccessExample {type} Success-Response:
- * // Return value may vary depending on whether an index was inserted or updated.
- * "result": {
- *   "n": 1,
- *   "nModified": 0,
- *   "upserted": [
- *     {
- *       "index": 0,
- *       "_id": "5ea837a00c98dd37783ff831"
- *     }
- *   ],
- *   "ok": 1
+ * {
+ *   'n': 1,
+ *   'nModified': 1,
+ *   'ok': 1
  * }
  */
 
 router.post('/upsertUser', (request: Request, response: Response) => {
-  const filter = { _id: ObjectID(request.body._id) };
+  const filter = { _id: ObjectId(request.body._id) };
   const query = {
     $set: {
       ...request.body.ip && { ip: request.body.ip },
@@ -64,17 +57,16 @@ router.post('/upsertUser', (request: Request, response: Response) => {
       ...request.body.city && { city: request.body.city },
       ...request.body.region && { region: request.body.region },
       ...request.body.country && { country: request.body.country },
+      ...request.body.latitude && { latitude: request.body.latitude },
+      ...request.body.longitude && { longitude: request.body.longitude },
       ...request.body.firstname && { firstname: request.body.firstname },
       ...request.body.lastname && { lastname: request.body.lastname },
       ...request.body.email && { email: request.body.email },
       ...request.body.username && { username: request.body.username },
       ...request.body.password && { password: request.body.password },
       ...request.body.gender && { gender: request.body.gender },
-      ...request.body.latitude && { latitude: request.body.latitude },
-      ...request.body.longitude && { longitude: request.body.longitude },
       ...request.body.interests && { interests: request.body.interests },
-      ...request.body.picture && { picture: request.body.picture },
-      ...request.body.verified && { verified: request.body.verified },
+      ...request.body.picture && { picture: request.body.picture }
     }
   };
   connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
