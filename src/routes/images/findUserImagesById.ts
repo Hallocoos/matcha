@@ -11,10 +11,10 @@ const router = express.Router();
 
 /**
  *
- * @apiName {Name of frontend 'function'that call this route}
- * @apiDescription {}
- * @apiMethod {METHOD}
- * @apiRoute /{route}
+ * @apiName getImages()
+ * @apiDescription Finds all user's images by ID
+ * @apiMethod POST
+ * @apiRoute /findUserImagesById
  *
  * @apiParamFormat {type} Param Format:
  * {}
@@ -24,13 +24,13 @@ const router = express.Router();
  * {}
  */
 
-router.post('/auth/route', (request: Request, response: Response) => {
-    const query = ;
+router.post('/findUserImagesById', (request: Request, response: Response) => {
+    const query = {};
     connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
         if (!err) {
             const dbName = client.db(process.env.MONGO_DB);
             try {
-                dbName.collection({collection}).query(query).toArray((err, data) => {
+                dbName.collection('images').find(query).toArray((err, data) => {
                     if (!err && data !== undefined && data.length > 0)
                         response.send(data);
                     else
@@ -44,13 +44,5 @@ router.post('/auth/route', (request: Request, response: Response) => {
         }
     })
 });
-
-// setUsersAsMatched - Link 2 users as matched, sets distance between users, matching tags
-// sortMatchesByIdAndCategory - Will find all matches for a specific users ID, sort by a category and returns possible matches
-    // for tags: https://docs.mongodb.com/manual/reference/operator/aggregation/setIntersection/
-// BlockMatch - Sets a boolean value in currently matched duo that represents that they can no longer be matched and can't talk
-
-// findUserImagesById - Finds all user's images by ID
-// upsertImage - Upserts an image
 
 export default router;

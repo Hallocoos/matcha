@@ -24,11 +24,11 @@ app.set('view engine', 'html');
 /*
 Routes
 */
-import verifyLogin from './routes/user/findUserByUsernameAndPassword';
-import findUser from './routes/user/findUserById';
-import upsertUser from './routes/user/upsertUser';
-import verifyUser from './routes/user/verifyUserById';
-import setUserPassword from './routes/user/setUserPasswordById';
+import verifyLogin from './routes/users/findUserByUsernameAndPassword';
+import findUser from './routes/users/findUserById';
+import upsertUser from './routes/users/upsertUser';
+import verifyUser from './routes/users/verifyUserById';
+import setUserPassword from './routes/users/setUserPasswordById';
 // import route from './routes/route';
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from

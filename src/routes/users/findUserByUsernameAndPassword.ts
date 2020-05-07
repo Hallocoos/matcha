@@ -7,7 +7,7 @@ const router = express.Router();
 /**
  * @apiName findUserByUsernameAndPassword({username, password});
  * @apiDescription Checks if password and username matches a user in the database
- * @apiMethod POST
+ * @apiMethod GET
  * @apiRoute /findUserByUsernameAndPassword
  * 
  * @apiParamFormat {type} Param Format:
@@ -23,7 +23,7 @@ const router = express.Router();
  * false <-- If username or password is incorrect
  */
 
-router.post('/findUserByUsernameAndPassword', (request: Request, response: Response) => {
+router.get('/findUserByUsernameAndPassword', (request: Request, response: Response) => {
   const query = 
   [{
     $match:
