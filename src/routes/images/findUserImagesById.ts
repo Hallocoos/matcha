@@ -17,15 +17,15 @@ const router = express.Router();
  * @apiRoute /findUserImagesById
  *
  * @apiParamFormat {type} Param Format:
- * {}
+ * { _id: "string"}
  * @apiParamExample {type} Param Example:
- * {}
+ * { _id: "" }
  * @apiSuccessExample {type} Success-Response:
- * {}
+ * {  }
  */
 
 router.post('/findUserImagesById', (request: Request, response: Response) => {
-    const query = {};
+    const query = { _id: request.body._id};
     connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
         if (!err) {
             const dbName = client.db(process.env.MONGO_DB);

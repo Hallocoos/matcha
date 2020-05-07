@@ -49,7 +49,9 @@ const router = express.Router();
  */
 
 router.post('/upsertUser', (request: Request, response: Response) => {
-  const filter = { _id: ObjectId(request.body._id) };
+  if (!request.body._id) {
+    request.body._id = new ObjectId();
+  }
   const query = {
     $set: {
       ...request.body.ip && { ip: request.body.ip },
@@ -69,6 +71,7 @@ router.post('/upsertUser', (request: Request, response: Response) => {
       ...request.body.picture && { picture: request.body.picture }
     }
   };
+  const filter = { _id: ObjectId(request.body._id) };
   connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
     if (!err) {
       const dbName = client.db(process.env.MONGO_DB);
