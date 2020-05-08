@@ -26,13 +26,13 @@ const router = express.Router();
  */
 
 router.post('/setPasswordById', (request: Request, response: Response) => {
-  const filter = 
+  const filter =
   {
     _id: ObjectId(request.body._id),
     password: request.body.oldPassword
   };
   const query =
-  { 
+  {
     $set: {
       password: request.body.newPassword
     }
@@ -54,6 +54,7 @@ router.post('/setPasswordById', (request: Request, response: Response) => {
     } else {
       response.send(err);
     }
+    client.close();
   })
 });
 

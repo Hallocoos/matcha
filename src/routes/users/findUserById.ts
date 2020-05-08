@@ -36,28 +36,29 @@ const router = express.Router();
  */
 
 router.post('/findUserById', (request: Request, response: Response) => {
-  const query = 
-  [{
-    $match:
-      { _id: ObjectID(request.body._id) }
-  }, {
-    $project:
-      { picture: 0, _id: 0, password: 0 }
-  }]
+  const query =
+    [{
+      $match:
+        { _id: ObjectID(request.body._id) }
+    }, {
+      $project:
+        { picture: 0, _id: 0, password: 0 }
+    }]
   connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-      if (!err) {
-          const dbName = client.db(process.env.MONGO_DB);
-          try {
-              dbName.collection('users').aggregate((query)).toArray((err, data) => {
-                if (!err && data !== undefined && data.length > 0)
-                    response.send(data);
-                else
-                    response.send(err);
-            }); 
-          } catch (e) {
-              response.send(e);
-          }
+    if (!err) {
+      const dbName = client.db(process.env.MONGO_DB);
+      try {
+        dbName.collection('users').aggregate((query)).toArray((err, data) => {
+          if (!err && data !== undefined && data.length > 0)
+            response.send(data);
+          else
+            response.send(err);
+        });
+      } catch (e) {
+        response.send(e);
       }
+    }
+    client.close();
   })
 })
 

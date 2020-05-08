@@ -41,7 +41,7 @@ router.post('/verifyUserById', (request: Request, response: Response) => {
     if (!err) {
       const dbName = client.db(process.env.MONGO_DB);
       try {
-        dbName.collection('users').updateOne(filter, query, {upsert: true}, (err, data) => {
+        dbName.collection('users').updateOne(filter, query, { upsert: true }, (err, data) => {
           if (err)
             response.send(err);
           else
@@ -53,6 +53,7 @@ router.post('/verifyUserById', (request: Request, response: Response) => {
     } else {
       response.send(err);
     }
+    client.close();
   })
 });
 

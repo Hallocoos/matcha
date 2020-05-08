@@ -24,15 +24,17 @@ const router = express.Router();
  */
 
 router.get('/findUserByUsernameAndPassword', (request: Request, response: Response) => {
-  const query = 
-  [{
-    $match:
-      { username: request.body.username, 
-        password: request.body.password }
-  }, {
-    $project:
-      { _id: 1}
-  }];
+  const query =
+    [{
+      $match:
+      {
+        username: request.body.username,
+        password: request.body.password
+      }
+    }, {
+      $project:
+        { _id: 1 }
+    }];
   connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
     if (!err) {
       const dbName = client.db(process.env.MONGO_DB);
@@ -49,6 +51,7 @@ router.get('/findUserByUsernameAndPassword', (request: Request, response: Respon
     } else {
       response.send(err);
     }
+    client.close();
   })
 })
 

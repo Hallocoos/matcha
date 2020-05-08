@@ -62,6 +62,7 @@ router.post('/upsertImage', (request: Request, response: Response) => {
     } else {
       response.send(err);
     }
+    client.close();
   })
 });
 

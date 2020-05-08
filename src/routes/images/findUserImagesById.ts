@@ -25,24 +25,25 @@ const router = express.Router();
  */
 
 router.post('/findUserImagesById', (request: Request, response: Response) => {
-    const query = { _id: request.body._id};
-    connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-        if (!err) {
-            const dbName = client.db(process.env.MONGO_DB);
-            try {
-                dbName.collection('images').find(query).toArray((err, data) => {
-                    if (!err && data !== undefined && data.length > 0)
-                        response.send(data);
-                    else
-                        response.send(err);
-                }); 
-            } catch (e) {
-                response.send(e);
-            }
-        } else {
+  const query = { _id: request.body._id };
+  connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+    if (!err) {
+      const dbName = client.db(process.env.MONGO_DB);
+      try {
+        dbName.collection('images').find(query).toArray((err, data) => {
+          if (!err && data !== undefined && data.length > 0)
+            response.send(data);
+          else
             response.send(err);
-        }
-    })
+        });
+      } catch (e) {
+        response.send(e);
+      }
+    } else {
+      response.send(err);
+    }
+    client.close();
+  })
 });
 
 export default router;

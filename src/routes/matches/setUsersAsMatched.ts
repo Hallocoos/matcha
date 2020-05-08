@@ -25,24 +25,25 @@ const router = express.Router();
  */
 
 router.post('/setUsersAsMatched', (request: Request, response: Response) => {
-    const filter = {};
-    const query = {};
-    connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-        if (!err) {
-            const dbName = client.db(process.env.MONGO_DB);
-            try {
-                dbName.collection('matches').updateOne(filter, query, (err, data) => {
-                    if (Error)
-                        response.send(err);
-                    response.send(data);
-                }); 
-            } catch (e) {
-                response.send(e);
-            }
-        } else {
+  const filter = {};
+  const query = {};
+  connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+    if (!err) {
+      const dbName = client.db(process.env.MONGO_DB);
+      try {
+        dbName.collection('matches').updateOne(filter, query, (err, data) => {
+          if (Error)
             response.send(err);
-        }
-    })
+          response.send(data);
+        });
+      } catch (e) {
+        response.send(e);
+      }
+    } else {
+      response.send(err);
+    }
+    client.close();
+  })
 });
 
 export default router;
