@@ -1,11 +1,6 @@
 import express from 'express';
 import { Request, Response } from 'express';
-import mongodb from 'mongodb';
 import { connect } from 'mongodb';
-import { config } from 'dotenv';
-const ObjectId = require('mongodb').ObjectId;
-type ObjectId = typeof import('mongodb').ObjectId;
-const util = require('util');
 
 const router = express.Router();
 
@@ -17,15 +12,23 @@ const router = express.Router();
  * @apiRoute /findUserImagesById
  *
  * @apiParamFormat {type} Param Format:
- * { _id: "string"}
+ * { userId: "string"}
  * @apiParamExample {type} Param Example:
- * { _id: "" }
+ * { userId: "091v82rn09823yvrn098y" }
  * @apiSuccessExample {type} Success-Response:
- * {  }
+ * {
+ *  {
+ *    _id : "5eb3d6891a29335fd7ae2e61",
+ *    profilePicture : true,
+ *    userId : "5e1eece605fa3d2ca82c81c8",
+ *    image : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD..."
+ *  },
+ *  ...
+ * }
  */
 
 router.post('/findUserImagesById', (request: Request, response: Response) => {
-  const query = { _id: request.body._id };
+  const query = { userId: request.body.userId };
   connect(`mongodb://${process.env.MONGO_DB_URL}:27017`, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
     if (!err) {
       const dbName = client.db(process.env.MONGO_DB);

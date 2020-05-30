@@ -19,10 +19,6 @@ Users format:
     "gender" : "male"
 }
 
-Matches:
-
-Still not decided
-
 Images:
 {
     "_id" : ObjectId("5eb3d6891a29335fd7ae2e61"),
@@ -30,3 +26,7 @@ Images:
     "userId" : "5e1eece605fa3d2ca82c81c8",
     "image" : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD..."
 }
+
+Matches:
+
+Still not decided
