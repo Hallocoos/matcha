@@ -48,7 +48,7 @@ router.post('/findUserById', (request: Request, response: Response) => {
     if (!err) {
       const dbName = client.db(process.env.MONGO_DB);
       try {
-        dbName.collection('users').aggregate((query)).toArray((err, data) => {
+        dbName.collection('users').aggregate(query).toArray((err, data) => {
           if (!err && data !== undefined && data.length > 0)
             response.send(data);
           else

@@ -24,13 +24,14 @@ app.set('view engine', 'html');
 /*
 Routes
 */
+// import route from './routes/{route}';
 import verifyLogin from './routes/users/findUserByUsernameAndPassword';
 import findUser from './routes/users/findUserById';
 import upsertUser from './routes/users/upsertUser';
 import verifyUser from './routes/users/verifyUserById';
 import setUserPassword from './routes/users/setUserPasswordById';
 import upsertImage from './routes/images/upsertImage';
-// import route from './routes/{route}';
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');

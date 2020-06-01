@@ -1,5 +1,4 @@
 Users format:
-
 {
     "_id" : ObjectId("5e1eece605fa3d2ca82c81c8"),
     "verified" : true,
@@ -28,5 +27,6 @@ Images:
 }
 
 Matches:
-
+{
 Still not decided
+}
