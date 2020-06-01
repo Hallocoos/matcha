@@ -40,5 +40,3 @@ app.use('/', verifyLogin, findUser, upsertUser, verifyUser, setUserPassword);
 const server = http.listen(process.env.PORT, () => {
   console.info('Server now listening on', server.address().port);
 });
-
-export default app;

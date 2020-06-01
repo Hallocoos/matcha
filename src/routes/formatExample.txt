@@ -54,3 +54,20 @@ router.post('/auth/route', (request: Request, response: Response) => {
 // upsertImage - Upserts an image
 
 export default router;
+
+
+
+import * as mysql from 'mysql';
+
+var con = mysql.createConnection({
+  host: "localhost",
+  user: "matcha",
+  password: "matcha"
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
+export default app;
