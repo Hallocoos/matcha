@@ -1,0 +1,26 @@
+const express = require('express');
+const { Request, Response } = ('express');
+const router = express.Router();
+require('dotenv').config()
+
+/**
+ *
+ * @apiName {Name of frontend 'function'that call this route}
+ * @apiDescription {}
+ * @apiMethod {METHOD}
+ * @apiRoute /{route}
+ *
+ * @apiParamFormat {type} Param Format:
+ * {}
+ * @apiParamExample {type} Param Example:
+ * {}
+ * @apiSuccessExample {type} Success-Response:
+ * {}
+ */
+
+router.get('/{route}', (request, response) => {
+  const query = ;
+  
+});
+
+module.exports = router;
