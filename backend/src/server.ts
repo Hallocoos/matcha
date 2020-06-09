@@ -26,7 +26,7 @@ app.set('view engine', 'html');
 Routes
 */
 // import route from './routes/{route}';
-// import findUserById from './routes/users/findUserById';
+import findUserById from './routes/users/findUserById';
 // import verifyLogin from './routes/users/findUserByUsernameAndPassword';
 // import upsertUser from './routes/users/upsertUser';
 // import verifyUser from './routes/users/verifyUserById';
@@ -40,7 +40,7 @@ app.use(function (req, res, next) {
 });
 
 // app.use('/', verifyLogin, findUserById, upsertUser, verifyUser, setUserPassword, upsertImage);
-// app.use('/', findUserById);
+app.use('/', findUserById);
 
 // matchaDB.query("SELECT * FROM db;", (err, data) => {
 //   console.log(err);
