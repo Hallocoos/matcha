@@ -5,7 +5,7 @@ import * as express from 'express';
 
 const router = express.Router();
 
-router.post('/createUser', (request: Request, response: Response) => {
+router.get('/createUser', (request: Request, response: Response) => {
   // validation();
   insertUser(request.body);
 });

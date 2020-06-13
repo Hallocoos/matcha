@@ -4,9 +4,9 @@ import * as express from 'express'
 import { Request, Response } from 'express';
 
 const app = express()
-const http = require('http').Server(app)
 
 dotenv.config()
+
 module.exports = app
 app.use(bodyParser.json())
 
@@ -24,7 +24,7 @@ app.use(loggerMiddleware);
 
 import createUser from './controllers/guest'
 
-app.use('/', createUser);
+app.use('/guest/', createUser);
 
 // app.use('/auth', );
 // app.use('/admin', isAuth, );
