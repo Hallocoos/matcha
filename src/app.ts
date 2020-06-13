@@ -1,14 +1,11 @@
-import * as bodyParser from 'body-parser'
-import * as dotenv from 'dotenv'
-import * as express from 'express'
+import * as bodyParser from 'body-parser';
+import * as dotenv from 'dotenv';
+import * as express from 'express';
 import { Request, Response } from 'express';
 
-const app = express()
-
-dotenv.config()
-
-module.exports = app
-app.use(bodyParser.json())
+const app = express();
+dotenv.config();
+module.exports = app;
 
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -19,19 +16,20 @@ function loggerMiddleware(request: Request, response: Response, next): void {
     console.info(`${date} - ${request.method} ${request.path}`);
   }
   next();
-}
+};
 app.use(loggerMiddleware);
 
-import createUser from './controllers/guest'
+import guest from './controllers/guest'
 
-app.use('/guest/', createUser);
+app.use('/', guest);
+// app.use('/', admin);
+// app.use('/', auth);
 
-// app.use('/auth', );
-// app.use('/admin', isAuth, );
+app.get('/');
 
 app.all('*', (req, res) => {
   res.sendStatus(404)
-})
+});
 
 const start = async () => {
   const port = process.env.PORT || 3000
@@ -45,7 +43,6 @@ const start = async () => {
   }
 }
 
-// instabul ignore if
 if (!module.parent) {
   start().catch(err => {
     console.log(err)

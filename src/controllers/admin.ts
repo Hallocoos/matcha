@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 
 const router = express.Router();
 
-// router.post('/route', (request: Request, response: Response) => {
+// router.post('/createUser', (request: Request, response: Response) => {
 //   validation();
 //   response.send();
 // });

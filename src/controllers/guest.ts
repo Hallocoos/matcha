@@ -1,13 +1,20 @@
-import { insertUser } from "../services/findUserById";
-import { Router } from "express";
-import { Request, Response } from 'express';
 import * as express from 'express';
+import { Request, Response } from 'express';
+import { insertUser } from "../services/findUserById";
 
 const router = express.Router();
 
-router.get('/createUser', (request: Request, response: Response) => {
+router.post('/createUser', (request: Request, response: Response) => {
   // validation();
-  insertUser(request.body);
+  response.send(insertUser(request.body));
+});
+
+router.get('/login', (request: Request, response: Response) => {
+  response.send();
+});
+
+router.get('/home', (request: Request, response: Response) => {
+  response.send();
 });
 
 export default router;
