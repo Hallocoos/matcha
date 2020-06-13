@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { insertUser } from "../services/findUserById";
+import { insertUser } from "../services/user";
 
 const router = express.Router();
 
