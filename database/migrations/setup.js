@@ -4,9 +4,7 @@ exports.up = function(knex, Promise) {
     table.string('username')
     table.string('password')
   })
-  // .createTable('accounts', function (table) {
-  // })
-  // .createTable('transactions', function (table) {
+  // .createTable('', function (table) {
   // })
 };
 
