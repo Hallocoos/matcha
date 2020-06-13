@@ -20,10 +20,12 @@ function loggerMiddleware(request: Request, response: Response, next): void {
 app.use(loggerMiddleware);
 
 import guest from './controllers/guest'
+import auth from './controllers/auth'
+import admin from './controllers/admin'
 
 app.use('/', guest);
-// app.use('/', admin);
-// app.use('/', auth);
+app.use('/', auth);
+app.use('/', admin);
 
 app.get('/');
 
