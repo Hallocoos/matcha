@@ -55,4 +55,7 @@ router.get('/findUserByUsernameAndPassword', (request: Request, response: Respon
   })
 })
 
+router.post('/findUserByUsernameAndPassword', (request: Request, response: Response) => {
+});
+
 export default router;

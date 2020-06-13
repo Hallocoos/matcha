@@ -26,25 +26,20 @@ app.set('view engine', 'html');
 Routes
 */
 // import route from './routes/{route}';
-import findUserById from './routes/users/findUserById';
-// import verifyLogin from './routes/users/findUserByUsernameAndPassword';
-// import upsertUser from './routes/users/upsertUser';
-// import verifyUser from './routes/users/verifyUserById';
-// import setUserPassword from './routes/users/setUserPasswordById';
-// import upsertImage from './routes/images/upsertImage';
+// import findUserById from './routes/users/findUserById';
+import verifyLogin from './routes/users/findUserByUsernameAndPassword';
+import upsertUser from './routes/users/upsertUser';
+import verifyUser from './routes/users/verifyUserById';
+import setUserPassword from './routes/users/setUserPasswordById';
+import upsertImage from './routes/images/upsertImage';
+
+app.use('/', verifyLogin, upsertUser, verifyUser, setUserPassword, upsertImage);
 
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
-
-// app.use('/', verifyLogin, findUserById, upsertUser, verifyUser, setUserPassword, upsertImage);
-app.use('/', findUserById);
-
-// matchaDB.query("SELECT * FROM db;", (err, data) => {
-//   console.log(err);
-// })
 
 const server = http.listen(process.env.PORT, () => {
   console.info('Server now listening on', server.address().port);
