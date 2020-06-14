@@ -2,6 +2,7 @@ import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
 import * as express from 'express';
 import { Request, Response } from 'express';
+import { verifyToken, Roles } from './services/jwt';
 
 const app = express();
 dotenv.config();
@@ -25,7 +26,7 @@ import admin from './controllers/admin'
 
 app.use('/', guest);
 app.use('/', auth);
-app.use('/', admin);
+app.use('/', verifyToken(Roles.User), admin);
 
 app.get('/');
 

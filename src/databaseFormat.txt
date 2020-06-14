@@ -1,0 +1,39 @@
+Users format:
+{
+    "id" : "2",
+    "username" : "Hallocoos", // Unique
+    "password" : "12345678", // Valid
+    "email" : "wdv@mailinator.com", // Unique, Valid
+    "firstname" : "Hallocoos",
+    "lastname" : "Hallocoos",
+    "gender" : "male",
+    "interests" : "male",
+    "longitude" : "",
+    "latitude" : "",
+    "ip" : "192.168.0.1",
+    "country_name" : "South Africa",
+    "region_name" : "Western Cape",
+    "city" : "Cape Town",
+    "zip_code" : "1234",
+    "verified" : true,
+
+    "fameRating" : "1234",
+    "age: "19"
+}
+
+Images:
+{
+    "id" : "5",
+    "profilePicture" : true,
+    "userId" : "5e1eece605fa3d2ca82c81c8",
+    "image" : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD..."
+}
+
+Matches:
+{
+    "id" : "13",
+    "requestUserId" : "2",
+    "acceptUserId" : "1",
+    "blocked" : "true",
+    "accepted" : "true",
+}

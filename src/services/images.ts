@@ -10,7 +10,7 @@ import * as knex from '../../database/knex';
 //     });
 // };
 
-export function findImagesByUserId(userId) {
+export function findImagesByUserId(userId: string) {
   return knex('images')
     .select()
     .where('userId', userId)
@@ -20,7 +20,17 @@ export function findImagesByUserId(userId) {
     });
 };
 
-export function storeImage(imageData) {
+export function updateImage(imageData: any) {
+  return knex('images')
+    .update('image', imageData.image)
+    .where('id', imageData.id)
+    .then(function (result: []) {
+      result = JSON.parse(JSON.stringify(result));
+      return result;
+    });
+};
+
+export function storeImage(imageData: any) {
   return knex('images')
     .insert(imageData)
     .then(function (result: []) {
@@ -29,9 +39,9 @@ export function storeImage(imageData) {
     });
 };
 
-export function deleteImageById(userId) {
+export function deleteImageById(imageId: string) {
   return knex('images')
-    .where('userId', userId)
+    .where('id', imageId)
     .del()
     .then(function (result: []) {
       result = JSON.parse(JSON.stringify(result));
