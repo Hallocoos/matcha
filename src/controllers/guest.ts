@@ -13,7 +13,7 @@ router.get('/home', (request: Request, response: Response) => {
 });
 
 router.get('/', (request: Request, response: Response) => {
-  response.redirect('/home');;
+  response.sendFile(path.resolve('src/view/index.html'));
 });
 
 router.get('/resetPassword', (request: Request, response: Response) => {

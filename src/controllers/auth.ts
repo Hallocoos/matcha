@@ -21,20 +21,16 @@ router.post('/resetPassword', (request: Request, response: Response) => {
 });
 
 router.post('/login', async (request: Request, response: Response) => {
-  console.log("POST Works!");
-  console.log(request.body);
   if (!request.body.username || !request.body.password)
     response.redirect('/login');
+  console.log(request.body);
   const user = new User(
     await userQueries.findUserByUsernameAndPassword(request.body.username, request.body.password)
   );
-  console.log(user[0]);
   if (user[0])
   {
     var token = jwt.sign(user[0], process.env.SECRETKEY);
-    // response.header['token'] = token;
-    response.status(200).send({ auth: true, token: token });
-    // response.sendFile(path.resolve('src/view/guest/home.html'), );
+    response.json({ token: token });
   } else {
     response.send("failed to login");
   }
