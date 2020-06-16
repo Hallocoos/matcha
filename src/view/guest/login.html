@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <input id="username" type="text" name="username" value="" placeholder="Username">
+  <input id="password" type="password" name="password" value="" placeholder="Password">
+  <button onclick="sendLoginDetails('asdf')" id="button" type="submit" name="submit">Login</button>
+
+  <script>
+    async function sendLoginDetails(asdf) {
+      const url = 'localhost:3000/login';
+      let data = {
+        username = document.getElementById('username').value,
+        password = document.getElementById('password').value
+      };
+      let fetchData = {
+        method: 'POST',
+        body: data,
+        headers: new Headers()
+      };
+
+      const response = await fetch(url, fetchData);
+      console.log(response);
+    }
+
+      // const response = await fetch(`/login`, {
+      //   method: 'POST',
+      //   body: body
+      // })
+  </script>
+
+</body>
+
+</html>

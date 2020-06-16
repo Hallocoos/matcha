@@ -7,6 +7,11 @@ import { verifyToken, Roles } from '../services/jwt';
 
 const router = express.Router();
 
+
+router.get('/updateUser', (request: Request, response: Response) => {
+  response.send(userQueries.updateUser(request.body));
+});
+
 router.post('/updateUser', (request: Request, response: Response) => {
   response.send(userQueries.updateUser(request.body));
 });

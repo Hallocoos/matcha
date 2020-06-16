@@ -8,6 +8,8 @@ const app = express();
 dotenv.config();
 module.exports = app;
 
+app.set('view engine', 'html');
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 

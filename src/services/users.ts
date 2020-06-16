@@ -1,4 +1,25 @@
 import * as knex from '../../database/knex';
+import { pullAt } from 'lodash';
+
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
+// put protection on all queries!
 
 export function findUserById(id: string) {
   return knex.select()
