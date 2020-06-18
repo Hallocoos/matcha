@@ -5,38 +5,66 @@
 </head>
 
 <body>
-  <div>
-    <h2 data-bind="click: selectMatchView">Match</h2>
-    <h2 data-bind="click: selectChatView">Chat</h2>
-    <h2 data-bind="click: selectProfileView">Profile</h2>
-    <h2 data-bind="click: selectSettingView">Settings</h2>
-  </div>
+  <p data-bind="style: {padding: 14}">
+    <span data-bind="click: selectMatchView, style: {padding: 14}">Match</span>
+    <span data-bind="click: selectChatView, style: {padding: 14}">Chat</span>
+    <span data-bind="click: selectProfileView, style: {padding: 14}">Profile</span>
+    <span data-bind="click: selectSettingView, style: {padding: 14}">Settings</span>
+    <hr>
+  </p>
+
+  <!-- ko if: selectedView() == 'login' -->
+  <h3>Enter Credentials</h3>
+  <input data-bind="value: userName">
+  <input data-bind="value: password">
+  <button>Login</button>
+  <!-- /ko -->
+
+  <!-- ko if: selectedView() == 'match' -->
+  <h1>This will be match view.</h1>
+  <!-- /ko -->
+
+  <!-- ko if: selectedView() == 'chat' -->
+  <h1>This will be chat view.</h1>
+  <!-- /ko -->
+
+  <!-- ko if: selectedView() == 'profile' -->
+  <h1>This will be profile view.</h1>
+  <!-- /ko -->
+
+  <!-- ko if: selectedView() == 'settings' -->
+  <h1>This will be settings view.</h1>
+  <!-- /ko -->
+
 </body>
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script>
   var viewModel = {
-    selectedView: ko.observable(),
+    guest: ko.observable(true),
+    password: ko.observable(''),
+    selectedView: ko.observable(''),
+    userName: ko.observable(''),
 
     selectMatchView() {
-      console.log('match');
       this.selectedView('match');
     },
 
     selectChatView() {
-      this.selectedView('chat');
+      viewModel.selectedView('chat');
     },
 
     selectProfileView() {
-      this.selectedView('profile');
+      viewModel.selectedView('profile');
     },
 
     selectSettingView() {
-      this.selectedView('settings');
+      viewModel.selectedView('settings');
     }
 
   };
 
+  viewModel.selectedView('login')
   ko.applyBindings(viewModel);
 </script>
 
