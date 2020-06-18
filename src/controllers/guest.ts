@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import * as path from 'path';
 import * as user from '../models/userModel';
+import * as image from '../models/imageModel';
 
 const router = express.Router();
 
@@ -25,10 +26,10 @@ router.get('/register', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/register.html'));
 });
 
-// router.post('/testRoute', async (request: Request, response: Response) => {
-//   // validation();
-//   console.log('/testRoute');
-//   response.send(await user.(request.body));
-// });
+router.post('/testRoute', async (request: Request, response: Response) => {
+  // validation();
+  console.log('/testRoute');
+  response.send(await image.retrieveImages());
+});
 
 export default router;
