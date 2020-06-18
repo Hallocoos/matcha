@@ -1,0 +1,16 @@
+
+export function function(columnData) {
+  return knex.select('columnsThatYouWant')
+    .from(table)
+    .where('column', isEqualToColumnData)
+    .then(function (result: []) {
+      result = JSON.parse(JSON.stringify(result)) // Turn data into JSON object
+      return result
+    });
+};
+
+This function equate to the SQL Query:
+  SELECT columnsThatYouWant FROM table where column = isEqualToColumnData;
+
+The output of this Query should look like a JSON object:
+  { value: key, value2: key2, ...}
