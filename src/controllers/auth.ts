@@ -1,18 +1,18 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import * as userQueries from '../services/users';
+import { retrieveUserByUsername, addUser } from '../models/userModel';
 import * as validation from '../services/validation';
-import User from '../models/userClass';
+import User from '../models/userModel';
 import * as jwt from 'jsonwebtoken';
-import * as path from 'path';
+import * as bcrypt from 'bcrypt';
 
 
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
-  var user = new User(await request.body);
+  const user = new User( await request.body );
   // validation
-  response.send(userQueries.insertUser(user));
+  response.send(addUser(user));
 });
 
 router.post('/resetPassword', (request: Request, response: Response) => {
@@ -23,14 +23,12 @@ router.post('/resetPassword', (request: Request, response: Response) => {
 router.post('/login', async (request: Request, response: Response) => {
   if (!request.body.username || !request.body.password)
     response.redirect('/login');
-  console.log(request.body);
-  const user = new User(
-    await userQueries.findUserByUsernameAndPassword(request.body.username, request.body.password)
+  const user = new User (
+    await retrieveUserByUsername(request.body.username)
   );
-  if (user[0])
-  {
-    var token = jwt.sign(user[0], process.env.SECRETKEY);
-    response.json({ token: token });
+  if (user && await bcrypt.compare(request.body.password, user.password)) {
+      var token = jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
+      response.json({ token: token });
   } else {
     response.send("failed to login");
   }

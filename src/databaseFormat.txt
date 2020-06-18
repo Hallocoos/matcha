@@ -16,16 +16,16 @@ Users format:
     "city" : "Cape Town",
     "zip_code" : "1234",
     "verified" : true,
+    "age: "19",
 
-    "fameRating" : "1234",
-    "age: "19"
+    "fameRating" : "1234"
 }
 
 Images:
 {
     "id" : "5",
     "profilePicture" : true,
-    "userId" : "5e1eece605fa3d2ca82c81c8",
+    "userId" : "4",
     "image" : "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD..."
 }
 
