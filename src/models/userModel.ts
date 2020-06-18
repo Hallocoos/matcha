@@ -27,10 +27,6 @@ class User {
   // method() {};
 };
 
-// ===========================================
-// ===========================================
-// ===========================================
-// ===========================================
 // function to handle getting all users
 export async function retrieveUsers(): Promise<User[]> {
   const result = await knexSelectAll('users');
@@ -92,9 +88,5 @@ export async function hashing(password: string): Promise<string> {
     return (undefined);
   }
 }
-// ===========================================
-// ===========================================
-// ===========================================
-// ===========================================
 
 export default User;

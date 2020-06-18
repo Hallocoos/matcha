@@ -1,8 +1,4 @@
 import * as knex from '../../database/knex'
-// ===========================================
-// ===========================================
-// ===========================================
-// ===========================================
 
 export function knexSelectByColumn(columnName: string, columnValue: string, targetTable: string) {
   return knex.select()
@@ -42,8 +38,4 @@ export function knexSelectAll(targetTable: string) {
       return result;
     })
 }
-// ===========================================
-// ===========================================
-// ===========================================
-// ===========================================
 /// delete

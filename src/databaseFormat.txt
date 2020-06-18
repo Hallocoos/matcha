@@ -32,8 +32,8 @@ Images:
 Matches:
 {
     "id" : "13",
-    "requestUserId" : "2",
-    "acceptUserId" : "1",
+    "requestId" : "2",
+    "acceptId" : "1",
     "blocked" : "true",
     "accepted" : "true",
 }

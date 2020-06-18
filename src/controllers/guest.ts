@@ -1,13 +1,9 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import * as path from 'path';
-import * as user from '../models/userModel';
+import * as match from '../models/matchModel';
 
 const router = express.Router();
-// ===========================================
-// ===========================================
-// ===========================================
-// ===========================================
 
 router.get('/login', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/login.html'));
@@ -29,14 +25,11 @@ router.get('/register', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/register.html'));
 });
 
-// router.post('/testRoute', async (request: Request, response: Response) => {
-//   // validation();
-//   console.log('/testRoute');
-//   response.send(await user.(request.body));
-// });
-// ===========================================
-// ===========================================
-// ===========================================
-// ===========================================
+router.post('/testRoute', async (request: Request, response: Response) => {
+  response.send(match.addMatch({
+    requestId : '2',
+    acceptId : '1'
+  }));
+});
 
 export default router;
