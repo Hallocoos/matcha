@@ -4,6 +4,10 @@ import * as path from 'path';
 import * as user from '../models/userModel';
 
 const router = express.Router();
+// ===========================================
+// ===========================================
+// ===========================================
+// ===========================================
 
 router.get('/login', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/login.html'));
@@ -30,5 +34,9 @@ router.get('/register', (request: Request, response: Response) => {
 //   console.log('/testRoute');
 //   response.send(await user.(request.body));
 // });
+// ===========================================
+// ===========================================
+// ===========================================
+// ===========================================
 
 export default router;
