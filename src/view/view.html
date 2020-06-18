@@ -1,0 +1,43 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+</head>
+
+<body>
+  <div>
+    <h2 data-bind="click: selectMatchView">Match</h2>
+    <h2 data-bind="click: selectChatView">Chat</h2>
+    <h2 data-bind="click: selectProfileView">Profile</h2>
+    <h2 data-bind="click: selectSettingView">Settings</h2>
+  </div>
+</body>
+
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+<script>
+  var viewModel = {
+    selectedView: ko.observable(),
+
+    selectMatchView() {
+      console.log('match');
+      this.selectedView('match');
+    },
+
+    selectChatView() {
+      this.selectedView('chat');
+    },
+
+    selectProfileView() {
+      this.selectedView('profile');
+    },
+
+    selectSettingView() {
+      this.selectedView('settings');
+    }
+
+  };
+
+  ko.applyBindings(viewModel);
+</script>
+
+</html>

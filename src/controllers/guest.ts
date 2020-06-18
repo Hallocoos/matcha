@@ -25,10 +25,10 @@ router.get('/register', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/register.html'));
 });
 
-// router.post('/testRoute', async (request: Request, response: Response) => {
+// router.get('/testRoute', async (request: Request, response: Response) => {
 //   // validation();
-//   console.log('/testRoute');
-//   response.send(await user.(request.body));
+//   // console.log('/testRoute');
+//   response.sendFile(path.resolve('src/view/test.html'));
 // });
 
 export default router;

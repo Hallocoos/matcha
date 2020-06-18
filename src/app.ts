@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { verifyToken, Roles } from './services/jwt';
+import * as path from 'path';
 
 const app = express();
 dotenv.config();
@@ -25,6 +26,12 @@ app.use(loggerMiddleware);
 import guest from './controllers/guest'
 import auth from './controllers/auth'
 import admin from './controllers/admin'
+
+app.get('/matcha', async (request: Request, response: Response) => {
+  // validation();
+  // console.log('/testRoute');
+  response.sendFile(path.resolve('src/view/view.html'));
+});
 
 app.use('/', guest);
 app.use('/', auth);
