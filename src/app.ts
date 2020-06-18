@@ -30,7 +30,7 @@ app.use('/', guest);
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
 
-app.get('/');
+// app.get('/');
 
 app.all('*', (req, res) => {
   res.sendStatus(404)
@@ -40,17 +40,17 @@ const start = async () => {
   const port = process.env.PORT || 3000
   try {
     app.listen(port, () => {
-      console.log('server running on port %d', port)
+      console.log('Server running on port %d', port)
     })
   } catch (err) {
-    console.log(err)
-    process.exit(1)
+    console.log(err);
+    process.exit(1);
   }
 }
 
 if (!module.parent) {
   start().catch(err => {
-    console.log(err)
-    process.exit(1)
+    console.log(err);
+    process.exit(1);
   })
 }
