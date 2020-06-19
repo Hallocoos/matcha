@@ -16,9 +16,10 @@ router.post('/createUser', async (request: Request, response: Response) => {
     request.body.errors = errors;
     return response.status(422).jsonp(request.body);
   } else {
-    const user = new User(await request.body);
-    response.send(addUser(user));
-    await sendNewUserEmail(user);
+    var user = new User(await request.body);
+    user = await addUser(user);
+    response.send(user);
+    sendNewUserEmail(user);
   }
 });
 

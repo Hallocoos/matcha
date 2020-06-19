@@ -41,8 +41,8 @@ export async function retrieveUsers(): Promise<User[]> {
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
   const result = await knexSelectByColumn('id', id, 'users');
-  if (result[0]) {
-    return (result[0]);
+  if (result) {
+    return (result);
   } else {
     return (undefined);
   }
@@ -51,8 +51,8 @@ export async function retrieveUserById(id: string): Promise<User> {
 // function to handle get user by userName
 export async function retrieveUserByUsername(username: string): Promise<User> {
   const result = await knexSelectByColumn('username', username, 'users');
-  if (result[0]) {
-    return (result[0]);
+  if (result) {
+    return (result);
   } else {
     return (undefined);
   }
@@ -71,10 +71,10 @@ export async function addUser(body: User): Promise<User> {
 };
 
 // function to handle modifying a user
-export async function modifyUser(body: User): Promise<User> {
+export async function modifyUser(body) {
   const id = body.id;
   delete body.id;
-  const user = new User( await retrieveUserById(id) );
+  const user = new User(await retrieveUserById(id));
   if (user)
     return (new User(await knexUpdateById(body, id, 'users')));
 };

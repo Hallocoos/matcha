@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import * as path from 'path';
-import * as match from '../models/matchModel';
+import * as user from '../models/userModel';
 
 const router = express.Router();
 
@@ -23,6 +23,10 @@ router.get('/resetPassword', (request: Request, response: Response) => {
 
 router.get('/register', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/register.html'));
+});
+
+router.get('/verify/:id', (request: Request, response: Response) => {
+  response.send(user.modifyUser( { id: request.params.id, verified: true } ));
 });
 
 // router.post('/testRoute', async (request: Request, response: Response) => {

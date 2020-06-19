@@ -1,5 +1,4 @@
 var nodemailer = require('nodemailer');
-// import * from 'nodemailer';
 
 export function sendNewUserEmail(data) {
   var transporter = nodemailer.createTransport({
@@ -15,13 +14,12 @@ export function sendNewUserEmail(data) {
     from: process.env.emailUser,
     to: data.email,
     subject: 'Welcome to Matcha!',
-    text: 'Your account has been created!'
+    text: 'Your account has been created!\n' +
+      'Please visit localhost:3000/verify/' + data.id + ' to verify your account.'
   };
   transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
+    if (error)
       return (error);
-    }
     console.log('Mail sent: ' + info.response);
   });
 }
