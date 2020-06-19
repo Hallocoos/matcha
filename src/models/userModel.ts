@@ -3,7 +3,6 @@ import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById } from '.
 const saltRounds = 3;
 
 class User {
-
   // property: datatype;
   id: string;
   username: string;

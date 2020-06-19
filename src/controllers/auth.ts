@@ -1,18 +1,23 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { retrieveUserByUsername, addUser } from '../models/userModel';
-import * as validation from '../services/validation';
+import { createUserValidator } from '../services/validation';
 import User from '../models/userModel';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
-import { createUserValidator } from '../services/validation';
 
 const router = express.Router();
 
-router.post('/createUser', createUserValidator, async (request: Request, response: Response) => {
-  const user = new User(await request.body);
-  // validation
-  response.send(addUser(user));
+router.post('/createUser', async (request: Request, response: Response) => {
+  const errors = createUserValidator(request, response); 
+
+  if (errors) {
+    return response.status(422).jsonp(errors);
+  } else {
+    console.log("Not Here");
+    const user = new User(await request.body);
+    response.send(addUser(user));
+  }
 });
 
 router.post('/resetPassword', (request: Request, response: Response) => {
