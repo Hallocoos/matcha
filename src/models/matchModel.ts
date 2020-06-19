@@ -4,8 +4,6 @@ import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById } from '.
 const saltRounds = 3;
 
 class Match {
-
-  // property: datatype;
   id: string;
   requestId: string;
   acceptId: string;
@@ -19,9 +17,8 @@ class Match {
 };
 
 /*
- * Function to handle getting all matches
- * @Incoming Params: N/A
- *
+ *  Function to handle getting all matches
+ *  @Incoming Params: N/A
 */
 export async function retrieveMatches(): Promise<Match[]> {
   const result = await knexSelectAll('matches');
@@ -33,13 +30,10 @@ export async function retrieveMatches(): Promise<Match[]> {
 };
 
 /*
- * Function to handle get match by requestId
- * @Incoming Params: body = {
- *   currId = <string>,
- *   blockId = <string>
- * }
+ *  Function to handle get match by requestId
+ *  @Incoming Params: requestId = <string>
 */
-export async function retrieveMatchByRequestId(requestId: string): Promise<Match> {
+export async function retrieveMatchByRequestId(requestId): Promise<Match> {
   const result = await knexSelectByColumn('requestId', requestId, 'matches');
   if (result[0]) {
     return (result[0]);
@@ -49,13 +43,10 @@ export async function retrieveMatchByRequestId(requestId: string): Promise<Match
 };
 
 /*
- * Function to handle get match by acceptId
- * @Incoming Params: body = {
- *   currId = <string>,
- *   blockId = <string>
- * }
+ *  Function to handle get match by acceptId
+ *  @Incoming Params: acceptId = <string>
 */
-export async function retrieveMatchByAcceptId(acceptId: string): Promise<Match> {
+export async function retrieveMatchByAcceptId(acceptId): Promise<Match> {
   const result = await knexSelectByColumn('acceptId', acceptId, 'matches');
   if (result[0]) {
     return (result[0]);
@@ -65,13 +56,11 @@ export async function retrieveMatchByAcceptId(acceptId: string): Promise<Match> 
 };
 
 /*
- * Function to handle adding matches
- * @Incoming Params: body = {
- *  acceptId  = <string>,
- *  requestId  = <string>,
- *  block  = boolean,
- *  accepted  = boolean
- * }
+ *  Function to handle adding matches
+ *  @Incoming Params: body = {
+ *    acceptId  = <string>,
+ *    requestId  = <string>
+ *  }
 */
 export async function addMatch(body) {
   if (body) {
@@ -83,11 +72,11 @@ export async function addMatch(body) {
 };
 
 /*
- * Function to handle blocking a match
- * @Incoming Params: body = {
- *   currId = <string>,
- *   blockId = <string>
- * }
+ *  Function to handle blocking a match
+ *  @Incoming Params: body = {
+ *    currId = <string>,
+ *    blockId = <string>
+ *  }
 */
 export async function blockMatch(body) {
   return knex.select()
@@ -96,24 +85,24 @@ export async function blockMatch(body) {
     .andWhere('requestId', body.blockId)
     .orWhere('acceptId', body.blockId)
     .andWhere('requestId', body.currId)
-    .update('block', true)
+    .update('blocked', true)
     .then(function (result) {
       return result;
     });
 };
 
 /*
- * Function to handle accepting a match
- * @Incoming Params: body = {
- *   currId = <string>,
- *   blockId = <string>
- * }
+ *  Function to handle accepting a match
+ *  @Incoming Params: body = {
+ *    acceptId = <string>,
+ *    requestId = <string>
+ *  }
 */
 export async function acceptMatch(body) {
   return knex('matches')
     .where('acceptId', body.acceptId)
     .andWhere('requestId', body.requestId)
-    .update('block', true)
+    .update('accepted', true)
     .then(function (result) {
       return result;
     });

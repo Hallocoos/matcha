@@ -8,8 +8,8 @@ export function knexSelectByColumn(columnName: string, columnValue: string, targ
       console.log(result);
       result = JSON.parse(JSON.stringify(result));
       return result;
-    })
-}
+    });
+};
 
 export function knexInsert(body, targetTable) {
   return knex(targetTable)
@@ -17,8 +17,8 @@ export function knexInsert(body, targetTable) {
     .then(async function (result) {
       console.log(result);
       return (await knexSelectByColumn('id', result, targetTable));
-    })
-}
+    });
+};
 
 export function knexUpdateById(body, id, targetTable) {
   return knex(targetTable)
@@ -26,8 +26,8 @@ export function knexUpdateById(body, id, targetTable) {
     .update(body)
     .then(async function () {
       return (await knexSelectByColumn('id', id, targetTable));
-    })
-}
+    });
+};
 
 export function knexSelectAll(targetTable: string) {
   return knex.select()
@@ -36,6 +36,6 @@ export function knexSelectAll(targetTable: string) {
       console.log(result);
       result = JSON.parse(JSON.stringify(result));
       return result;
-    })
-}
-/// delete
+    });
+};
+// delete
