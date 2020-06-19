@@ -8,8 +8,6 @@ Users format:
     "lastname" : "Hallocoos",
     "gender" : "male",
     "interests" : "male",
-    "longitude" : "",
-    "latitude" : "",
     "ip" : "192.168.0.1",
     "countryName" : "South Africa",
     "regionName" : "Western Cape",
@@ -17,7 +15,7 @@ Users format:
     "zipcode" : "1234",
     "verified" : true,
     "age: "19",
-
+    "tags" : true,
     "fameRating" : "1234"
 }
 

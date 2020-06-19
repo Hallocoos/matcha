@@ -25,11 +25,8 @@ router.get('/register', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/register.html'));
 });
 
-router.post('/testRoute', async (request: Request, response: Response) => {
-  response.send(match.addMatch({
-    requestId : '2',
-    acceptId : '1'
-  }));
-});
+// router.post('/testRoute', async (request: Request, response: Response) => {
+//   response.send();
+// });
 
 export default router;

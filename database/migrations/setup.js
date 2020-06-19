@@ -17,6 +17,7 @@ exports.up = function (knex, Promise) {
       table.string('city').defaultTo('')
       table.string('zipcode').defaultTo('')
       table.boolean('verified').defaultTo(false)
+      table.integer('fameRating').defaultTo(0)
     })
     .createTable('images', function (table) {
       table.increments('id').primary()

@@ -21,6 +21,7 @@ class User {
   zipcode: string;
   verified: boolean;
   tags: string[];
+  fameRating: number;
 
   constructor(data: Partial<User>) {
     Object.assign(this, data);

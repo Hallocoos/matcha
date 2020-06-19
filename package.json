@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "redb": "knex migrate:rollback && knex migrate:latest && knex seed:run && nodemon",
+    "redb": "knex migrate:rollback && knex migrate:latest && knex seed:run && npm run start",
     "start": "nodemon ./src/app.ts"
   },
   "author": "Henricus Wouter de Vos",

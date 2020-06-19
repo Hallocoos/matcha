@@ -31,7 +31,8 @@ exports.seed = function (knex, Promise) {
           countryName: 'South Africa',
           regionName: 'Western Cape',
           city: 'Cape Town',
-          zipcode: '7441'
+          zipcode: '7441',
+          fameRating: 0
         });
     })
     .then(async function () {
@@ -50,7 +51,8 @@ exports.seed = function (knex, Promise) {
           countryName: 'asdkjf',
           regionName: 'qwerqwe',
           city: 'zxcvzxc',
-          zipcode: '2345'
+          zipcode: '2345',
+          fameRating: 0
         });
     })
     .then(async function () {
@@ -69,7 +71,8 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqevf',
           regionName: 'b5ynuj7',
           city: 'wevfqwevfq',
-          zipcode: '8842'
+          zipcode: '8842',
+          fameRating: 0
         });
     })
     .then(async function () {
@@ -88,7 +91,8 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqwevf',
           regionName: 'wevfqwefqv',
           city: 'wevfqwevfq',
-          zipcode: '9814'
+          zipcode: '9814',
+          fameRating: 0
         });
     })
 };
