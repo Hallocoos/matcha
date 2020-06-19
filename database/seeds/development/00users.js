@@ -32,7 +32,8 @@ exports.seed = function (knex, Promise) {
           regionName: 'Western Cape',
           city: 'Cape Town',
           zipcode: '7441',
-          fameRating: 0
+          fameRating: 0,
+          hash:  await hash('Hallocoos')
         });
     })
     .then(async function () {
@@ -52,7 +53,8 @@ exports.seed = function (knex, Promise) {
           regionName: 'qwerqwe',
           city: 'zxcvzxc',
           zipcode: '2345',
-          fameRating: 0
+          fameRating: 0,
+          hash: await (await hash('asdfasdf')).replace('/', '')
         });
     })
     .then(async function () {
@@ -72,7 +74,8 @@ exports.seed = function (knex, Promise) {
           regionName: 'b5ynuj7',
           city: 'wevfqwevfq',
           zipcode: '8842',
-          fameRating: 0
+          fameRating: 0,
+          hash: await hash('qwerqwer')
         });
     })
     .then(async function () {
@@ -92,7 +95,8 @@ exports.seed = function (knex, Promise) {
           regionName: 'wevfqwefqv',
           city: 'wevfqwevfq',
           zipcode: '9814',
-          fameRating: 0
+          fameRating: 0,
+          hash: await hash('zxcvzxcv')
         });
     })
 };

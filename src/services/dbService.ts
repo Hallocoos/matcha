@@ -1,4 +1,4 @@
-import * as knex from '../../database/knex'
+import * as knex from '../../database/knex';
 
 export function knexSelectByColumn(columnName: string, columnValue: string, targetTable: string) {
   return knex.select()

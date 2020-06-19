@@ -1,7 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import * as path from 'path';
-import * as user from '../models/userModel';
 
 const router = express.Router();
 
@@ -17,16 +16,12 @@ router.get('/', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/index.html'));
 });
 
-router.get('/resetPassword', (request: Request, response: Response) => {
+router.get('/forgotPassword', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/resetPassword.html'));
 });
 
 router.get('/register', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/register.html'));
-});
-
-router.get('/verify/:id', (request: Request, response: Response) => {
-  response.send(user.modifyUser( { id: request.params.id, verified: true } ));
 });
 
 // router.post('/testRoute', async (request: Request, response: Response) => {
