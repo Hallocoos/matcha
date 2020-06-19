@@ -14,7 +14,7 @@ Users format:
     "city" : "Cape Town",
     "zipcode" : "1234",
     "verified" : true,
-    "age: "19",
+    "age": "19",
     "tags" : true,
     "fameRating" : "1234"
 }

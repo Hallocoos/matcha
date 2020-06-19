@@ -5,11 +5,11 @@ import * as validation from '../services/validation';
 import User from '../models/userModel';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
-
+import { createUserValidator } from '../services/validation';
 
 const router = express.Router();
 
-router.post('/createUser', async (request: Request, response: Response) => {
+router.post('/createUser', createUserValidator, async (request: Request, response: Response) => {
   const user = new User(await request.body);
   // validation
   response.send(addUser(user));
