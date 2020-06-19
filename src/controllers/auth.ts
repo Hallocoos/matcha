@@ -5,18 +5,20 @@ import { createUserValidator } from '../services/validation';
 import User from '../models/userModel';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
+import { sendNewUserEmail } from '../helpers/email';
 
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
-  const errors = createUserValidator(request, response); 
+  let errors = createUserValidator(request, response);
 
-  if (errors) {
-    return response.status(422).jsonp(errors);
+  if (request.body.errors) {
+    request.body.errors = errors;
+    return response.status(422).jsonp(request.body);
   } else {
-    console.log("Not Here");
     const user = new User(await request.body);
     response.send(addUser(user));
+    await sendNewUserEmail(user);
   }
 });
 
