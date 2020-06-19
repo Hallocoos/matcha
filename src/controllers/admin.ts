@@ -15,16 +15,6 @@ router.post('/updateUser', async (request: Request, response: Response) => {
   response.send( await modifyUser(request.body));
 });
 
-// router.post('/findAllUsers', verifyToken(Roles.Admin), async (request: Request, response: Response) => {
-//   const user = new User( await );
-//   response.send(user);
-// });
-
-// router.post('/findUserById', async (request: Request, response: Response) => {
-//   const user = new User( await );
-//   response.send(user);
-// });
-
 // router.post('/testRoute', (request: Request, response: Response) => {
 //   response.send(FILE);
 // });

@@ -18,8 +18,9 @@ class User {
   countryName: string;
   regionName: string;
   city: string;
-  zip: string;
+  zipcode: string;
   verified: boolean;
+  tags: string[];
 
   constructor(data: Partial<User>) {
     Object.assign(this, data);

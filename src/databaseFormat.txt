@@ -11,10 +11,10 @@ Users format:
     "longitude" : "",
     "latitude" : "",
     "ip" : "192.168.0.1",
-    "country_name" : "South Africa",
-    "region_name" : "Western Cape",
+    "countryName" : "South Africa",
+    "regionName" : "Western Cape",
     "city" : "Cape Town",
-    "zip_code" : "1234",
+    "zipcode" : "1234",
     "verified" : true,
     "age: "19",
 

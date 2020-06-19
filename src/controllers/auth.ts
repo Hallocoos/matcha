@@ -10,7 +10,7 @@ import * as bcrypt from 'bcrypt';
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
-  const user = new User( await request.body );
+  const user = new User(await request.body);
   // validation
   response.send(addUser(user));
 });
@@ -23,15 +23,18 @@ router.post('/resetPassword', (request: Request, response: Response) => {
 router.post('/login', async (request: Request, response: Response) => {
   if (!request.body.username || !request.body.password)
     response.redirect('/login');
-  const user = new User (
+  const user = new User(
     await retrieveUserByUsername(request.body.username)
   );
-  if (user && await bcrypt.compare(request.body.password, user.password)) {
+  if (user.id)
+    if (await bcrypt.compare(request.body.password, user.password)) {
       var token = jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
       response.json({ token: token });
-  } else {
+    } else {
+      response.send("failed to login");
+    }
+  else
     response.send("failed to login");
-  }
 });
 
 // router.post('/testRoute', (request: Request, response: Response) => {
