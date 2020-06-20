@@ -8,16 +8,14 @@ Users format:
     "lastname" : "Hallocoos",
     "gender" : "male",
     "interests" : "male",
-    "longitude" : "",
-    "latitude" : "",
     "ip" : "192.168.0.1",
-    "country_name" : "South Africa",
-    "region_name" : "Western Cape",
+    "countryName" : "South Africa",
+    "regionName" : "Western Cape",
     "city" : "Cape Town",
-    "zip_code" : "1234",
+    "zipcode" : "1234",
     "verified" : true,
-    "age: "19",
-
+    "age": "19",
+    "tags" : true,
     "fameRating" : "1234"
 }
 
@@ -32,8 +30,8 @@ Images:
 Matches:
 {
     "id" : "13",
-    "requestUserId" : "2",
-    "acceptUserId" : "1",
+    "requestId" : "2",
+    "acceptId" : "1",
     "blocked" : "true",
     "accepted" : "true",
 }
