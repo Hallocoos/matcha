@@ -8,14 +8,6 @@ router.get('/login', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/login.html'));
 });
 
-router.get('/home', (request: Request, response: Response) => {
-  // response.sendFile(path.resolve('src/view/guest/home.html'));
-});
-
-router.get('/', (request: Request, response: Response) => {
-  // response.sendFile(path.resolve('src/view/index.html'));
-});
-
 router.get('/forgotPassword', (request: Request, response: Response) => {
   // response.sendFile(path.resolve('src/view/guest/resetPassword.html'));
 });

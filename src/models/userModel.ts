@@ -111,6 +111,7 @@ export async function modifyUserPasswordByHash(body) {
 };
 
 // function to handle modifying a user
+// body : { key: value } will insert value in column called key;
 export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;

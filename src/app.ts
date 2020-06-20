@@ -22,15 +22,13 @@ function loggerMiddleware(request: Request, response: Response, next): void {
 };
 app.use(loggerMiddleware);
 
-import guest from './controllers/guest'
-import auth from './controllers/auth'
-import admin from './controllers/admin'
+import guest from './controllers/guest';
+import auth from './controllers/auth';
+import admin from './controllers/admin';
 
-// ===========================================
 app.use('/', guest);
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
-// ===========================================
 
 // app.get('/');
 
