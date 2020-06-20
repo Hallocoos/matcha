@@ -35,10 +35,10 @@ router.post('/login', async (request: Request, response: Response) => {
       var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
       response.json({ token: token });
     } else {
-      response.send("failed to login");
+      response.send({text: "Failed to login."});
     }
   else
-    response.send("failed to login");
+    response.send({text: "Failed to login."});
 });
 
 router.get('/verify/:hash', async (request: Request, response: Response) => {

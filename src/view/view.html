@@ -10,57 +10,112 @@
     <span data-bind="click: selectChatView, style: {padding: 14}">Chat</span>
     <span data-bind="click: selectProfileView, style: {padding: 14}">Profile</span>
     <span data-bind="click: selectSettingView, style: {padding: 14}">Settings</span>
+    <span data-bind="click: selectNotificationsView, style: {padding: 14}">Notifications</span>
     <hr>
   </p>
 
-  <!-- ko if: selectedView() == 'login' -->
-  <h3>Enter Credentials</h3>
-  <input data-bind="value: userName">
-  <input data-bind="value: password">
-  <button>Login</button>
-  <!-- /ko -->
+  <div data-bind="if: selectedView() == 'login'">
+    <h3>Enter credentials to log in</h3>
+    <table>
+      <tr>
+        <td>Username:</td>
+        <td>Password:</td>
+      </tr>
+      <tr>
+        <td>
+          <input data-bind="value: username">
+        </td>
+        <td>
+          <input data-bind="value: password">
+        </td>
+        <td>
+          <button data-bind="click: submitCreds">Log In</button>
+        </td>
+      </tr>
+    </table>
+  </div>
 
-  <!-- ko if: selectedView() == 'match' -->
-  <h1>This will be match view.</h1>
-  <!-- /ko -->
+  <div data-bind="if: selectedView() == 'match'">
+    <h1>This will be match view.</h1>
+  </div>
 
-  <!-- ko if: selectedView() == 'chat' -->
-  <h1>This will be chat view.</h1>
-  <!-- /ko -->
+  <div data-bind="if: selectedView() == 'chat'">
+    <h1>This will be chat view.</h1>
+  </div>
 
-  <!-- ko if: selectedView() == 'profile' -->
-  <h1>This will be profile view.</h1>
-  <!-- /ko -->
+  <div data-bind="if: selectedView() == 'profile'">
+    <h1>This will be profile view.</h1>
+  </div>
 
-  <!-- ko if: selectedView() == 'settings' -->
-  <h1>This will be settings view.</h1>
-  <!-- /ko -->
+  <div data-bind="if: selectedView() == 'settings'">
+    <h1>This will be settings view.</h1>
+  </div>
+
+  <div data-bind="if: selectedView() == 'notifications'">
+    <h1>This will be notifications view.</h1>
+  </div>
+
+  <div id="errordiv"></div>
 
 </body>
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script>
+
+
   var viewModel = {
     guest: ko.observable(true),
     password: ko.observable(''),
     selectedView: ko.observable(''),
-    userName: ko.observable(''),
+    username: ko.observable(''),
+    token: ko.observable(),
 
     selectMatchView() {
       this.selectedView('match');
     },
 
     selectChatView() {
-      viewModel.selectedView('chat');
+      this.selectedView('chat');
     },
 
     selectProfileView() {
-      viewModel.selectedView('profile');
+      this.selectedView('profile');
     },
 
     selectSettingView() {
-      viewModel.selectedView('settings');
-    }
+      this.selectedView('settings');
+    },
+
+    selectNotificationsView() {
+      this.selectedView('notifications');
+    },
+
+    async submitCreds() {
+      var body = JSON.stringify({
+        username: viewModel.username(),
+        password: viewModel.password(),
+      })
+      await fetch("http://localhost:3000/login", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        // console.log(data)
+        if (data.token) {
+          // viewModel.token(data.token)
+          // viewModel.selectedView('notifications')
+        } else {
+          alert(data.text)
+        }
+      }).catch(er => {
+        // alert('Invalid credentials')
+        document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+      })
+    },
 
   };
 
