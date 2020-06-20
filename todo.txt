@@ -1,0 +1,7 @@
+location tracking
+categories
+emails
+return possible matches
+chat record
+view profile record
+make usernames unique

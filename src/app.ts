@@ -33,9 +33,11 @@ app.get('/matcha', async (request: Request, response: Response) => {
   response.sendFile(path.resolve('src/view/view.html'));
 });
 
+// ===========================================
 app.use('/', guest);
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
+// ===========================================
 
 // app.get('/');
 
