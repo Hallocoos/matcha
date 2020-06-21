@@ -15,7 +15,7 @@ router.post('/createUser', async (request: Request, response: Response) => {
     request.body.errors = errors;
     return response.status(422).jsonp(request.body);
   } else {
-    request.body.hash = await (await hashing('asdfasdf')).replace('/', '');
+    request.body.hash = await (await hashing(request.body.password)).replace('/', '');
     var user = new User(await request.body);
     user = await addUser(user);
     sendNewUserEmail(user);

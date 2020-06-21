@@ -37,6 +37,8 @@ exports.up = function (knex, Promise) {
       table.increments('id').primary()
       table.integer('sendId').unsigned().references('id').inTable('users')
       table.integer('receiveId').unsigned().references('id').inTable('users')
+      table.string('sender').notNullable()
+      table.string('receiver').notNullable()
       table.string('message').notNullable()
       table.timestamp('createdAt').defaultTo(knex.fn.now())
       table.boolean('seen').defaultTo(false)
