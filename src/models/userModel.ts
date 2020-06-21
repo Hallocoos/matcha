@@ -85,7 +85,7 @@ export async function retrieveUserByEmail(email: string) {
 export async function retrieveUserByHash(hash: string): Promise<User> {
   const result = await knexSelectByColumn('hash', hash, 'users');
   if (result[0]) {
-    return (result);
+    return (result[0]);
   } else {
     return (undefined);
   }
@@ -106,11 +106,13 @@ export async function addUser(body: User): Promise<User> {
 // function to handle modifying a user
 export async function modifyUserPasswordByHash(body) {
   var user = new User(await retrieveUserByHash(body.hash));
+  console.log(user)
   if (user.id) {
     body.newPassword = (await hashing(body.newPassword)).replace('/', '');
     await knexUpdateById({password: body.newPassword}, user.id, 'users');
     return (await knexSelectByColumn('id', user.id, 'users'));
   }
+  console.log(user)
   return (undefined);
 };
 

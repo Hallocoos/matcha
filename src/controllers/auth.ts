@@ -44,14 +44,15 @@ router.post('/forgotPassword', async (request: Request, response: Response) => {
   const user = await retrieveUserByEmail(request.body.email);
   resetUserPassword(user.email, user.hash);
   if (user)
-    response.send({ text: 'Check your email inbox to see how to reset your password.', success: true });
+    response.send({ text: 'If this email address is registered, check your inbox to see how to reset your password.', success: true });
   else
-    response.send({ text: 'Check your email inbox to see how to reset your password.', success: true });
+    response.send({ text: 'If this email address is registered, check your inbox to see how to reset your password.', success: true });
 
 });
 
 router.post('/resetPassword/', async (request: Request, response: Response) => {
   var user = await modifyUserPasswordByHash(request.body);
+  // console.log(user)
   if (user)
     response.send({ text: 'Password has been reset.', success: true });
   else

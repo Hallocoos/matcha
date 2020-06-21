@@ -64,8 +64,16 @@
     <h1>This will be notifications view.</h1>
   </div>
 
+  <div data-bind="if: selectedView() == 'reset'">
+    <h3>Please enter your new password:</h3>
+    <input data-bind="value: password">
+    <button data-bind="click: sendNewPassword">Reset Password</button>
+  </div>
+
   <div data-bind="if: selectedView() == 'resetrequest'">
-    <h1>This will be reset request view.</h1>
+    <h3>Please provide your email address:</h3>
+    <input data-bind="value: email">
+    <button data-bind="click: sendResetPasswordRequest">Send Request</button>
   </div>
 
   <div data-bind="if: selectedView() == 'register'">
@@ -96,6 +104,7 @@
 
 
   var viewModel = {
+    email: ko.observable(''),
     newRegistration: {
       username: ko.observable(''),
       email: ko.observable(''),
@@ -104,6 +113,7 @@
       password: ko.observable(''),
     },
     password: ko.observable(''),
+    reset: ko.observable(),
     selectedView: ko.observable(''),
     token: ko.observable(),
     username: ko.observable(''),
@@ -119,6 +129,32 @@
       // console.log(view)
       viewModel.selectedView(view)
       // console.log(viewModel.selectedView())
+    },
+
+    async sendNewPassword() {
+      var body = JSON.stringify({
+        newPassword: viewModel.password(),
+        hash: viewModel.reset(),
+      })
+      // console.log(body)
+      await fetch("http://localhost:3000/resetPassword", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        if (data.success) {
+          if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+        } else {
+          alert("Please request a new reset link.")
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error sending new password. Reason: " + er.message + "."
+      })
     },
 
     async sendNewRegistrationToDb() {
@@ -143,6 +179,29 @@
       }).catch(er => {
         // alert('Invalid credentials')
         document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+      })
+    },
+
+    async sendResetPasswordRequest() {
+      var body = JSON.stringify({
+        email: viewModel.email()
+      })
+      // console.log(body)
+      await fetch("http://localhost:3000/forgotPassword", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        if (data.success == true) {
+          if (!alert(data.text)) { window.location.reload(); }
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error resetting pwd. Reason: " + er.message + "."
       })
     },
 
@@ -176,6 +235,11 @@
   };
 
   viewModel.selectedView('login')
+  const params = new URLSearchParams(window.location.search)
+  if (params.has("reset")) {
+    viewModel.reset(params.get("reset"))
+    viewModel.selectedView("reset")
+  }
   ko.applyBindings(viewModel);
 </script>
 
