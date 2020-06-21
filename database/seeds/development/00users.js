@@ -99,6 +99,27 @@ exports.seed = function (knex, Promise) {
           hash: await hash('zxcvzxcv')
         });
     })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'uiop',
+          password: await hash('uiop'),
+          firstname: 'uiop',
+          lastname: 'uiop',
+          email: 'uiop@mailinator.com',
+          gender: 'female',
+          interest: 'female',
+          age: '20',
+          tags: 'balls',
+          ip: '156.654.45.65',
+          countryName: 'uiop',
+          regionName: 'uiop',
+          city: 'uiop',
+          zipcode: '9814',
+          fameRating: 0,
+          hash: await hash('uiop')
+        });
+    })
 };
 
 // Template for new user:
