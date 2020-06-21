@@ -9,16 +9,14 @@ import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
-  let errors = createUserValidator(request);
-
-  if (errors) {
+  let errors = await createUserValidator(request);
+  if (errors)
     response.send({ text: errors });
-  } else {
-    request.body.hash = await (await hashing('asdfasdf')).replace('/', '');
-    var user = await addUser(new User(await request.body));
-    sendNewUserEmail(user);
-    response.send(user);
-  }
+  request.body.hash = await (await hashing(request.body.username)).replace('/', '');
+  var user = new User(await addUser(request.body));
+  sendNewUserEmail(user);
+  if (user)
+    response.send({ login: 'true' });
 });
 
 router.post('/login', async (request: Request, response: Response) => {
@@ -27,7 +25,7 @@ router.post('/login', async (request: Request, response: Response) => {
     var user = new User(await retrieveUserByUsername(request.body.username));
     if (user.id && await bcrypt.compare(request.body.password, user.password)) {
       var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-      response.json({ token: token });
+      response.json({ token: token, text: 'Login was successful.' });
     } else
       response.send({ text: 'Username or Password was incorrect.' });
   } else
@@ -35,17 +33,29 @@ router.post('/login', async (request: Request, response: Response) => {
 });
 
 router.get('/verify/:hash', async (request: Request, response: Response) => {
-  await verifyUserByHash(request.params.hash)
-  response.redirect('/login');
+  const user = await verifyUserByHash(request.params.hash);
+  if (user)
+    response.send({ text: 'User has successfully been verified.', success: true });
+  else
+    response.send({ text: 'User has not been verified.', success: false });
 });
 
 router.post('/forgotPassword', async (request: Request, response: Response) => {
   const user = await retrieveUserByEmail(request.body.email);
-  response.send(await resetUserPassword(user.email, user.hash));
+  resetUserPassword(user.email, user.hash);
+  if (user)
+    response.send({ text: 'Check your email inbox to see how to reset your password.', success: true });
+  else
+    response.send({ text: 'Check your email inbox to see how to reset your password.', success: true });
+
 });
 
 router.post('/resetPassword/', async (request: Request, response: Response) => {
-  response.send(await modifyUserPasswordByHash(request.body));
+  var user = await modifyUserPasswordByHash(request.body);
+  if (user)
+    response.send({ text: 'Password has been reset.', success: true });
+  else
+    response.send({ text: 'Invalid hash has been passed.', success: false });
 });
 
 // router.post('/testRoute', (request: Request, response: Response) => {

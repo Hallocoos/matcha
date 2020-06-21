@@ -1,5 +1,13 @@
-export function createUserValidator(request) {
+import { retrieveUserByUsername, retrieveUserByEmail } from '../models/userModel';
+
+export async function createUserValidator(request) {
   const user = request.body;
+  const username = await retrieveUserByUsername(user.username);
+  if (username)
+    return ('Username is in use.');
+  const email = await retrieveUserByEmail(user.email);
+  if (email)
+    return ('Email is in use.');
   if (!exists(user.username) || !isString(user.username) || user.username.length < 4)
     return ('Username is Invalid');
   if (!exists(user.password) || !isString(user.password) || !complexPassword(user.password))
@@ -29,6 +37,44 @@ export function userLoginValidator(request) {
     return ('Password is Invalid');
   return undefined;
 }
+
+export async function updateUserValidator(request) {
+  const user = request.body;
+  const username = await retrieveUserByUsername(user.username);
+  if (username)
+    return ('Username is in use.');
+  const email = await retrieveUserByEmail(user.email);
+  if (email)
+    return ('Email is in use.');
+  if (user.username)
+    if (!isString(user.username) && user.username.length < 4)
+      return ('Username is Invalid');
+  if (user.password)
+    if (!isString(user.password) || !complexPassword(user.password))
+      return ('Password is Invalid');
+  if (user.firstname)
+    if (!isString(user.firstname) || user.firstname.length < 4)
+      return ('First name is Invalid');
+  if (user.lastname)
+    if (!isString(user.lastname) || user.lastname.length < 4)
+      return ('Last name is Invalid');
+  if (user.gender)
+    if (!isString(user.gender) || !genderClassification(user.gender))
+      return ('Gender is Invalid');
+  if (user.interest)
+    if (!isString(user.interest) || !genderClassification(user.interest))
+      return ('Interest is Invalid');
+  if (user.tags)
+    if (!isString(user.tags))
+      return ('Tags are Invalid');
+  if (user.email)
+    if (!isString(user.email) || !isEmail(user.email))
+      return ('Email is Invalid');
+  if (user.age)
+    if (!isNumeric(user.age) || user.age < 18)
+      return ('Age is Invalid');
+  return undefined;
+};
 
 export function exists(exists) {
   if (exists)

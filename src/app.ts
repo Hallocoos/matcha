@@ -22,18 +22,11 @@ function loggerMiddleware(request: Request, response: Response, next): void {
 };
 app.use(loggerMiddleware);
 
-import guest from './controllers/guest';
 import auth from './controllers/auth';
 import admin from './controllers/admin';
 
-app.use('/', guest);
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
-<<<<<<< HEAD
-
-// app.get('/');
-=======
->>>>>>> 6f791a914d53ecff5d8209feacb40a78609537ca
 
 app.all('*', (req, res) => {
   res.sendStatus(404)
