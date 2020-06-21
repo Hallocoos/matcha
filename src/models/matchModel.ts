@@ -79,8 +79,7 @@ export async function addMatch(body) {
  *  }
 */
 export async function blockMatch(body) {
-  return knex.select()
-    .from('matches')
+  return knex('matches')
     .where('acceptId', body.currId)
     .andWhere('requestId', body.blockId)
     .orWhere('acceptId', body.blockId)
