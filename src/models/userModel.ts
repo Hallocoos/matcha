@@ -61,17 +61,18 @@ export async function verifyUserByHash(hash: string): Promise<User> {
 };
 
 // function to handle get user by username
-export async function retrieveUserByUsername(username: string): Promise<User> {
+// /login
+export async function retrieveUserByUsername(username: string) {
   const result = await knexSelectByColumn('username', username, 'users');
-  if (result) {
-    return (result);
+  if (result[0]) {
+    return (result[0]);
   } else {
     return (undefined);
   }
 };
 
 // function to handle get user by email
-export async function retrieveUserByEmail(email: string): Promise<User> {
+export async function retrieveUserByEmail(email: string) {
   const result = await knexSelectByColumn('email', email, 'users');
   if (result[0]) {
     return (result[0]);
@@ -84,7 +85,7 @@ export async function retrieveUserByEmail(email: string): Promise<User> {
 export async function retrieveUserByHash(hash: string): Promise<User> {
   const result = await knexSelectByColumn('hash', hash, 'users');
   if (result[0]) {
-    return (result[0]);
+    return (result);
   } else {
     return (undefined);
   }
@@ -104,20 +105,26 @@ export async function addUser(body: User): Promise<User> {
 
 // function to handle modifying a user
 export async function modifyUserPasswordByHash(body) {
-  const user = new User(await retrieveUserByHash(body.hash));
-  body.newPassword = (await hashing(body.newPassword)).replace('/', '');
-  if (user)
-    return (new User(await knexUpdateById({password: body.newPassword}, user.id, 'users')));
+  var user = new User(await retrieveUserByHash(body.hash));
+  if (user.id) {
+    body.newPassword = (await hashing(body.newPassword)).replace('/', '');
+    await knexUpdateById({password: body.newPassword}, user.id, 'users');
+    return (await knexSelectByColumn('id', user.id, 'users'));
+  }
+  return (undefined);
 };
 
 // function to handle modifying a user
+// body : { key: value } will insert value in column called key;
 export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
-  const user = new User(await retrieveUserById(id));
-  if (user)
-    return (new User(await knexUpdateById(body, id, 'users')));
-};
+  console.log(body);
+  if (body)
+    return (await knexUpdateById(body, id, 'users'));
+  else
+    return (0);
+ };
 
 export async function hashing(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);

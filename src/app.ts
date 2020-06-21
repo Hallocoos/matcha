@@ -23,9 +23,8 @@ function loggerMiddleware(request: Request, response: Response, next): void {
 };
 app.use(loggerMiddleware);
 
-import guest from './controllers/guest'
-import auth from './controllers/auth'
-import admin from './controllers/admin'
+import auth from './controllers/auth';
+import admin from './controllers/admin';
 
 app.get('/matcha', async (request: Request, response: Response) => {
   // validation();
@@ -33,13 +32,8 @@ app.get('/matcha', async (request: Request, response: Response) => {
   response.sendFile(path.resolve('src/view/view.html'));
 });
 
-// ===========================================
-app.use('/', guest);
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
-// ===========================================
-
-// app.get('/');
 
 app.all('*', (req, res) => {
   res.sendStatus(404)
