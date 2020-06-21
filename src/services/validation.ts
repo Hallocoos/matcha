@@ -31,7 +31,7 @@ export function userLoginValidator(request) {
 }
 
 export function resetPasswordValidator(data) {
-  if (!exists(data.newPassword) || !isString(data.newPassword) || !complexPassword(data.newPassword))
+  if (!exists(data.password) || !isString(data.password) || !complexPassword(data.password))
     return ('Password is Invalid');
   if (!exists(data.hash))
     return ('Hash is Invalid')
@@ -40,12 +40,14 @@ export function resetPasswordValidator(data) {
 
 export async function updateUserValidator(request) {
   const user = request.body;
-  const username = await retrieveUserByUsername(user.username);
-  if (username)
-    return ('Username is in use.');
-  const email = await retrieveUserByEmail(user.email);
-  if (email)
-    return ('Email is in use.');
+  if (user.username)
+    var username = await retrieveUserByUsername(user.username);
+      if (username)
+        return ('Username is in use.');
+  if (user.email)
+    var email = await retrieveUserByEmail(user.email);
+      if (email)
+        return ('Email is in use.');
   if (user.username)
     if (!isString(user.username) && user.username.length < 4)
       return ('Username is Invalid');

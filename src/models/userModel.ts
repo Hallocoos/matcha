@@ -1,7 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as knex from '../../database/knex'
 import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById } from '../services/dbService';
-import { orderBy } from 'lodash';
 const saltRounds = 3;
 
 export class User {
@@ -42,8 +41,8 @@ export async function retrieveUsers(): Promise<User[]> {
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
   const result = await knexSelectByColumn('id', id, 'users');
-  if (result)
-    return (result);
+  if (result[0])
+    return (result[0]);
   return (undefined);
 };
 
@@ -53,7 +52,7 @@ export async function verifyUserByHash(hash: string): Promise<User> {
     .where('hash', hash)
     .update('verified', true)
     .then(async function () {
-      return (await knexSelectByColumn('hash', hash, 'users'));
+      return (await retrieveUserByHash(hash));
     });
 };
 
@@ -85,7 +84,7 @@ export async function retrieveUserByHash(hash: string): Promise<User> {
 // function to handle adding users
 export async function addUser(body: User): Promise<User> {
   const result = await knexInsert(body, 'users');
-  return (result[0]);
+  return (await retrieveUserByUsername(body.username));
 };
 
 /*
@@ -95,9 +94,9 @@ export async function addUser(body: User): Promise<User> {
 export async function modifyUserPasswordByHash(body) {
   var user = await retrieveUserByHash(body.hash);
   if (user) {
-    body.newPassword = await hashing(body.newPassword);
-    await knexUpdateById({ password: body.newPassword }, user.id, 'users');
-    return (await knexSelectByColumn('id', user.id, 'users'));
+    body.password = await hashing(body.password);
+    await knexUpdateById({ password: body.password }, user.id, 'users');
+    return (await retrieveUserById(user.id));
   }
   return (undefined);
 };
@@ -109,7 +108,8 @@ export async function modifyUserPasswordByHash(body) {
 export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
-  return (await knexUpdateById(body, id, 'users'));
+  await knexUpdateById(body, id, 'users');
+  return (await retrieveUserById(id));
 };
 
 export async function hashing(password: string): Promise<string> {

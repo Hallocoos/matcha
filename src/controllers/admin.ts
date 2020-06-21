@@ -7,18 +7,16 @@ import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndRecei
 
 const router = express.Router();
 
+// {"id":"2", "countryName": "South Africa", ...other...}
 router.post('/updateUser', async (request: Request, response: Response) => {
-  let errors = updateUserValidator(request);
+  let errors = await updateUserValidator(request);
   if (errors)
     response.send({ text: errors, success: false });
   else if (await modifyUserById(request.body))
     response.send({ text: 'User has successfully been updated.', success: true });
 });
 
-router.post('/matches', (request: Request, response: Response) => {
-  response.send();
-});
-
+// {"username": "Hallocoos"}
 router.post('/profile', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
   if (user)
@@ -26,7 +24,8 @@ router.post('/profile', async (request: Request, response: Response) => {
   response.send({ user: user, images: images });
 });
 
-router.post('/chat', async (request: Request, response: Response) => {
+// {"send": "Hallocoos", "receive": "asdfasdf"}
+router.post('/getChat', async (request: Request, response: Response) => {
   const send = await retrieveUserByUsername(request.body.send);
   const receive = await retrieveUserByUsername(request.body.receive);
   if (send && receive)
@@ -34,15 +33,32 @@ router.post('/chat', async (request: Request, response: Response) => {
   response.send({ notifications: notifications });
 });
 
-router.post('/notifications', async (request: Request, response: Response) => {
+// {"username": "Hallocoos"}
+router.post('/getNotifications', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
   if (user)
     var notifications = await retrieveNotificationsByReceiveId(user.id);
   response.send({ notifications: notifications });
 });
 
-// router.post('/testRoute', (request: Request, response: Response) => {
-//   response.send(FILE);
+// router.post('/createNotifications', async (request: Request, response: Response) => {
+//   response.send({ text: '', success: true});
+// });
+
+// router.post('/createMatch', (request: Request, response: Response) => {
+//   response.send({ text: '', success: true});
+// });
+
+// router.post('/getMatches', (request: Request, response: Response) => {
+//   response.send({ text: '', success: true});
+// });
+
+// router.post('/getSuggestions', (request: Request, response: Response) => {
+//   response.send({ text: '', success: true});
+// });
+
+// router.post('/setProfilePicture', (request: Request, response: Response) => {
+//   response.send({ text: '', success: true});
 // });
 
 export default router;
