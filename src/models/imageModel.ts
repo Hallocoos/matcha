@@ -14,7 +14,7 @@ class Image {
 };
 
 // function to handle get images by userId
-export async function findImagesByUserId(userId: string): Promise<Image> {
+export async function retrieveImagesByUserId(userId: string): Promise<Image> {
   // Select by column id, where id = userId, from table images.
   const result = await knexSelectByColumn('userId', userId, 'images');
   // result = array of [ images ];
@@ -24,5 +24,4 @@ export async function findImagesByUserId(userId: string): Promise<Image> {
     return (undefined);
   }
 };
-
 //delete

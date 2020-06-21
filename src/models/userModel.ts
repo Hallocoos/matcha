@@ -34,21 +34,17 @@ export class User {
 // function to handle getting all users
 export async function retrieveUsers(): Promise<User[]> {
   const result = await knexSelectAll('users');
-  if (result) {
+  if (result)
     return (result);
-  } else {
-    return (undefined);
-  }
+  return (undefined);
 };
 
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
   const result = await knexSelectByColumn('id', id, 'users');
-  if (result) {
+  if (result)
     return (result);
-  } else {
-    return (undefined);
-  }
+  return (undefined);
 };
 
 // function to handle get user by id
@@ -65,43 +61,31 @@ export async function verifyUserByHash(hash: string): Promise<User> {
 // /login
 export async function retrieveUserByUsername(username: string) {
   const result = await knexSelectByColumn('username', username, 'users');
-  if (result[0]) {
+  if (result[0])
     return (result[0]);
-  } else {
-    return (undefined);
-  }
+  return (undefined);
 };
 
 // function to handle get user by email
 export async function retrieveUserByEmail(email: string) {
   const result = await knexSelectByColumn('email', email, 'users');
-  if (result[0]) {
+  if (result[0])
     return (result[0]);
-  } else {
-    return (undefined);
-  }
+  return (undefined);
 };
 
 // function to handle get user by email
 export async function retrieveUserByHash(hash: string): Promise<User> {
   const result = await knexSelectByColumn('hash', hash, 'users');
-  if (result[0]) {
+  if (result[0])
     return (result[0]);
-  } else {
-    return (undefined);
-  }
+  return (undefined);
 };
 
 // function to handle adding users
 export async function addUser(body: User): Promise<User> {
-  if (body) {
-    const hashedPassword = await hashing(body.password);
-    body.password = hashedPassword;
-    const result = await knexInsert(body, 'users');
-    return (result[0]);
-  } else {
-    return (undefined);
-  }
+  const result = await knexInsert(body, 'users');
+  return (result[0]);
 };
 
 /*
@@ -125,20 +109,15 @@ export async function modifyUserPasswordByHash(body) {
 export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
-  if (body)
-    return (await knexUpdateById(body, id, 'users'));
-  else
-    return (0);
+  return (await knexUpdateById(body, id, 'users'));
 };
 
 export async function hashing(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(password, salt);
-  if (hash) {
+  if (hash)
     return (await (hash).replace('/', ''));
-  } else {
-    return (undefined);
-  }
+  return (undefined);
 }
 
 export default User;

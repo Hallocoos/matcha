@@ -62,13 +62,13 @@ export async function retrieveNotificationsById(id): Promise<Notification[]> {
  *    sendId = <string>
  *  }
 */
-export async function retrieveNotificationsBySendIdAndReceiveId(body):Promise<Notification[]> {
+export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveId):Promise<Notification[]> {
   return knex.select()
     .from('notifications')
-    .where('receiveId', body.receiveId)
-    .andWhere('sendId', body.sendId)
-    .orWhere('receiveId', body.sendId)
-    .andWhere('sendId', body.receiveId)
+    .where('receiveId', receiveId)
+    .andWhere('sendId', sendId)
+    .orWhere('receiveId', sendId)
+    .andWhere('sendId', receiveId)
     .then(function (result) {
       return (result);
     });

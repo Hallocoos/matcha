@@ -5,7 +5,6 @@ import { resetPasswordValidator, createUserValidator, userLoginValidator } from 
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
-import bodyParser = require('body-parser');
 
 const router = express.Router();
 
@@ -28,6 +27,8 @@ router.post('/login', async (request: Request, response: Response) => {
     var user = new User(await retrieveUserByUsername(request.body.username));
     if (user.id && await bcrypt.compare(request.body.password, user.password)) {
       var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
+      // set ip;
+      // function call to iplocation(ip, user.id)
       response.json({ token: token, text: 'Login was successful.', success: true });
     } else
       response.send({ text: 'Username or Password was incorrect.', success: false });
