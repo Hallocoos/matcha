@@ -6,11 +6,11 @@
 
 <body>
   <p data-bind="style: {padding: 14}">
-    <span data-bind="click: selectMatchView, style: {padding: 14}">Match</span>
-    <span data-bind="click: selectChatView, style: {padding: 14}">Chat</span>
-    <span data-bind="click: selectProfileView, style: {padding: 14}">Profile</span>
-    <span data-bind="click: selectSettingView, style: {padding: 14}">Settings</span>
-    <span data-bind="click: selectNotificationsView, style: {padding: 14}">Notifications</span>
+    <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
+    <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
+    <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
+    <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
+    <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
     <hr>
   </p>
 
@@ -32,7 +32,14 @@
           <button data-bind="click: submitCreds">Log In</button>
         </td>
       </tr>
+      <tr>
+        <td></td>
+        <td>
+          <h6>Oops. I need to <a href="" data-bind="click: ">reset my password</a>.</h6>
+        </td>
+      </tr>
     </table>
+    <h3>New user? Click here to <a href="">register</a>.</h3>
   </div>
 
   <div data-bind="if: selectedView() == 'match'">
@@ -70,26 +77,15 @@
     username: ko.observable(''),
     token: ko.observable(),
 
-    selectMatchView() {
-      this.selectedView('match');
+    // note here that params are switched around
+    // if unsure, use console.log to verify
+    selectView(view, data) { 
+      // console.log(data)
+      // console.log(view)
+      viewModel.selectedView(view)
+      // console.log(viewModel.selectedView())
     },
-
-    selectChatView() {
-      this.selectedView('chat');
-    },
-
-    selectProfileView() {
-      this.selectedView('profile');
-    },
-
-    selectSettingView() {
-      this.selectedView('settings');
-    },
-
-    selectNotificationsView() {
-      this.selectedView('notifications');
-    },
-
+    
     async submitCreds() {
       var body = JSON.stringify({
         username: viewModel.username(),
@@ -106,8 +102,8 @@
       ).then(data => {
         // console.log(data)
         if (data.token) {
-          // viewModel.token(data.token)
-          // viewModel.selectedView('notifications')
+          viewModel.token(data.token)
+          viewModel.selectedView('notifications')
         } else {
           alert(data.text)
         }
