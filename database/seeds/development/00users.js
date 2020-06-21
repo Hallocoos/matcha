@@ -117,6 +117,7 @@ exports.seed = function (knex, Promise) {
           city: 'uiop',
           zipcode: '9814',
           fameRating: 0,
+          verified: 1, 
           hash: await hash('uiop')
         });
     })
