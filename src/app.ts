@@ -26,13 +26,9 @@ import guest from './controllers/guest'
 import auth from './controllers/auth'
 import admin from './controllers/admin'
 
-// ===========================================
 app.use('/', guest);
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
-// ===========================================
-
-// app.get('/');
 
 app.all('*', (req, res) => {
   res.sendStatus(404)

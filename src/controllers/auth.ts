@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { modifyUserPasswordByHash, verifyUserByHash, retrieveUserByUsername, retrieveUserByEmail, addUser, hashing, User } from '../models/userModel';
-import { createUserValidator } from '../services/validation';
+import { createUserValidator, userLoginValidator } from '../services/validation';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
@@ -9,40 +9,34 @@ import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
-  let errors = createUserValidator(request, response);
+  let errors = createUserValidator(request);
 
-  if (request.body.errors) {
-    request.body.errors = errors;
-    return response.status(422).jsonp(request.body);
+  if (errors) {
+    response.send({ text: errors });
   } else {
     request.body.hash = await (await hashing('asdfasdf')).replace('/', '');
-    var user = new User(await request.body);
-    user = await addUser(user);
+    var user = await addUser(new User(await request.body));
     sendNewUserEmail(user);
     response.send(user);
   }
 });
 
 router.post('/login', async (request: Request, response: Response) => {
-  if (!request.body.username || !request.body.password)
-    response.redirect('/login');
-  var user = new User(
-    await retrieveUserByUsername(request.body.username)
-  );
-  user = user[0];
-  if (user.id)
-    if (await bcrypt.compare(request.body.password, user.password)) {
+  let errors = userLoginValidator(request);
+  if (!errors) {
+    var user = new User(await retrieveUserByUsername(request.body.username));
+    if (user.id && await bcrypt.compare(request.body.password, user.password)) {
       var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
       response.json({ token: token });
-    } else {
-      response.send("failed to login");
-    }
-  else
-    response.send("failed to login");
+    } else
+      response.send({ text: 'Username or Password was incorrect.' });
+  } else
+    response.send({ text: errors });
 });
 
 router.get('/verify/:hash', async (request: Request, response: Response) => {
-  response.send(await verifyUserByHash(request.params.hash));
+  await verifyUserByHash(request.params.hash)
+  response.redirect('/login');
 });
 
 router.post('/forgotPassword', async (request: Request, response: Response) => {
