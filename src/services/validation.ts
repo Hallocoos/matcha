@@ -16,16 +16,8 @@ export async function createUserValidator(request) {
     return ('First name is Invalid');
   if (!exists(user.lastname) || !isString(user.lastname) || user.lastname.length < 4)
     return ('Last name is Invalid');
-  if (!exists(user.gender) || !isString(user.gender) || !genderClassification(user.gender))
-    return ('Gender is Invalid');
-  if (!exists(user.interest) || !isString(user.interest) || !genderClassification(user.interest))
-    return ('Interest is Invalid');
-  if (!exists(user.tags) || !isString(user.tags))
-    return ('Tags are Invalid');
   if (!exists(user.email) || !isString(user.email) || !isEmail(user.email))
     return ('Email is Invalid');
-  if (!exists(user.age) || !isNumeric(user.age) || user.age < 18)
-    return ('Age is Invalid');
   return undefined;
 };
 
@@ -66,21 +58,21 @@ export async function updateUserValidator(request) {
   if (user.lastname)
     if (!isString(user.lastname) || user.lastname.length < 4)
       return ('Last name is Invalid');
+  if (user.email)
+    if (!isString(user.email) || !isEmail(user.email))
+      return ('Email is Invalid');
   if (user.gender)
     if (!isString(user.gender) || !genderClassification(user.gender))
       return ('Gender is Invalid');
   if (user.interest)
     if (!isString(user.interest) || !genderClassification(user.interest))
       return ('Interest is Invalid');
-  if (user.tags)
-    if (!isString(user.tags))
-      return ('Tags are Invalid');
-  if (user.email)
-    if (!isString(user.email) || !isEmail(user.email))
-      return ('Email is Invalid');
   if (user.age)
     if (!isNumeric(user.age) || user.age < 18)
       return ('Age is Invalid');
+  if (user.tags)
+    if (!isString(user.tags))
+      return ('Tags are Invalid');
   return undefined;
 };
 
