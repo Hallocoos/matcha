@@ -1,5 +1,4 @@
 TODO:
-location tracking
 suggest by categories
 Create Notifications Route
 Create match Route
