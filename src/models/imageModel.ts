@@ -13,4 +13,13 @@ class Image {
   // method() {};
 };
 
+// function to handle get images by userId
+export async function retrieveImagesByUserId(userId: string): Promise<Image> {
+  const result = await knexSelectByColumn('userId', userId, 'images');
+  if (result) {
+    return (result);
+  } else {
+    return (undefined);
+  }
+};
 //delete

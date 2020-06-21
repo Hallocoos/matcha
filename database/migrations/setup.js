@@ -7,10 +7,11 @@ exports.up = function (knex, Promise) {
       table.string('firstname').notNullable()
       table.string('lastname').notNullable()
       table.string('email').notNullable()
-      table.string('gender').notNullable()
-      table.string('interest').notNullable()
       table.string('age').notNullable()
-      table.string('tags').notNullable()
+      table.string('gender').defaultTo('')
+      table.string('biography').defaultTo('')
+      table.string('interest').defaultTo('')
+      table.string('tags').defaultTo('')
       table.string('ip').defaultTo('')
       table.string('countryName').defaultTo('')
       table.string('regionName').defaultTo('')
@@ -32,11 +33,22 @@ exports.up = function (knex, Promise) {
       table.integer('requestId').unsigned().references('id').inTable('users')
       table.boolean('accepted').defaultTo(false)
       table.boolean('blocked').defaultTo(false)
+    })
+    .createTable('notifications', function (table) {
+      table.increments('id').primary()
+      table.integer('sendId').unsigned().references('id').inTable('users')
+      table.integer('receiveId').unsigned().references('id').inTable('users')
+      table.string('sender').notNullable()
+      table.string('receiver').notNullable()
+      table.string('message').notNullable()
+      table.timestamp('createdAt').defaultTo(knex.fn.now())
+      table.boolean('seen').defaultTo(false)
     }).then();
 };
 
 exports.down = function (knex, Promise) {
   return knex.schema
+  .dropTable('notifications')
   .dropTable('matches')
   .dropTable('images')
   .dropTable('users').then();

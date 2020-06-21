@@ -1,7 +1,21 @@
+TODO:
 location tracking
-categories
-emails
-return possible matches
-chat record
-view profile record
+suggest by categories
+Create Notifications Route
+Create match Route
+Create match Route
+Create match Route
+Set Profile Picture
+
+DONE:
+check that logging in user is verified
+chat table
+GET chat chats
+view profile route
 make usernames unique
+validate reset password
+add biography column
+emails
+
+??:
+match information
