@@ -21,15 +21,14 @@ router.post('/createUser', async (request: Request, response: Response) => {
 
 router.post('/login', async (request: Request, response: Response) => {
   let errors = userLoginValidator(request);
-  if (!errors) {
-    var user = new User(await retrieveUserByUsername(request.body.username));
-    if (user.id && await bcrypt.compare(request.body.password, user.password)) {
-      var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-      response.json({ token: token, text: 'Login was successful.' });
-    } else
-      response.send({ text: 'Username or Password was incorrect.' });
-  } else
+  if (errors)
     response.send({ text: errors });
+  var user = new User(await retrieveUserByUsername(request.body.username));
+  if (user.id && await bcrypt.compare(request.body.password, user.password)) {
+    var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
+    response.json({ token: token, text: 'Login was successful.' });
+  } else
+    response.send({ text: 'Username or Password was incorrect.' });
 });
 
 router.get('/verify/:hash', async (request: Request, response: Response) => {
