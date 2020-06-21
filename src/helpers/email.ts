@@ -26,7 +26,6 @@ export function sendNewUserEmail(data: User) {
 }
 
 export function resetUserPassword(email, hash) {
-  console.log(email, hash);
   var transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,

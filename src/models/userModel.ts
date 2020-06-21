@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as knex from '../../database/knex'
 import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById } from '../services/dbService';
+import { orderBy } from 'lodash';
 const saltRounds = 3;
 
 export class User {
@@ -85,7 +86,7 @@ export async function retrieveUserByEmail(email: string) {
 export async function retrieveUserByHash(hash: string): Promise<User> {
   const result = await knexSelectByColumn('hash', hash, 'users');
   if (result[0]) {
-    return (result);
+    return (result[0]);
   } else {
     return (undefined);
   }
@@ -103,34 +104,38 @@ export async function addUser(body: User): Promise<User> {
   }
 };
 
-// function to handle modifying a user
+/*
+ *  Function to handle modifying a user
+ *  @Incoming Params: { hash: value, key1: value1, ... }
+*/
 export async function modifyUserPasswordByHash(body) {
-  var user = new User(await retrieveUserByHash(body.hash));
-  if (user.id) {
-    body.newPassword = (await hashing(body.newPassword)).replace('/', '');
-    await knexUpdateById({password: body.newPassword}, user.id, 'users');
+  var user = await retrieveUserByHash(body.hash);
+  if (user) {
+    body.newPassword = await hashing(body.newPassword);
+    await knexUpdateById({ password: body.newPassword }, user.id, 'users');
     return (await knexSelectByColumn('id', user.id, 'users'));
   }
   return (undefined);
 };
 
-// function to handle modifying a user
-// body : { key: value } will insert value in column called key;
+/*
+ *  Function to handle modifying a user, will insert value in column called key
+ *  @Incoming Params: { id: value, key1: value1, ... }
+*/
 export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
-  console.log(body);
   if (body)
     return (await knexUpdateById(body, id, 'users'));
   else
     return (0);
- };
+};
 
 export async function hashing(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(password, salt);
   if (hash) {
-    return (hash);
+    return (await (hash).replace('/', ''));
   } else {
     return (undefined);
   }

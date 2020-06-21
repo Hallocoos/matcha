@@ -38,6 +38,14 @@ export function userLoginValidator(request) {
   return undefined;
 }
 
+export function resetPasswordValidator(data) {
+  if (!exists(data.newPassword) || !isString(data.newPassword) || !complexPassword(data.newPassword))
+    return ('Password is Invalid');
+  if (!exists(data.hash))
+    return ('Hash is Invalid')
+  return undefined;
+}
+
 export async function updateUserValidator(request) {
   const user = request.body;
   const username = await retrieveUserByUsername(user.username);
