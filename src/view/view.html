@@ -36,7 +36,8 @@
       <tr>
         <td></td>
         <td>
-          <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my password</a>.</h6>
+          <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my
+              password</a>.</h6>
         </td>
       </tr>
     </table>
@@ -51,9 +52,6 @@
     <h1>This will be chat view.</h1>
   </div>
 
-  <!-- ko if: selectedView() == 'profile' -->
-  <!-- /ko -->
-  
   <div data-bind="if: selectedView() == 'profile'">
     <h1>This will be profile view.</h1>
   </div>
@@ -71,7 +69,22 @@
   </div>
 
   <div data-bind="if: selectedView() == 'register'">
-    <h1>This will be registration view.</h1>
+    <h3>Please provide the following information to register:</h3>
+    <div>Username:</div>
+    <input data-bind="value: newRegistration.username">
+    <div>Firstname:</div>
+    <input data-bind="value: newRegistration.firstname">
+    <div>Lastname:</div>
+    <input data-bind="value: newRegistration.lastname">
+    <div>Email:</div>
+    <input data-bind="value: newRegistration.email">
+    <div>Password:</div>
+    <input data-bind="value: newRegistration.password">
+    <button data-bind="click: sendNewRegistrationToDb">Register</button>
+    <p> </p>
+    <div>
+      <button data-bind="click: logOut">Return to Log In</button>
+    </div>
   </div>
 
   <div id="errordiv"></div>
@@ -83,6 +96,13 @@
 
 
   var viewModel = {
+    newRegistration: {
+      username: ko.observable(''),
+      email: ko.observable(''),
+      firstname: ko.observable(''),
+      lastname: ko.observable(''),
+      password: ko.observable(''),
+    },
     password: ko.observable(''),
     selectedView: ko.observable(''),
     token: ko.observable(),
@@ -94,16 +114,41 @@
       this.token = ko.observable()
       this.username = ko.observable('')
     },
-    
+
     // note here that params are switched around
     // if unsure, use console.log to verify
-    selectView(view, data) { 
+    selectView(view, data) {
       // console.log(data)
       // console.log(view)
       viewModel.selectedView(view)
       // console.log(viewModel.selectedView())
     },
-    
+
+    async sendNewRegistrationToDb() {
+      var body = ko.toJSON(viewModel.newRegistration)
+      console.log(body)
+      await fetch("http://localhost:3000/createUser", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        // if (data.token) {
+        //   viewModel.token(data.token)
+        //   viewModel.selectedView('notifications')
+        // } else {
+        //   alert(data.text)
+        // }
+      }).catch(er => {
+        // alert('Invalid credentials')
+        document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+      })
+    },
+
     async submitCreds() {
       var body = JSON.stringify({
         username: viewModel.username(),
