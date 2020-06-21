@@ -5,12 +5,13 @@
 </head>
 
 <body>
-  <p data-bind="style: {padding: 14}">
+  <p data-bind="if: token(), style: {padding: 14}">
     <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
     <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
     <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
     <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
     <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
+    <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
     <hr>
   </p>
 
@@ -35,11 +36,11 @@
       <tr>
         <td></td>
         <td>
-          <h6>Oops. I need to <a href="" data-bind="click: ">reset my password</a>.</h6>
+          <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my password</a>.</h6>
         </td>
       </tr>
     </table>
-    <h3>New user? Click here to <a href="">register</a>.</h3>
+    <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.</h3>
   </div>
 
   <div data-bind="if: selectedView() == 'match'">
@@ -50,6 +51,9 @@
     <h1>This will be chat view.</h1>
   </div>
 
+  <!-- ko if: selectedView() == 'profile' -->
+  <!-- /ko -->
+  
   <div data-bind="if: selectedView() == 'profile'">
     <h1>This will be profile view.</h1>
   </div>
@@ -62,6 +66,14 @@
     <h1>This will be notifications view.</h1>
   </div>
 
+  <div data-bind="if: selectedView() == 'resetrequest'">
+    <h1>This will be reset request view.</h1>
+  </div>
+
+  <div data-bind="if: selectedView() == 'register'">
+    <h1>This will be registration view.</h1>
+  </div>
+
   <div id="errordiv"></div>
 
 </body>
@@ -71,12 +83,18 @@
 
 
   var viewModel = {
-    guest: ko.observable(true),
     password: ko.observable(''),
     selectedView: ko.observable(''),
-    username: ko.observable(''),
     token: ko.observable(),
+    username: ko.observable(''),
 
+    logOut() {
+      this.password = ko.observable('')
+      this.selectedView('login')
+      this.token = ko.observable()
+      this.username = ko.observable('')
+    },
+    
     // note here that params are switched around
     // if unsure, use console.log to verify
     selectView(view, data) { 
