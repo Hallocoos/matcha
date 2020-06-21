@@ -109,10 +109,7 @@
     username: ko.observable(''),
 
     logOut() {
-      this.password = ko.observable('')
-      this.selectedView('login')
-      this.token = ko.observable()
-      this.username = ko.observable('')
+      location.reload()
     },
 
     // note here that params are switched around
