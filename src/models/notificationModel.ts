@@ -55,8 +55,6 @@ export async function retrieveNotificationsById(id): Promise<Notification[]> {
   }
 };
 
-
-
 /*
  *  Function to handle blocking a match
  *  @Incoming Params: body = {

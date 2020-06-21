@@ -61,10 +61,11 @@ export async function verifyUserByHash(hash: string): Promise<User> {
 };
 
 // function to handle get user by username
+// /login
 export async function retrieveUserByUsername(username: string): Promise<User> {
   const result = await knexSelectByColumn('username', username, 'users');
   if (result) {
-    return (result);
+    return (result[0]);
   } else {
     return (undefined);
   }
