@@ -1,7 +1,6 @@
-import User from "../models/userModel";
 var nodemailer = require('nodemailer');
 
-export function sendNewUserEmail(data: User) {
+export function sendNewUserEmail(data) {
   var transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -26,7 +25,6 @@ export function sendNewUserEmail(data: User) {
 }
 
 export function resetUserPassword(email, hash) {
-  console.log(email, hash);
   var transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
