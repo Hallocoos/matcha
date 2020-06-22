@@ -26,10 +26,6 @@ app.use(loggerMiddleware);
 import auth from './controllers/auth';
 import admin from './controllers/admin';
 
-app.get('/reset', async (request: Request, response: Response) => {
-  response.sendFile(path.resolve('src/view/reset.html'));
-});
-
 app.get('/matcha', async (request: Request, response: Response) => {
   // validation();
   // console.log('/testRoute');

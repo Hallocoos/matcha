@@ -102,9 +102,37 @@
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script>
 
+  async function putUserInViewModel() {
+    var body = JSON.stringify({
+      username: viewModel.username(),
+    })
+    await fetch("http://localhost:3000/profile", {
+      method: "POST",
+      body: body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + viewModel.token(),
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      // console.log(data)
+      if (data.user && data.images) {
+        viewModel.loggedInUser(data.user)
+        viewModel.ownImages(data.images)
+      } else {
+        if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
+      }
+    }).catch(er => {
+      document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
+    })
+    console.log(viewModel.loggedInUser())
+    console.log(viewModel.ownImages())
+  }
 
   var viewModel = {
     email: ko.observable(''),
+    loggedInUser: ko.observable(),
     newRegistration: {
       username: ko.observable(''),
       email: ko.observable(''),
@@ -112,6 +140,7 @@
       lastname: ko.observable(''),
       password: ko.observable(''),
     },
+    ownImages: ko.observable(),
     password: ko.observable(''),
     reset: ko.observable(),
     selectedView: ko.observable(''),
@@ -223,6 +252,7 @@
         if (data.token) {
           viewModel.token(data.token)
           viewModel.selectedView('notifications')
+          putUserInViewModel();
         } else {
           alert(data.text)
         }
