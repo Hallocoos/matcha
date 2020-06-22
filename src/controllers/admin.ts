@@ -20,9 +20,11 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"username": "Hallocoos"}
 router.post('/profile', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
-  if (user)
+  if (user) {
     var images = await retrieveImagesByUserId(user.id);
-  response.send({ user: user, images: images });
+    response.send({ user: user, images: images });
+  } else
+    response.send({ text: 'Failed to retrieve user and their associated images.', success: false});
 });
 
 // {"send": "Hallocoos", "receive": "asdfasdf"}
@@ -92,14 +94,14 @@ router.post('/getMatches', async (request: Request, response: Response) => {
 });
 
 // {userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh"}
-router.post('/setProfilePicture', async (request: Request, response: Response) => {
-  // createImage();
-  // setImageAsProfilePicture();
-  response.send({ text: '', success: true});
-});
+// router.post('/setProfilePicture', async (request: Request, response: Response) => {
+//   // createImage();
+//   // setImageAsProfilePicture();
+//   response.send({ text: '', success: true});
+// });
 
 // {userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh"}
-// router.post('/setProfilePicture', async (request: Request, response: Response) => {
+// router.post('/uploadPicture', async (request: Request, response: Response) => {
 //   // createImage();
 //   response.send({ text: '', success: true});
 // });
