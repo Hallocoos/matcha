@@ -18,6 +18,8 @@ export class User {
   countryName: string;
   regionName: string;
   city: string;
+  long: string;
+  lat: string;
   zipcode: string;
   verified: boolean;
   tags: string[];
