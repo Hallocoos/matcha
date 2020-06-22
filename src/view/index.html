@@ -61,7 +61,9 @@
   <!-- email -->
   <!-- enable -->
   <div data-bind="if: selectedView() == 'settings'">
-    <h1>This will be settings view.</h1>
+    <h3>Pick a setting to change.</h3>
+    <input data-bind="value: loggedInUser.username">
+    <button data-bind="click: persistChangesToLoggedInUser">Save</button>
   </div>
 
   <div data-bind="if: selectedView() == 'notifications'">
@@ -104,6 +106,7 @@
 </body>
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+<script type='text/javascript' src='knockout.mapping.js'></script>
 <script>
 
   async function putUserInViewModel() {
@@ -122,7 +125,7 @@
     ).then(data => {
       // console.log(data)
       if (data.user && data.images) {
-        viewModel.loggedInUser(data.user)
+        viewModel.loggedInUser = ko.mapping.fromJS(data.user)
         viewModel.ownImages(data.images)
       } else {
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
@@ -130,13 +133,13 @@
     }).catch(er => {
       document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
     })
-    // console.log(viewModel.loggedInUser())
+    console.log((viewModel.loggedInUser.username()))
     // console.log(viewModel.ownImages())
   }
 
   var viewModel = {
     email: ko.observable(''),
-    loggedInUser: ko.observable(),
+    loggedInUser: null,
     newRegistration: {
       username: ko.observable(''),
       email: ko.observable(''),
@@ -162,6 +165,30 @@
       // console.log(view)
       viewModel.selectedView(view)
       // console.log(viewModel.selectedView())
+    },
+
+    async persistChangesToLoggedInUser() {
+      var body = ko.toJSON(viewModel.loggedInUser())
+      // console.log(body)
+      await fetch("http://localhost:3000/updateUser", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        // if (data.success) {
+        //   if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+        // } else {
+        //   alert("Please request a new reset link.")
+        // }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+      })
     },
 
     async sendNewPassword() {
