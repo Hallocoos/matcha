@@ -116,7 +116,7 @@ export async function hashing(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(password, salt);
   if (hash)
-    return (await (hash).replace('/', ''));
+    return (hash);
   return (undefined);
 }
 

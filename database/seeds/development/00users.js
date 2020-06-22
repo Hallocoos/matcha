@@ -27,12 +27,9 @@ exports.seed = function (knex, Promise) {
           interest: 'female',
           age: '20',
           tags: 'some',
-          ip: '192.168.0.1',
           countryName: 'South Africa',
-          regionName: 'Western Cape',
           city: 'Cape Town',
-          zipcode: '7441',
-          fameRating: 0,
+          fame: 0,
           hash:  await hash('Hallocoos')
         });
     })
@@ -48,12 +45,9 @@ exports.seed = function (knex, Promise) {
           interest: 'male',
           age: '21',
           tags: 'food',
-          ip: '156.256.36.134',
           countryName: 'asdkjf',
-          regionName: 'qwerqwe',
           city: 'zxcvzxc',
-          zipcode: '2345',
-          fameRating: 0,
+          fame: 0,
           hash: await (await hash('asdfasdf')).replace('/', '')
         });
     })
@@ -69,12 +63,9 @@ exports.seed = function (knex, Promise) {
           interest: 'male',
           age: '22',
           tags: 'sucks',
-          ip: '123.456.789.32',
           countryName: 'wevfqevf',
-          regionName: 'b5ynuj7',
           city: 'wevfqwevfq',
-          zipcode: '8842',
-          fameRating: 0,
+          fame: 0,
           hash: await hash('qwerqwer')
         });
     })
@@ -90,12 +81,9 @@ exports.seed = function (knex, Promise) {
           interest: 'female',
           age: '20',
           tags: 'balls',
-          ip: '156.654.45.65',
           countryName: 'wevfqwevf',
-          regionName: 'wevfqwefqv',
           city: 'wevfqwevfq',
-          zipcode: '9814',
-          fameRating: 0,
+          fame: 0,
           hash: await hash('zxcvzxcv')
         });
     })
@@ -111,12 +99,9 @@ exports.seed = function (knex, Promise) {
           interest: 'female',
           age: '20',
           tags: 'balls',
-          ip: '156.654.45.65',
           countryName: 'uiop',
-          regionName: 'uiop',
           city: 'uiop',
-          zipcode: '9814',
-          fameRating: 0,
+          fame: 0,
           hash: await hash('uiop')
         });
     })

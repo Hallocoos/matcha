@@ -98,11 +98,13 @@ router.post('/setProfilePicture', async (request: Request, response: Response) =
   response.send({ text: '', success: true});
 });
 
-// router.post('/uploadPicture', async (request: Request, response: Response) => {
+// {userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh"}
+// router.post('/setProfilePicture', async (request: Request, response: Response) => {
+//   // createImage();
 //   response.send({ text: '', success: true});
 // });
 
-// router.post('/getSuggestions', async (request: Request, response: Response) => {
+// router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
 //   response.send({ text: '', success: true});
 // });
 

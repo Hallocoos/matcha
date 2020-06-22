@@ -12,12 +12,10 @@ exports.up = function (knex, Promise) {
       table.string('biography').defaultTo('')
       table.string('interest').defaultTo('')
       table.string('tags').defaultTo('')
-
       table.string('countryName').defaultTo('')
       table.string('city').defaultTo('')
       table.string('longitude').defaultTo('')
       table.string('latitude').defaultTo('')
-
       table.boolean('verified').defaultTo(false)
       table.integer('fame').defaultTo(0)
       table.string('hash').notNullable()
