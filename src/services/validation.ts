@@ -1,4 +1,4 @@
-import { retrieveUserByUsername, retrieveUserByEmail } from '../models/userModel';
+import { retrieveUserByUsername, retrieveUserByEmail, retrieveUserById } from '../models/userModel';
 
 export async function createUserValidator(request) {
   const user = request.body;
@@ -35,6 +35,17 @@ export function resetPasswordValidator(data) {
     return ('Password is Invalid');
   if (!exists(data.hash))
     return ('Hash is Invalid')
+  return undefined;
+}
+
+//currently in progress
+export async function newImageValidator(image) {
+  if (image.userId && isNumeric(image.userId))
+    var userId = await retrieveUserById(image.userId);
+  if (!userId)
+    return ('Invalid User.');
+  if (!(image.image) || !isString(image.image) )
+    return ('Invalid image.')
   return undefined;
 }
 

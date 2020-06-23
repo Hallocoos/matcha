@@ -46,7 +46,7 @@ export async function retrieveUserById(id: string): Promise<User> {
   return (undefined);
 };
 
-// function to handle get user by id
+// function to handle get user by hash
 export async function verifyUserByHash(hash: string): Promise<User> {
   return knex('users')
     .where('hash', hash)

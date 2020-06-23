@@ -1,9 +1,9 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator } from '../services/validation';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
-import { retrieveImagesByUserId } from '../models/imageModel';
+import { retrieveImagesByUserId, createImage } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
 
 const router = express.Router();
@@ -106,7 +106,15 @@ router.post('/getMatches', async (request: Request, response: Response) => {
 // });
 
 // { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh" }
-// router.post('/uploadPicture', async (request: Request, response: Response) => {
+router.post('/uploadPicture', async (request: Request, response: Response) => {
+  let errors = await newImageValidator(request.body);
+  if (!errors) {
+    let newImage = await createImage(request.body);
+    response.send({text: 'Image succesfully uploaded.', success:true});
+  }
+  else {
+    response.send({ text: 'Invalid user or image.', success:false});
+  }
 //   do error checks - let errors = idValidator(request.body.id);
 //       error protection - if (!errors)
 //       createImage(); - await addMatch(request.body);
