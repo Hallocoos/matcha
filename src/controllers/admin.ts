@@ -1,9 +1,10 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { modifyUserById, retrieveUserByUsername, User } from '../models/userModel';
+import { modifyUserById, retrieveUserByUsername, retrieveUserById } from '../models/userModel';
 import { updateUserValidator } from '../services/validation';
 import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId } from '../models/notificationModel';
+import { calculateDistance } from '../helpers/locator';
 
 const router = express.Router();
 
@@ -53,9 +54,15 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
 //   response.send({ text: '', success: true});
 // });
 
-// router.post('/getSuggestions', (request: Request, response: Response) => {
-//   response.send({ text: '', success: true});
-// });
+// { "id": 1, "max": 0, "min": 10000 }
+router.post('/getSuggestions', async (request: Request, response: Response) => {
+  let user = await retrieveUserById(request.body.id);
+  if (user) {
+    let allUsers = await calculateDistance(user);
+    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+  } else
+    response.send({ text: 'No matches have been found.', success: false });
+});
 
 // router.post('/setProfilePicture', (request: Request, response: Response) => {
 //   response.send({ text: '', success: true});

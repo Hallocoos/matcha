@@ -1,16 +1,12 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { modifyUserPasswordByHash, verifyUserByHash, retrieveUserByUsername, retrieveUserByEmail, addUser, hashing, User } from '../models/userModel';
-import {createUserValidator, resetPasswordValidator, userLoginValidator} from '../services/validation';
+import { createUserValidator, resetPasswordValidator, userLoginValidator } from '../services/validation';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
 import { locateUser } from "../helpers/locator";
-import ipLocation from "iplocation/dist";
-// import {filterByDistance} from "../helpers/filterUsersByDistance";
-import {filterByDistance} from "../helpers/locator";
 
-const ipify = require('ipify');
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
@@ -19,8 +15,8 @@ router.post('/createUser', async (request: Request, response: Response) => {
     request.body.password = await hashing(request.body.password);
     request.body.hash = await hashing(request.body.username);
     var user = new User(await addUser(request.body));
-    console.log(user);
     await sendNewUserEmail(user);
+    await locateUser(user).catch(e => response.send({ text: e, success: false }));
     response.send({ text: 'User has succesfully been created.', success: true });
   } else
     response.send({ text: errors, success: false });
@@ -35,8 +31,7 @@ router.post('/login', async (request: Request, response: Response) => {
     if (user.id && await bcrypt.compare(request.body.password, user.password)) {
       if (user.verified) {
         let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-        let locationData = await locateUser(user).catch(e => response.send({text: e, success: false})); // gets location info + updates
-        await filterByDistance(user, locationData);
+        await locateUser(user).catch(e => response.send({ text: e, success: false }));
         response.json({ token: token, text: 'Login was successful.', success: true });
       } else
         response.send({ text: 'Please verify your account via your associated email account.', success: false });
