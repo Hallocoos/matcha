@@ -1,47 +1,49 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { modifyUserPasswordByHash, verifyUserByHash, retrieveUserByUsername, retrieveUserByEmail, addUser, hashing, User } from '../models/userModel';
-import {createUserValidator, resetPasswordValidator} from '../services/validation';
+import {createUserValidator, resetPasswordValidator, userLoginValidator} from '../services/validation';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
 import { locateUser } from "../helpers/locator";
 import ipLocation from "iplocation/dist";
+// import {filterByDistance} from "../helpers/filterUsersByDistance";
+import {filterByDistance} from "../helpers/locator";
 
 const ipify = require('ipify');
 const router = express.Router();
 
 router.post('/createUser', async (request: Request, response: Response) => {
-  let errors = createUserValidator(request);
-
-  if (request.body.errors) {
-    request.body.errors = errors;
-    return response.status(422).jsonp(request.body);
-  } else {
-    request.body.hash = await (await hashing('asdfasdf')).replace('/', '');
-    var user = new User(await request.body);
-    user = await addUser(user);
-    sendNewUserEmail(user);
-    response.send(user);
-  }
+  let errors = await createUserValidator(request);
+  if (!errors) {
+    request.body.password = await hashing(request.body.password);
+    request.body.hash = await hashing(request.body.username);
+    var user = new User(await addUser(request.body));
+    console.log(user);
+    await sendNewUserEmail(user);
+    response.send({ text: 'User has succesfully been created.', success: true });
+  } else
+    response.send({ text: errors, success: false });
 });
 
 router.post('/login', async (request: Request, response: Response) => {
-  if (!request.body.username || !request.body.password)
-    response.redirect('/login');
-  var user = new User(
-    await retrieveUserByUsername(request.body.username)
-  );
-  if (user.id)
-    if (await bcrypt.compare(request.body.password, user.password)) {
-      var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-      await locateUser(user, await ipify({useIPv6: false})).catch(e => response.send({text: e, success: false}))
-      response.json({token: token});
-    } else {
-      response.send("failed to login");
-    }
-  else
-    response.send("failed to login");
+  let errors = userLoginValidator(request);
+  if (errors)
+    response.send({ text: errors });
+  else {
+    var user = new User(await retrieveUserByUsername(request.body.username));
+    if (user.id && await bcrypt.compare(request.body.password, user.password)) {
+      if (user.verified) {
+        var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
+        await locateUser(user, await ipify({useIPv6: false})).catch(e => response.send({text: e, success: false}));
+        let num = await filterByDistance(user);
+        console.log(num, " KM");
+        response.json({ token: token, text: 'Login was successful.', success: true });
+      } else
+        response.send({ text: 'Please verify your account via your associated email account.', success: false });
+    } else
+      response.send({ text: 'Username or Password was incorrect.', success: false });
+  }
 });
 
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6
