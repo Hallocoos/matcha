@@ -1,5 +1,8 @@
 // import User, {modifyUserById} from "../models/userModel";
-import User, {modifyUserById, retrieveUserById} from "../models/userModel";
+import User, {modifyUserById, retrieveUserById, retrieveUsers} from "../models/userModel";
+import {body} from "express-validator";
+import ipify = require("ipify");
+import {Optional} from "express-validator/src/context";
 var ip2location = require('ip-to-location');
 
 
@@ -26,30 +29,49 @@ async function distance(lat1, lon1, lat2, lon2) {
     return 12742 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 
+// lat2long2 = user we want to compare with
+// so get all users
+// loop users object and compare distance
+// put in place ? .sort?????
+export async function filterByDistance(user: User, locationData) {
+    let allUsers = await retrieveUsers();
+    console.log(user.latitude, user.longitude);
 
-export async function filterByDistance(user: User) {
-    console.log(user);
-    console.log("userlat", user.lat, "userlong", user.long);
-    let dist = await(distance(Number(user.lat),Number(user.long), -33.9165, 18.4155));
-
-    // let dist = distance(-33.9258, 18.4259, -33.9165, 18.4155)
-    // console.log(dist + 'km');
-    console.log(dist+"KM", "\t", user.lat, "\t", user.long);
-    return dist;
+    let usersFilteredByDistance;
+    let i = 0;
+    while (allUsers[i] && user != allUsers[i]) {
+        if (allUsers[i].latitude == "" || allUsers[i].longitude == "") { // check if empty cords
+            i++;
+        } else if (allUsers[i].latitude && allUsers[i].longitude) {
+            // let dist = await(distance(Number(ME),Number(ME), Number(YOU), Number(YOU)));
+            let dist = await(distance(Number(user.latitude),Number(user.longitude), allUsers[i].latitude, allUsers[i].longitude));
+            console.log(dist);
+        }
+        i++;
+    }
+    // usersFilteredByDistance.sort
+    console.log(usersFilteredByDistance);
+    return usersFilteredByDistance;
 }
 
+export async function locateUser(user: User) {
+    let locationData = await locationQuery();
+    console.log(locationData);
 
-export async function locateUser(user: User, ipAddress) {
-    console.log("u: ", "ipAddress: ", ipAddress)
-    await ip2location.fetch(ipAddress, (err, res) => {
-        console.log(res);
-        let body = {
-            id: user.id,
-            countryName: res.country_name,
-            city: res.city,
-            latitude: res.latitude,
-            longitude: res.longitude
-        }
-        modifyUserById(body);
-    });
+    let body = {
+        id: user.id,
+        countryName: locationData.country_name,
+        city: locationData.city,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude
+    }
+
+    await modifyUserById(body);
+    return (locationData);
+}
+
+// function to get ipv4
+export async function locationQuery() {
+    let locationData = await ip2location.fetch(await ipify({useIPv6: false}))
+    return locationData;
 }

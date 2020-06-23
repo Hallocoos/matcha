@@ -34,10 +34,9 @@ router.post('/login', async (request: Request, response: Response) => {
     var user = new User(await retrieveUserByUsername(request.body.username));
     if (user.id && await bcrypt.compare(request.body.password, user.password)) {
       if (user.verified) {
-        var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-        await locateUser(user, await ipify({useIPv6: false})).catch(e => response.send({text: e, success: false}));
-        let num = await filterByDistance(user);
-        console.log(num, " KM");
+        let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
+        let locationData = await locateUser(user).catch(e => response.send({text: e, success: false})); // gets location info + updates
+        await filterByDistance(user, locationData);
         response.json({ token: token, text: 'Login was successful.', success: true });
       } else
         response.send({ text: 'Please verify your account via your associated email account.', success: false });
