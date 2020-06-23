@@ -1,0 +1,28 @@
+TODO:
+location tracking
+suggest by categories
+Create Notifications Route
+Create match Route
+Create match Route
+Create match Route
+Set Profile Picture
+
+DONE:
+check that logging in user is verified
+chat table
+GET chat chats
+view profile route
+make usernames unique
+validate reset password
+add biography column
+emails
+
+??:
+match information
+
+chloe's note on queries:
+import { fileURLToPath } from "url"
+
+user sends request(app.ts) -> a route gets chosen (guest/auth/admin)
+calls function out of model file(user/image/match)
+calls query(dbservice.ts)

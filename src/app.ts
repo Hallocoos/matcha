@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { verifyToken, Roles } from './services/jwt';
+import * as path from 'path';
 
 const app = express();
 dotenv.config();
@@ -22,15 +23,17 @@ function loggerMiddleware(request: Request, response: Response, next): void {
 };
 app.use(loggerMiddleware);
 
-import guest from './controllers/guest'
-import auth from './controllers/auth'
-import admin from './controllers/admin'
+import auth from './controllers/auth';
+import admin from './controllers/admin';
 
-app.use('/', guest);
+app.get('/matcha', async (request: Request, response: Response) => {
+  // validation();
+  // console.log('/testRoute');
+  response.sendFile(path.resolve('src/view/view.html'));
+});
+
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);
-
-// app.get('/');
 
 app.all('*', (req, res) => {
   res.sendStatus(404)

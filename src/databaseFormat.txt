@@ -1,23 +1,23 @@
 Users format:
 {
     "id" : "2",
-    "username" : "Hallocoos", // Unique
-    "password" : "12345678", // Valid
-    "email" : "wdv@mailinator.com", // Unique, Valid
+
+    "username" : "Hallocoos",
+    "password" : "12345678",
+    "email" : "wdv@mailinator.com",
     "firstname" : "Hallocoos",
     "lastname" : "Hallocoos",
     "gender" : "male",
-    "interests" : "male",
-    "longitude" : "",
-    "latitude" : "",
-    "ip" : "192.168.0.1",
-    "country_name" : "South Africa",
-    "region_name" : "Western Cape",
-    "city" : "Cape Town",
-    "zip_code" : "1234",
-    "verified" : true,
-    "age: "19",
+    "interest" : "male",
+    "age" : "19",
+    "tags" : true,
 
+    "ip" : "192.168.0.1",
+    "countryName" : "South Africa",
+    "regionName" : "Western Cape",
+    "city" : "Cape Town",
+    "zipcode" : "1234",
+    "verified" : true,
     "fameRating" : "1234"
 }
 
@@ -32,8 +32,8 @@ Images:
 Matches:
 {
     "id" : "13",
-    "requestUserId" : "2",
-    "acceptUserId" : "1",
+    "requestId" : "2",
+    "acceptId" : "1",
     "blocked" : "true",
     "accepted" : "true",
 }
