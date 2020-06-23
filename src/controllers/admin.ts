@@ -24,7 +24,7 @@ router.post('/profile', async (request: Request, response: Response) => {
     var images = await retrieveImagesByUserId(user.id);
     response.send({ user: user, images: images });
   } else
-    response.send({ text: 'Failed to retrieve user and their associated images.', success: false});
+    response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
 });
 
 // {"send": "Hallocoos", "receive": "asdfasdf"}
@@ -83,7 +83,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
-// { "id": 1}
+// { "id": 1 }
 router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
@@ -93,17 +93,27 @@ router.post('/getMatches', async (request: Request, response: Response) => {
     response.send({ text: 'Id is Invalid.', success: false });
 });
 
-// {userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh"}
+// { userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh" }
 // router.post('/setProfilePicture', async (request: Request, response: Response) => {
-//   // createImage();
-//   // setImageAsProfilePicture();
-//   response.send({ text: '', success: true});
+//   do error checks - let errors = idValidator(request.body.id);
+//   error protection - if (!errors)
+//   createImage();
+//   setImageAsProfilePicture();
+//   send a response
+//   or
+//   send error messages
+//   response.send({ text: '', success: true });
 // });
 
-// {userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh"}
+// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh" }
 // router.post('/uploadPicture', async (request: Request, response: Response) => {
-//   // createImage();
-//   response.send({ text: '', success: true});
+//   do error checks - let errors = idValidator(request.body.id);
+//   error protection - if (!errors)
+//   createImage();
+//   send a response
+//   or
+//   send error messages
+//   response.send({ text: '', success: true });
 // });
 
 // router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
