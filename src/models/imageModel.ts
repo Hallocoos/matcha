@@ -34,6 +34,7 @@ export async function retrieveImageById(id: string): Promise<Image> {
 };
 
 // function to handle creation of new images
+// body = { userId: 1<int>, image: "asdojfhioqwehfvqwef"<string>};
 export async function createImage(body): Promise<Image> {
   const result = await knexInsert(body, 'images');
   return (retrieveImageById(result[0]));
