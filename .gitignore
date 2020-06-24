@@ -72,15 +72,18 @@ testdb
 my_db
 emptydb
 
-#vscode
+# vscode
 .vscode/
 
-#log files
+# intellij
+.idea/
+
+# log files
 *.log
 
 # load test report
 report.json.html
 report.json
 
-#config files
+# config files
 .env

@@ -5,6 +5,7 @@ import { modifyUserById, retrieveUserByUsername, retrieveUserById } from '../mod
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
+import { calculateDistance } from '../helpers/locator';
 
 const router = express.Router();
 
@@ -103,8 +104,15 @@ router.post('/getMatches', async (request: Request, response: Response) => {
 //     send error messages - response.send({ text: 'Id is Invalid.', success: false });
 // });
 
-// router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
-//   response.send({ text: '', success: true});
-// });
+// { "id": 1, "max": 0, "min": 10000 }
+router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
+  // Distance
+  let user = await retrieveUserById(request.body.id);
+  if (user) {
+    let allUsers = await calculateDistance(user);
+    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+  } else
+    response.send({ text: 'No matches have been found.', success: false });
+});
 
 export default router;

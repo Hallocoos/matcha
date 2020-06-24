@@ -18,7 +18,10 @@ export class User {
   countryName: string;
   regionName: string;
   city: string;
+  longitude: string;
+  latitude: string;
   zipcode: string;
+  distance: number;
   verified: boolean;
   tags: string[];
   fameRating: number;
