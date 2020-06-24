@@ -110,11 +110,14 @@ router.post('/uploadPicture', async (request: Request, response: Response) => {
   let errors = await newImageValidator(request.body);
   if (!errors) {
     let newImage = await createImage(request.body);
+    console.log('success');
     response.send({text: 'Image succesfully uploaded.', success:true});
   }
   else {
+    console.log('failure');
     response.send({ text: 'Invalid user or image.', success:false});
   }
+  });
 //   do error checks - let errors = idValidator(request.body.id);
 //       error protection - if (!errors)
 //       createImage(); - await addMatch(request.body);

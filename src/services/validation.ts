@@ -46,6 +46,7 @@ export async function newImageValidator(image) {
     return ('Invalid User.');
   if (!(image.image) || !isString(image.image) )
     return ('Invalid image.')
+  console.log('all good in validation');
   return undefined;
 }
 
