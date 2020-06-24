@@ -105,29 +105,13 @@ router.post('/getMatches', async (request: Request, response: Response) => {
 //   response.send({ text: '', success: true });
 // });
 
-// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh" }
+// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
 router.post('/uploadPicture', async (request: Request, response: Response) => {
   let errors = await newImageValidator(request.body);
   if (!errors) {
-    let newImage = await createImage(request.body);
-    console.log('success');
-    response.send({text: 'Image succesfully uploaded.', success:true});
-  }
-  else {
-    console.log('failure');
-    response.send({ text: 'Invalid user or image.', success:false});
-  }
-  });
-//   do error checks - let errors = idValidator(request.body.id);
-//       error protection - if (!errors)
-//       createImage(); - await addMatch(request.body);
-//       send a success response - response.send({ text: 'The recipient will be notified.', success: true });
-//   or
-//     send error messages - response.send({ text: 'Id is Invalid.', success: false });
-// });
-
-// router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
-//   response.send({ text: '', success: true});
-// });
-
+    await createImage(request.body);
+    response.send({text: 'Image succesfully uploaded.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
 export default router;

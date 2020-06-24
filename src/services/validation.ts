@@ -38,15 +38,15 @@ export function resetPasswordValidator(data) {
   return undefined;
 }
 
-//currently in progress
 export async function newImageValidator(image) {
   if (image.userId && isNumeric(image.userId))
-    var userId = await retrieveUserById(image.userId);
-  if (!userId)
+    var user = await retrieveUserById(image.userId);
+  if (!user)
     return ('Invalid User.');
-  if (!(image.image) || !isString(image.image) )
-    return ('Invalid image.')
-  console.log('all good in validation');
+  if (!image.image || !isString(image.image))
+    return ('Invalid image.');
+  if (!(typeof image.profilePicture === "boolean"))
+    return ('Profile picture not boolean.');
   return undefined;
 }
 

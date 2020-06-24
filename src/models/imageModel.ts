@@ -1,5 +1,5 @@
 import * as knex from '../../database/knex'
-import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById } from '../services/dbService';
+import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById, knexClearProfilePicture } from '../services/dbService';
 
 class Image {
   id: string;
@@ -34,15 +34,17 @@ export async function retrieveImageById(id: string): Promise<Image> {
 };
 
 // function to handle creation of new images
-// body = { userId: 1<int>, image: "asdojfhioqwehfvqwef"<string>};
+// body = { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
 export async function createImage(body): Promise<Image> {
+  if (body.profilePicture)
+    await knexClearProfilePicture(body.userId, 'images');
   const result = await knexInsert(body, 'images');
-  console.log('image created');
   return (retrieveImageById(result[0]));
 };
 
 // function to handle the setting of profile picutures
 export async function setImageAsProfilePicture(body): Promise<Image> {
+  await knexClearProfilePicture(body.userId, 'images');
   const id = body.id;
   delete body.id;
   const result = await knexUpdateById(body, id, 'images')

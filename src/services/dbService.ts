@@ -39,4 +39,14 @@ export function knexUpdateById(body, id, targetTable) {
       return (result);
     });
 };
+
+export function knexClearProfilePicture(userId, targetTable) {
+  return knex(targetTable)
+    .where('userId', userId)
+    .update('profilePicture', 0)
+    .then(function (result) {
+      // console.log(result);
+      return (result);
+    });
+};
 // delete
