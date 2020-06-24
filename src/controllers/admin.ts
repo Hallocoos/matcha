@@ -95,14 +95,15 @@ router.post('/getMatches', async (request: Request, response: Response) => {
 });
 
 // { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh" }
-// router.post('/uploadPicture', async (request: Request, response: Response) => {
+router.post('/uploadPicture', async (request: Request, response: Response) => {
 //   do error checks - let errors = idValidator(request.body.id);
 //     error protection - if (!errors)
 //     createImage(); - await addMatch(request.body);
 //     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
 //   or
 //     send error messages - response.send({ text: 'Id is Invalid.', success: false });
-// });
+  response.send({ text: '', success: true });
+});
 
 // { "id": 1, "max": 0, "min": 10000 }
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
