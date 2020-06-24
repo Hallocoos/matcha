@@ -93,24 +93,12 @@ router.post('/getMatches', async (request: Request, response: Response) => {
     response.send({ text: 'Id is Invalid.', success: false });
 });
 
-// { userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh" }
-// router.post('/setProfilePicture', async (request: Request, response: Response) => {
-//   do error checks - let errors = idValidator(request.body.id);
-//   error protection - if (!errors)
-//   createImage();
-//   setImageAsProfilePicture();
-//   send a response
-//   or
-//   send error messages
-//   response.send({ text: '', success: true });
-// });
-
 // { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh" }
 // router.post('/uploadPicture', async (request: Request, response: Response) => {
 //   do error checks - let errors = idValidator(request.body.id);
-//       error protection - if (!errors)
-//       createImage(); - await addMatch(request.body);
-//       send a success response - response.send({ text: 'The recipient will be notified.', success: true });
+//     error protection - if (!errors)
+//     createImage(); - await addMatch(request.body);
+//     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
 //   or
 //     send error messages - response.send({ text: 'Id is Invalid.', success: false });
 // });
