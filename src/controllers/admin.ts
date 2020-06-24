@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById } from '../models/userModel';
+import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
@@ -23,6 +23,7 @@ router.post('/profile', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
   if (user) {
     var images = await retrieveImagesByUserId(user.id);
+    await incrementUsersFameRating(user.id, 1);
     response.send({ user: user, images: images });
   } else
     response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
@@ -77,6 +78,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
     else {
       request.body.accepter = accepter.username;
       request.body.requester = requester.username;
+      await incrementUsersFameRating(accepter.id, 5);
       await addMatch(request.body);
       response.send({ text: 'The recipient will be notified.', success: true });
     }
@@ -94,10 +96,12 @@ router.post('/getMatches', async (request: Request, response: Response) => {
     response.send({ text: 'Id is Invalid.', success: false });
 });
 
-// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh" }
+// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: true }
 router.post('/uploadPicture', async (request: Request, response: Response) => {
 //   do error checks - let errors = idValidator(request.body.id);
 //     error protection - if (!errors)
+//     if (profilePicture)
+//       setUserImagesToNotProfilePictures();
 //     createImage(); - await addMatch(request.body);
 //     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
 //   or
@@ -114,6 +118,8 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
   } else
     response.send({ text: 'No matches have been found.', success: false });
+  // Tags - create model - select * from users inner join `matches` on users.id = matches.acceptId; (Basic Query)
+  // Fame rating
 });
 
 export default router;

@@ -24,7 +24,7 @@ export class User {
   distance: number;
   verified: boolean;
   tags: string[];
-  fameRating: number;
+  fame: number;
   hash: string;
 
   constructor(data: Partial<User>) {
@@ -112,6 +112,16 @@ export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
   await knexUpdateById(body, id, 'users');
+  return (await retrieveUserById(id));
+};
+
+/*
+ *  Function to handle the increments on fame
+ *  @Incoming Params: { id: value, key1: value1, ... }
+*/
+export async function incrementUsersFameRating(id, amount) {
+  const user = await retrieveUserById(id);
+  await knexUpdateById({fame: user.fame + amount}, id, 'users');
   return (await retrieveUserById(id));
 };
 
