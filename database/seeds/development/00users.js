@@ -27,13 +27,13 @@ exports.seed = function (knex, Promise) {
           interest: 'female',
           age: '20',
           tags: 'some',
-          ip: '192.168.0.1',
           countryName: 'South Africa',
-          regionName: 'Western Cape',
           city: 'Cape Town',
-          zipcode: '7441',
-          fameRating: 0,
-          hash:  await hash('Hallocoos')
+          fame: 0,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 31.2836,
+          latitude: -32.2541,
+          verified: 1
         });
     })
     .then(async function () {
@@ -48,13 +48,12 @@ exports.seed = function (knex, Promise) {
           interest: 'male',
           age: '21',
           tags: 'food',
-          ip: '156.256.36.134',
           countryName: 'asdkjf',
-          regionName: 'qwerqwe',
           city: 'zxcvzxc',
-          zipcode: '2345',
-          fameRating: 0,
-          hash: await (await hash('asdfasdf')).replace('/', '')
+          fame: 0,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827
         });
     })
     .then(async function () {
@@ -69,13 +68,12 @@ exports.seed = function (knex, Promise) {
           interest: 'male',
           age: '22',
           tags: 'sucks',
-          ip: '123.456.789.32',
           countryName: 'wevfqevf',
-          regionName: 'b5ynuj7',
           city: 'wevfqwevfq',
-          zipcode: '8842',
-          fameRating: 0,
-          hash: await hash('qwerqwer')
+          fame: 0,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 73.3947,
+          latitude: -84.4936
         });
     })
     .then(async function () {
@@ -90,13 +88,12 @@ exports.seed = function (knex, Promise) {
           interest: 'female',
           age: '20',
           tags: 'balls',
-          ip: '156.654.45.65',
           countryName: 'wevfqwevf',
-          regionName: 'wevfqwefqv',
           city: 'wevfqwevfq',
-          zipcode: '9814',
-          fameRating: 0,
-          hash: await hash('zxcvzxcv')
+          fame: 0,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 25.3639,
+          latitude: -15.3658
         });
     })
     .then(async function () {
@@ -111,29 +108,17 @@ exports.seed = function (knex, Promise) {
           interest: 'female',
           age: '20',
           tags: 'balls',
-          ip: '156.654.45.65',
           countryName: 'uiop',
-          regionName: 'uiop',
           city: 'uiop',
           zipcode: '9814',
           fameRating: 0,
           verified: 1, 
-          hash: await hash('uiop')
+          hash: await hash('uiop'),
+          fame: 0,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 85.3654,
+          latitude: -75.3654,
+          verified: 1
         });
     })
 };
-
-// Template for new user:
-// username: '',
-// password: '',
-// firstname: '',
-// lastname: '',
-// email: '',
-// gender: '',
-// interest: '',
-// age: '',
-// ip: '',
-// countryName: '',
-// regionName: '',
-// city: '',
-// zip: ''
