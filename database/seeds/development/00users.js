@@ -30,7 +30,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'South Africa',
           city: 'Cape Town',
           fame: 0,
-          hash: await hash('Hallocoos'),
+          hash: await hash('Hallocoos').replace('/', ''),
           longitude: 31.2836,
           latitude: -32.2541
         });
@@ -70,7 +70,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await hash('qwerqwer'),
+          hash: await hash('qwerqwer').replace('/', ''),
           longitude: 73.3947,
           latitude: -84.4936
         });
@@ -79,7 +79,7 @@ exports.seed = function (knex, Promise) {
       return knex('users')
         .insert({
           username: 'zxcvzxcv',
-          password: await hash('zxcvzxcv'),
+          password: await hash('zxcvzxcv').replace('/', ''),
           firstname: 'zxcvzxcv',
           lastname: 'zxcvzxcv',
           email: 'zxcv@mailinator.com',
@@ -90,7 +90,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqwevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await hash('zxcvzxcv'),
+          hash: await hash('zxcvzxcv').replace('/', ''),
           longitude: 25.3639,
           latitude: -15.3658
         });
@@ -110,24 +110,9 @@ exports.seed = function (knex, Promise) {
           countryName: 'uiop',
           city: 'uiop',
           fame: 0,
-          hash: await hash('uiop'),
+          hash: await hash('uiop').replace('/', ''),
           longitude: 85.3654,
           latitude: -75.3654
         });
     })
 };
-
-// Template for new user:
-// username: '',
-// password: '',
-// firstname: '',
-// lastname: '',
-// email: '',
-// gender: '',
-// interest: '',
-// age: '',
-// ip: '',
-// countryName: '',
-// regionName: '',
-// city: '',
-// zip: ''

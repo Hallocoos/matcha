@@ -31,8 +31,8 @@ router.post('/login', async (request: Request, response: Response) => {
     if (user && await bcrypt.compare(request.body.password, user.password)) {
       if (user.verified) {
         let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-        await locateUser(user).catch(e => response.send({ text: e, success: false }));
         response.json({ token: token, text: 'Login was successful.', success: true });
+        await locateUser(user).catch(e => response.send({ text: e, success: false }));
       } else
         response.send({ text: 'Please verify your account via your associated email account.', success: false });
     } else
