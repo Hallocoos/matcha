@@ -30,7 +30,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'South Africa',
           city: 'Cape Town',
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace('/', ''),
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 31.2836,
           latitude: -32.2541,
           verified: 1
@@ -51,7 +51,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'asdkjf',
           city: 'zxcvzxc',
           fame: 0,
-          hash: await (await hash('asdfasdf')).replace('/', ''),
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 17.0401,
           latitude: -32.1827
         });
@@ -71,7 +71,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('qwerqwer')).replace('/', ''),
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 73.3947,
           latitude: -84.4936
         });
@@ -91,7 +91,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqwevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('zxcvzxcv')).replace('/', ''),
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 25.3639,
           latitude: -15.3658
         });
@@ -115,7 +115,7 @@ exports.seed = function (knex, Promise) {
           verified: 1, 
           hash: await hash('uiop'),
           fame: 0,
-          hash: await (await hash('uiop')).replace('/', ''),
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 85.3654,
           latitude: -75.3654,
           verified: 1
