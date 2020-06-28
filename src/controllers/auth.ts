@@ -9,7 +9,7 @@ import { locateUser } from "../helpers/locator";
 
 const router = express.Router();
 
-// { "username": "qwerqwer", "password": "asdfasdf", "email": "asdf@asdf.asdf", "firstname": "asdfasdf", "lastname": "asdfasdf", "gender": "male/female/other" }
+// { "username": "qwerqwer", "password": "asdfasdf", "email": "asdf@asdf.asdf", "firstname": "asdfasdf", "lastname": "asdfasdf", "gender": "male/female/other" "age": "94"}
 router.post('/createUser', async (request: Request, response: Response) => {
   let errors = await createUserValidator(request);
   if (!errors) {
