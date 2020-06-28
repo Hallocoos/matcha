@@ -74,6 +74,7 @@
     <h3>Please enter your new password:</h3>
     <input data-bind="value: password">
     <button data-bind="click: sendNewPassword">Reset Password</button>
+    <div><button data-bind="click: logOut">Return to Log In</button></div>
   </div>
 
   <div data-bind="if: selectedView() == 'resetrequest'">
@@ -155,7 +156,7 @@
     username: ko.observable(''),
 
     logOut() {
-      location.reload()
+      window.location.replace("http://localhost:3000/matcha")
     },
 
     // note here that params are switched around
@@ -193,7 +194,7 @@
 
     async sendNewPassword() {
       var body = JSON.stringify({
-        newPassword: viewModel.password(),
+        password: viewModel.password(),
         hash: viewModel.reset(),
       })
       // console.log(body)
