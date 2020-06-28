@@ -30,7 +30,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'South Africa',
           city: 'Cape Town',
           fame: 0,
-           hash: await (await hash('Hallocoos')).replace('/', ''),
+          hash: await (await hash('Hallocoos')).replace('/', ''),
           longitude: 31.2836,
           latitude: -32.2541
         });
