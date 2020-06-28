@@ -32,7 +32,8 @@ exports.seed = function (knex, Promise) {
           fame: 0,
           hash: await (await hash('Hallocoos')).replace('/', ''),
           longitude: 31.2836,
-          latitude: -32.2541
+          latitude: -32.2541,
+          verified: 1
         });
     })
     .then(async function () {
@@ -112,7 +113,8 @@ exports.seed = function (knex, Promise) {
           fame: 0,
           hash: await (await hash('uiop')).replace('/', ''),
           longitude: 85.3654,
-          latitude: -75.3654
+          latitude: -75.3654,
+          verified: 1
         });
     })
 };
