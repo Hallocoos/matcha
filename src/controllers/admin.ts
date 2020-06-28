@@ -14,8 +14,10 @@ router.post('/updateUser', async (request: Request, response: Response) => {
   let errors = await updateUserValidator(request);
   if (errors)
     response.send({ text: errors, success: false });
-  else if (await modifyUserById(request.body))
-    response.send({ text: 'User has successfully been updated.', success: true });
+  else {
+    var user = await modifyUserById(request.body);
+    response.send({ user: user, text: 'User has successfully been updated.', success: true });
+  }
 });
 
 // {"username": "Hallocoos"}
@@ -35,7 +37,7 @@ router.post('/getChat', async (request: Request, response: Response) => {
   const receive = await retrieveUserByUsername(request.body.receive);
   if (send && receive)
     var notifications = await retrieveNotificationsBySendIdAndReceiveId(send.id, receive.id);
-  response.send({ notifications: notifications });
+  response.send({ notifications: notifications, success: false });
 });
 
 // {"username": "Hallocoos"}
@@ -43,7 +45,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
   const user = await retrieveUserByUsername(request.body.username);
   if (user)
     var notifications = await retrieveNotificationsByReceiveId(user.id);
-  response.send({ notifications: notifications });
+  response.send({ notifications: notifications, success: false });
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -98,14 +100,14 @@ router.post('/getMatches', async (request: Request, response: Response) => {
 
 // { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: true }
 router.post('/uploadPicture', async (request: Request, response: Response) => {
-//   do error checks - let errors = idValidator(request.body.id);
-//     error protection - if (!errors)
-//     if (profilePicture)
-//       setUserImagesToNotProfilePictures();
-//     createImage(); - await addMatch(request.body);
-//     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
-//   or
-//     send error messages - response.send({ text: 'Id is Invalid.', success: false });
+  //   do error checks - let errors = idValidator(request.body.id);
+  //     error protection - if (!errors)
+  //     if (profilePicture)
+  //       setUserImagesToNotProfilePictures();
+  //     createImage(); - await addMatch(request.body);
+  //     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
+  //   or
+  //     send error messages - response.send({ text: 'Id is Invalid.', success: false });
   response.send({ text: '', success: true });
 });
 
