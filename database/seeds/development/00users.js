@@ -79,7 +79,7 @@ exports.seed = function (knex, Promise) {
       return knex('users')
         .insert({
           username: 'zxcvzxcv',
-          password: (await hash('zxcvzxcv')).replace('/', ''),
+          password: await hash('zxcvzxcv'),
           firstname: 'zxcvzxcv',
           lastname: 'zxcvzxcv',
           email: 'zxcv@mailinator.com',
