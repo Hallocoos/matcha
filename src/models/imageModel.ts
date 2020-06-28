@@ -22,4 +22,34 @@ export async function retrieveImagesByUserId(userId: string): Promise<Image> {
     return (undefined);
   }
 };
-//delete
+
+// function to handle get images by image.id
+export async function retrieveImageById(id: string): Promise<Image> {
+  const result = await knexSelectByColumn('id', id, 'images');
+  if (result[0]) {
+    return (result[0]);
+  } else {
+    return (undefined);
+  }
+};
+
+// function to handle creation of new images
+// body = { userId: 1<int>, image: "asdojfhioqwehfvqwef"<string>};
+export async function createImage(body): Promise<Image> {
+  const result = await knexInsert(body, 'images');
+  return (retrieveImageById(result[0]));
+};
+
+// function to handle the setting of profile picutures
+export async function setImageAsProfilePicture(body): Promise<Image> {
+  const id = body.id;
+  delete body.id;
+  const result = await knexUpdateById(body, id, 'images')
+  return (retrieveImageById(result[0]));
+};
+
+// function to handle get images by userId
+// export async function deleteImageById(body): Promise<Image> {
+//   const result = await knexInsert(body, 'images');
+//   return (retrieveImageById(result[0]));
+// };
