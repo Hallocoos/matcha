@@ -39,7 +39,7 @@ export function resetUserPassword(email, hash) {
     to: email,
     subject: 'Password Reset Request',
     text: 'A password reset has been requested on this account!\n' +
-      'Please visit localhost:3000/resetPassword/' + hash + ' to reset your password.'
+      'Please visit localhost:3000/matcha?reset=' + hash + ' to reset your password.'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error)

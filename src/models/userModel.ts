@@ -101,6 +101,7 @@ export async function modifyUserPasswordByHash(body) {
     await knexUpdateById({ password: body.password }, user.id, 'users');
     return (await retrieveUserById(user.id));
   }
+  console.log(user)
   return (undefined);
 };
 

@@ -110,6 +110,8 @@ exports.seed = function (knex, Promise) {
           tags: 'balls',
           countryName: 'uiop',
           city: 'uiop',
+          verified: 1, 
+          hash: await hash('uiop'),
           fame: 0,
           hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 85.3654,
