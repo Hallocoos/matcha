@@ -124,4 +124,8 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   // Fame rating
 });
 
+router.post('/reportFalseAccount', async(request: Request, response: Response) => {
+
+});
+
 export default router;
