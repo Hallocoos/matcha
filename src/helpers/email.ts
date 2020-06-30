@@ -47,3 +47,29 @@ export function resetUserPassword(email, hash) {
     console.log('Mail sent: ' + info.response);
   });
 }
+
+export function reportUser(data) {
+  var transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.emailUser,
+      pass: process.env.emailPass
+    }
+  });
+  var mailOptions = {
+    from: process.env.emailUser,
+    to: "jordanrheeder@gmail.com",
+    subject: 'Report user ' + data.email,
+    text: 'Terminate this account\n' +
+        'Please visit http://localhost:3000/terminate/' + data.hash + ' to kill the account.'
+  };
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error)
+      return (error);
+    }
+    console.log("Mail sent: " + info.response);
+  });
+}

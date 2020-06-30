@@ -59,6 +59,19 @@ export async function verifyUserByHash(hash: string): Promise<User> {
     });
 };
 
+export async function deleteUserByHash(hash: string): Promise<User> {
+  return knex('users')
+      .where('hash', hash)
+      .del().then(function() {
+        console.log("it worked");
+        // it worked
+      })
+      .catch(function(error) {
+        console.log(error);
+        // it failed
+      });
+}
+
 // function to handle get user by username
 // /login
 export async function retrieveUserByUsername(username: string) {

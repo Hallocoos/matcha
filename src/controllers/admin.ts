@@ -1,11 +1,18 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating } from '../models/userModel';
+import {
+  modifyUserById,
+  retrieveUserByUsername,
+  retrieveUserById,
+  incrementUsersFameRating,
+  deleteUserByHash
+} from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
 import { calculateDistance } from '../helpers/locator';
+import {reportUser} from "../helpers/email";
 
 const router = express.Router();
 
@@ -123,9 +130,26 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   // Tags - create model - select * from users inner join `matches` on users.id = matches.acceptId; (Basic Query)
   // Fame rating
 });
-
+// {"id":2} -reports 'asdf'
 router.post('/reportFalseAccount', async(request: Request, response: Response) => {
+  let user = await retrieveUserById(request.body.id);
 
+  if (user) {
+    await reportUser(user);
+    console.log("test");
+    response.send({text: user.email+" has been reported.", success: true});
+  } else response.send({text: "The user doesn't exist.", success: false})
 });
 
+// post -> localhost:3000/terminate/$2b$04$p6XyPrVk.Fa.3FynMArTWeRMhpGtzljhyN70kOJ8uxQJFT.ttJl2K
+// should delete 'asdf'
+router.post('/terminate/:hash', async(request: Request, response:Response) => {
+  console.log(request.params.hash+ "\ntest")
+
+    const user = await deleteUserByHash(request.params.hash);
+  if (user)
+    response.send({ text: 'User has successfully been verified.', success: true });
+  else
+    response.send({ text: 'User has not been verified.', success: false });
+});
 export default router;
