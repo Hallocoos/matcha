@@ -250,7 +250,7 @@
         alert("Password min 8 characters.")
       } else {
         var body = ko.toJSON(viewModel.newRegistration)
-        console.log(body)
+        // console.log(body)
         await fetch("http://localhost:3000/createUser", {
           method: "POST",
           body: body,
@@ -260,7 +260,7 @@
         }).then(response =>
           response.json()
         ).then(data => {
-          console.log(data)
+          // console.log(data)
           if (!data.success) {
             alert(data.text)
           } else {
