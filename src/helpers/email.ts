@@ -15,7 +15,7 @@ export function sendNewUserEmail(data) {
     to: data.email,
     subject: 'Welcome to Matcha!',
     text: 'Your account has been created!\n' +
-      'Please visit localhost:3000/verify/' + data.hash + ' to verify your account.'
+      'Please visit localhost:3000/matcha?verify=' + data.hash + ' to verify your account.'
   };
   transporter.sendMail(mailOptions, function (error, info) {
     if (error)

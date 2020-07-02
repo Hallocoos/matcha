@@ -56,11 +56,11 @@
     <h1>This will be profile view.</h1>
   </div>
 
-  <!-- username -->
-  <!-- password -->
-  <!-- email -->
-  <!-- enable -->
   <div data-bind="if: selectedView() == 'settings'">
+    <!-- username -->
+    <!-- password -->
+    <!-- email -->
+    <!-- enable -->
     <h3>Pick a setting to change.</h3>
     <input data-bind="value: loggedInUser.username">
     <button data-bind="click: persistChangesToLoggedInUser">Save</button>
@@ -144,7 +144,7 @@
     }).catch(er => {
       document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
     })
-    console.log((viewModel.loggedInUser.username()))
+    // console.log((viewModel.loggedInUser.username()))
     // console.log(viewModel.ownImages())
   }
 
@@ -171,9 +171,9 @@
       window.location.replace("http://localhost:3000/matcha")
     },
 
-    // note here that params are switched around
-    // if unsure, use console.log to verify
     selectView(view, data) {
+      // note here that params are switched around
+      // if unsure, use console.log to verify
       // console.log(data)
       // console.log(view)
       viewModel.selectedView(view)
@@ -230,14 +230,14 @@
       })
     },
 
-    // { "username": "qwerqwer", 
-    // "password": "asdfasdf", 
-    // "email": "asdf@asdf.asdf", 
-    // "firstname": "asdfasdf", 
-    // "lastname": "asdfasdf", 
-    // "gender": "male/female/other" }
     async sendNewRegistrationToDb() {
-      console.log(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(viewModel.newRegistration.email()))
+      // { "username": "qwerqwer", 
+      // "password": "asdfasdf", 
+      // "email": "asdf@asdf.asdf", 
+      // "firstname": "asdfasdf", 
+      // "lastname": "asdfasdf", 
+      // "gender": "male/female/other" }
+      // console.log(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(viewModel.newRegistration.email()))
       if (viewModel.newRegistration.username().length < 4)
         alert("Username min 4 characters.")
       else if (viewModel.newRegistration.firstname().length < 4) {
@@ -261,12 +261,11 @@
           response.json()
         ).then(data => {
           console.log(data)
-          // if (data.token) {
-          //   viewModel.token(data.token)
-          //   viewModel.selectedView('notifications')
-          // } else {
-          //   alert(data.text)
-          // }
+          if (!data.success) {
+            alert(data.text)
+          } else {
+            if (!alert(data.text + " . Please confirm email address.")) { window.location.replace("http://localhost:3000/matcha") }
+          }
         }).catch(er => {
           // alert('Invalid credentials')
           document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
@@ -332,6 +331,31 @@
   if (params.has("reset")) {
     viewModel.reset(params.get("reset"))
     viewModel.selectedView("reset")
+  }
+  if (params.has("verify")) {
+    // viewModel.verify(params.get("verify"))
+    // viewModel.selectedView("verify")
+    // var body = ko.toJSON(viewModel.newRegistration)
+    // console.log(body)
+    fetch("http://localhost:3000/verify/" + params.get("verify"), {
+      method: "GET",
+      // body: body,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      console.log(data)
+      // if (!data.success) {
+      //   alert(data.text)
+      // } else {
+        if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+      // }
+    }).catch(er => {
+      // alert('Invalid credentials')
+      document.getElementById("errordiv").innerHTML = "Error verifying email. Reason: " + er.message + "."
+    })
   }
   ko.applyBindings(viewModel);
 </script>
