@@ -20,9 +20,8 @@ router.post('/createUser', async (request: Request, response: Response) => {
   let errors = await createUserValidator(request);
   if (!errors) {
     request.body.password = await hashing(request.body.password);
-    request.body.hash = await hashing(request.body.username);
+    request.body.hash = await (await hashing(request.body.username)).replace('/', '');
     var user = new User(await addUser(request.body));
-    console.log(user);
     await sendNewUserEmail(user);
     response.send({ text: 'User has succesfully been created.', success: true });
   } else
@@ -31,21 +30,15 @@ router.post('/createUser', async (request: Request, response: Response) => {
 
 // {"username": "username", "password" : "password"}
 router.post('/login', async (request: Request, response: Response) => {
-  let errors = userLoginValidator(request);
-  if (errors)
-    response.send({ text: errors });
-  else {
-    var user = new User(await retrieveUserByUsername(request.body.username));
-    console.log(user);
-    if (user.id && await bcrypt.compare(request.body.password, user.password)) {
-      if (user.verified) {
-        var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-        response.json({ token: token, text: 'Login was successful.', success: true });
-      } else
-        response.send({ text: 'Please verify your account via your associated email account.', success: false });
+  var user = new User(await retrieveUserByUsername(request.body.username));
+  if (user.id && await bcrypt.compare(request.body.password, user.password)) {
+    if (user.verified) {
+      var token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
+      response.json({ token: token, text: 'Login was successful.', success: true });
     } else
-      response.send({ text: 'Username or Password was incorrect.', success: false });
-  }
+      response.send({ text: 'Please verify your account via your associated email account.', success: false });
+  } else
+    response.send({ text: 'Username or Password was incorrect.', success: false });
 });
 
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6

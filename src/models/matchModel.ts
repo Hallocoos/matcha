@@ -30,6 +30,19 @@ export async function retrieveMatches(): Promise<Match[]> {
 };
 
 /*
+ *  Function to handle get match by id
+ *  @Incoming Params: requestId = <string>
+*/
+export async function retrieveMatchById(id): Promise<Match> {
+  const result = await knexSelectByColumn('id', id, 'matches');
+  if (result[0]) {
+    return (result[0]);
+  } else {
+    return (undefined);
+  }
+};
+
+/*
  *  Function to handle get match by requestId
  *  @Incoming Params: requestId = <string>
 */
@@ -65,7 +78,7 @@ export async function retrieveMatchByAcceptId(acceptId): Promise<Match> {
 export async function addMatch(body) {
   if (body) {
     const result = await knexInsert(body, 'matches');
-    return (result[0]);
+    return (retrieveMatchById(result[0]));
   } else {
     return (undefined);
   }
@@ -78,12 +91,12 @@ export async function addMatch(body) {
  *    blockId = <string>
  *  }
 */
-export async function blockMatch(body) {
+export async function blockMatch(acceptId, requestId) {
   return knex('matches')
-    .where('acceptId', body.currId)
-    .andWhere('requestId', body.blockId)
-    .orWhere('acceptId', body.blockId)
-    .andWhere('requestId', body.currId)
+    .where('acceptId', acceptId)
+    .andWhere('requestId', requestId)
+    .orWhere('acceptId', requestId)
+    .andWhere('requestId', acceptId)
     .update('blocked', true)
     .then(function (result) {
       return result;
@@ -97,14 +110,51 @@ export async function blockMatch(body) {
  *    requestId = <string>
  *  }
 */
-export async function acceptMatch(body) {
+export async function acceptMatch(acceptId, requestId) {
   return knex('matches')
-    .where('acceptId', body.acceptId)
-    .andWhere('requestId', body.requestId)
+    .where('acceptId', acceptId)
+    .andWhere('requestId', requestId)
     .update('accepted', true)
     .then(function (result) {
       return result;
     });
 };
+
+/*
+ *  Function to handle finding a matched pair
+ *  @Incoming Params: body = {
+ *    acceptId = <string>,
+ *    requestId = <string>
+ *  }
+*/
+export async function retrieveMatchByIds(acceptId, requestId) {
+  return knex.select()
+    .from('matches')
+    .where('acceptId', acceptId)
+    .andWhere('requestId', requestId)
+    .orWhere('acceptId', requestId)
+    .andWhere('requestId', acceptId)
+    .then(function (result) {
+      return result[0];
+    });
+};
+
+/*
+ *  Function to handle finding all of a single users matches
+ *  @Incoming Params: body = {
+ *    userId = <string>
+ *  }
+*/
+export async function retrieveMatchesById(userId) {
+  return knex.select()
+    .from('matches')
+    .where('acceptId', userId)
+    .orWhere('requestId', userId)
+    .then(function (result) {
+      return result;
+    });
+};
+
+
 
 export default Match;

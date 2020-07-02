@@ -46,7 +46,7 @@ export async function retrieveUserById(id: string): Promise<User> {
   return (undefined);
 };
 
-// function to handle get user by id
+// function to handle get user by hash
 export async function verifyUserByHash(hash: string): Promise<User> {
   return knex('users')
     .where('hash', hash)
@@ -116,7 +116,7 @@ export async function hashing(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(password, salt);
   if (hash)
-    return (await (hash).replace('/', ''));
+    return (hash);
   return (undefined);
 }
 
