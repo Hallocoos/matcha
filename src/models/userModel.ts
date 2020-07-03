@@ -18,10 +18,13 @@ export class User {
   countryName: string;
   regionName: string;
   city: string;
+  longitude: string;
+  latitude: string;
   zipcode: string;
+  distance: number;
   verified: boolean;
   tags: string[];
-  fameRating: number;
+  fame: number;
   hash: string;
 
   constructor(data: Partial<User>) {
@@ -98,6 +101,7 @@ export async function modifyUserPasswordByHash(body) {
     await knexUpdateById({ password: body.password }, user.id, 'users');
     return (await retrieveUserById(user.id));
   }
+  console.log(user)
   return (undefined);
 };
 
@@ -109,6 +113,16 @@ export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
   await knexUpdateById(body, id, 'users');
+  return (await retrieveUserById(id));
+};
+
+/*
+ *  Function to handle the increments on fame
+ *  @Incoming Params: { id: value, key1: value1, ... }
+*/
+export async function incrementUsersFameRating(id, amount) {
+  const user = await retrieveUserById(id);
+  await knexUpdateById({fame: user.fame + amount}, id, 'users');
   return (await retrieveUserById(id));
 };
 

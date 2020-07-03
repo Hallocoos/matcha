@@ -27,7 +27,7 @@ export async function retrieveImagesByUserId(userId: string): Promise<Image> {
 // function to handle get images by image.id
 export async function retrieveImageById(id: string): Promise<Image> {
   const result = await knexSelectByColumn('id', id, 'images');
-  if (result) {
+  if (result[0]) {
     return (result[0]);
   } else {
     return (undefined);

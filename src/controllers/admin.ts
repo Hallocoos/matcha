@@ -1,11 +1,12 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById } from '../models/userModel';
+import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImageById, deleteImageById } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
 import { createTag, deleteTagById } from '../models/tagModel';
+import { calculateDistance } from '../helpers/locator';
 
 const router = express.Router();
 
@@ -14,8 +15,10 @@ router.post('/updateUser', async (request: Request, response: Response) => {
   let errors = await updateUserValidator(request);
   if (errors)
     response.send({ text: errors, success: false });
-  else if (await modifyUserById(request.body))
-    response.send({ text: 'User has successfully been updated.', success: true });
+  else {
+    var user = await modifyUserById(request.body);
+    response.send({ user: user, text: 'User has successfully been updated.', success: true });
+  }
 });
 
 // {"username": "Hallocoos"}
@@ -23,6 +26,7 @@ router.post('/profile', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
   if (user) {
     var images = await retrieveImagesByUserId(user.id);
+    await incrementUsersFameRating(user.id, 1);
     response.send({ user: user, images: images });
   } else
     response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
@@ -34,7 +38,7 @@ router.post('/getChat', async (request: Request, response: Response) => {
   const receive = await retrieveUserByUsername(request.body.receive);
   if (send && receive)
     var notifications = await retrieveNotificationsBySendIdAndReceiveId(send.id, receive.id);
-  response.send({ notifications: notifications });
+  response.send({ notifications: notifications, success: false });
 });
 
 // {"username": "Hallocoos"}
@@ -42,7 +46,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
   const user = await retrieveUserByUsername(request.body.username);
   if (user)
     var notifications = await retrieveNotificationsByReceiveId(user.id);
-  response.send({ notifications: notifications });
+  response.send({ notifications: notifications, success: false });
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -77,6 +81,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
     else {
       request.body.accepter = accepter.username;
       request.body.requester = requester.username;
+      await incrementUsersFameRating(accepter.id, 5);
       await addMatch(request.body);
       response.send({ text: 'The recipient will be notified.', success: true });
     }
@@ -131,4 +136,18 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
   } else
     response.send({ text: errors, success: false });
 });
+
+// { "id": 1, "max": 0, "min": 10000 }
+router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
+  // Distance
+  let user = await retrieveUserById(request.body.id);
+  if (user) {
+    let allUsers = await calculateDistance(user);
+    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+  } else
+    response.send({ text: 'No matches have been found.', success: false });
+  // Tags - create model - select * from users inner join `matches` on users.id = matches.acceptId; (Basic Query)
+  // Fame rating
+});
+
 export default router;
