@@ -1,5 +1,5 @@
 import * as knex from '../../database/knex'
-import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById, knexClearProfilePicture } from '../services/dbService';
+import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById, knexClearProfilePicture, knexDeleteById } from '../services/dbService';
 
 class Image {
   id: string;
@@ -43,18 +43,24 @@ export async function createImage(body): Promise<Image> {
 };
 
 // function to handle the setting of profile picutures
-export async function setImageAsProfilePicture(body): Promise<Image> {
-  await knexClearProfilePicture(body.userId, 'images');
-  const id = body.id;
-  delete body.id;
-  const result = await knexUpdateById(body, id, 'images')
-  return (retrieveImageById(result[0]));
-};
-
-// function to handle get images by userId
-// export async function deleteImageById(body): Promise<Image> {
-//   const result = await knexInsert(body, 'images');
+// export async function setImageAsProfilePicture(body): Promise<Image> {
+//   await knexClearProfilePicture(body.userId, 'images');
+//   const id = body.id;
+//   delete body.id;
+//   const result = await knexUpdateById(body, id, 'images')
 //   return (retrieveImageById(result[0]));
 // };
 
-//delete
+//function to delete an image by Id
+//body = { id: 3 userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
+export async function deleteImageById(body): Promise<Image> {
+  const id = body.id;
+  const result = await knexDeleteById(id, 'images');
+  if (result) {
+    return (result);
+  } else {
+    return (undefined);
+  }
+};
+
+export default Image;

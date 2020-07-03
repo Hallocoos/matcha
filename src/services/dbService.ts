@@ -49,4 +49,13 @@ export function knexClearProfilePicture(userId, targetTable) {
       return (result);
     });
 };
-// delete
+
+export function knexDeleteById(id, targetTable) {
+  return knex(targetTable)
+  .where ('id', id)
+  .del()
+  .then(function (result) {
+    // console.log(result);
+    return(result);
+  });
+};

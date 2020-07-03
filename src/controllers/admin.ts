@@ -1,10 +1,11 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
-import { retrieveImagesByUserId, createImage } from '../models/imageModel';
+import { retrieveImagesByUserId, createImage, retrieveImageById, deleteImageById } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
+import { createTag, deleteTagById } from '../models/tagModel';
 
 const router = express.Router();
 
@@ -93,24 +94,40 @@ router.post('/getMatches', async (request: Request, response: Response) => {
     response.send({ text: 'Id is Invalid.', success: false });
 });
 
-// { userId: 1, image: <base64 string>"nhvf4qnhnhvqvfqnuhqwevfnuh" }
-// router.post('/setProfilePicture', async (request: Request, response: Response) => {
-//   do error checks - let errors = idValidator(request.body.id);
-//   error protection - if (!errors)
-//   createImage();
-//   setImageAsProfilePicture();
-//   send a response
-//   or
-//   send error messages
-//   response.send({ text: '', success: true });
-// });
-
 // { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
 router.post('/uploadPicture', async (request: Request, response: Response) => {
   let errors = await newImageValidator(request.body);
   if (!errors) {
     await createImage(request.body);
-    response.send({text: 'Image succesfully uploaded.', success: true });
+    response.send({text: 'Image successfully uploaded.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+// { "id": "1" }
+router.post('/deletePicture', async (request: Request, response: Response) => {
+  let errors = await deleteImageValidator(request.body);
+  if (!errors) {
+    await deleteImageById(request.body);
+    response.send({text: 'Image successfully deleted.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+router.post('/createTag', async (request: Request, response: Response) => {
+  let errors = await newTagValidator(request.body);
+  if (!errors) {
+    await createTag(request.body);
+    response.send({text: 'Tag Successfully created.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+router.post('/deleteTag', async (request: Request, response: Response) => {
+  let errors = await deleteTagValidator(request.body);
+  if (!errors) {
+    await deleteTagById(request.body);
+    response.send({text: 'Tag successfully deleted.', success: true });
   } else
     response.send({ text: errors, success: false });
 });
