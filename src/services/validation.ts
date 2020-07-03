@@ -1,5 +1,5 @@
 import { retrieveUserByUsername, retrieveUserByEmail, retrieveUserById } from '../models/userModel';
-import { retrieveImageById } from '../models/imageModel';
+import { retrieveImageById, retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveTagById } from '../models/tagModel';
 
 export async function createUserValidator(request) {
@@ -45,6 +45,9 @@ export async function newImageValidator(image) {
     var user = await retrieveUserById(image.userId);
   if (!user)
     return ('Invalid User.');
+  var pictures = await retrieveImagesByUserId(image.userId);
+  if (pictures[4])
+    return('max allowed pictures already reached');
   if (!image.image || !isString(image.image))
     return ('Invalid image.');
   if (!(typeof image.profilePicture === "boolean"))
