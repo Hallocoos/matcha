@@ -73,14 +73,16 @@
     <!-- /ko -->
     <!-- ko if: settingEditing() == 'username'-->
     <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-    <input data-bind="value: settingEditingWorkspace">
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
     <!-- /ko -->
     <br>
 
 
 
 
-    <b>Password</b>
+    <!-- <b>Password</b>
     <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
     <div data-bind="text: loggedInUser.username"></div>
     <br>
@@ -90,11 +92,11 @@
     <br>
     <b>Use Location</b>
     <button data-bind="click: selectSettingEditing.bind($data, 'useLocation')">Edit</button>
-    <div data-bind="text: loggedInUser.username"></div>
+    <div data-bind="text: loggedInUser.username"></div> -->
   </div>
 
   <div data-bind="if: selectedView() == 'notifications'">
-    <h1 data-bind="text: selectedView"></h1>
+    <h1>This will be notifications view.</h1>
     <!-- <h6>test</h6> -->
   </div>
 
@@ -166,7 +168,7 @@
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
         viewModel.ownImages(data.images)
-        console.log(ko.toJS(viewModel.loggedInUser))
+        // console.log(ko.toJS(viewModel.loggedInUser))
       } else {
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
       }
@@ -177,6 +179,12 @@
     // console.log(viewModel.ownImages())
   }
 
+  function resetSettingEditing() {
+    console.log("reset setting editing called")
+    viewModel.settingEditing('')
+    viewModel.settingEditingWorkspace('')
+  }
+  
   var viewModel = {
     email: ko.observable(''),
     loggedInUser: null,
@@ -193,8 +201,8 @@
     password: ko.observable(''),
     reset: ko.observable(),
     selectedView: ko.observable(''),
-    settingEditing: ko.observable(),
-    settingEditingWorkspace: ko.observable(),
+    settingEditing: ko.observable(''),
+    settingEditingWorkspace: ko.observable(''),
     token: ko.observable(),
     username: ko.observable(''),
 
@@ -222,6 +230,8 @@
         }
         viewModel.settingEditingWorkspace(existingData)
       }
+      console.log(viewModel.settingEditing())
+      console.log(viewModel.settingEditingWorkspace())
     },
 
     selectView(view, data) {
@@ -230,16 +240,18 @@
       // console.log(data)
       // console.log(view)
       viewModel.selectedView(view)
+      resetSettingEditing()
       // console.log(viewModel.selectedView())
     },
 
     async saveChangesToLoggedInUser() {
-      var body = ko.toJSON(viewModel.loggedInUser())
-      // put the new data into the body js/json
       // data = ko.toJS
+      var data = {id: viewModel.loggedInUser.id()}
       // alter property
+      data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
       // body = stringify
-      // console.log(body)
+      var body = JSON.stringify(data)
+      console.log(body)
       await fetch("http://localhost:3000/updateUser", {
         method: "POST",
         body: body,
@@ -256,6 +268,8 @@
       }).catch(er => {
         document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
       })
+      resetSettingEditing()
+      // putUserInViewModel()
     },
 
     async sendNewPassword() {
