@@ -41,6 +41,20 @@ export async function retrieveUsers(): Promise<User[]> {
   return (undefined);
 };
 
+/*
+ *  Function to handle getting valid matches by gender
+ *  @Incoming Params: body = { interest = <string> }
+*/
+export async function retrieveUsersByGender(interest, gender) {
+  return knex.select()
+    .from('users')
+    .where('gender', interest)
+    .andWhere('interest', gender)
+    .then(function (result) {
+      return result;
+    });
+};
+
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
   const result = await knexSelectByColumn('id', id, 'users');
@@ -113,6 +127,15 @@ export async function modifyUserById(body) {
   const id = body.id;
   delete body.id;
   await knexUpdateById(body, id, 'users');
+  return (await retrieveUserById(id));
+};
+
+/*
+ *  Function to handle wether a user is online
+ *  @Incoming Params: { id: value, matchable: false }
+*/
+export async function setUserAsOnlineStatus(id, status) {
+  await knexUpdateById({online: status, lastSeen: knex.fn.now()}, id, 'users');
   return (await retrieveUserById(id));
 };
 

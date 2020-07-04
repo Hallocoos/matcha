@@ -1,4 +1,4 @@
-import User, { modifyUserById, retrieveUsers } from "../models/userModel";
+import User, { modifyUserById, retrieveUsers, retrieveUsersByGender } from "../models/userModel";
 import ipify = require("ipify");
 var ip2location = require('ip-to-location');
 
@@ -10,7 +10,7 @@ async function distance(lat1, lon1, lat2, lon2) {
 }
 
 export async function calculateDistance(user: User) {
-    let allUsers = await retrieveUsers();
+    let allUsers = await retrieveUsersByGender(user.interest, user.gender);
     allUsers = allUsers.filter(obj => obj.id !== user.id);
     for (let i = 0; allUsers[i]; i++)
         allUsers[i].distance =
