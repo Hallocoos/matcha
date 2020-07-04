@@ -1,4 +1,6 @@
-import { retrieveUserByUsername, retrieveUserByEmail } from '../models/userModel';
+import { retrieveUserByUsername, retrieveUserByEmail, retrieveUserById } from '../models/userModel';
+import { retrieveImageById, retrieveImagesByUserId } from '../models/imageModel';
+import { retrieveTagById } from '../models/tagModel';
 
 export async function createUserValidator(request) {
   const user = request.body;
@@ -35,6 +37,49 @@ export function resetPasswordValidator(data) {
     return ('Password is Invalid');
   if (!exists(data.hash))
     return ('Hash is Invalid')
+  return undefined;
+}
+
+export async function newImageValidator(image) {
+  if (image.userId && isNumeric(image.userId))
+    var user = await retrieveUserById(image.userId);
+  if (!user)
+    return ('Invalid User.');
+  var pictures = await retrieveImagesByUserId(image.userId);
+  if (pictures[4])
+    return('max allowed pictures already reached');
+  if (!image.image || !isString(image.image))
+    return ('Invalid image.');
+  if (!(typeof image.profilePicture === "boolean"))
+    return ('Profile picture not boolean.');
+  return undefined;
+}
+
+export async function deleteImageValidator(image) {
+  if (!image.id || !isString(image.id))
+    return('incorrect image id');
+  var picture = await retrieveImageById(image.id);
+  if (!picture)
+    return('the picture selected does not exist');
+  return undefined;
+}
+
+export async function newTagValidator(tag) {
+  if (tag.userId && isNumeric(tag.userId))
+    var user = await retrieveUserById(tag.userId);
+  if (!user)
+    return ('Invalid User.');
+  if (!tag.tag || !isString(tag.tag))
+    return ('Invalid tag.');
+  return undefined;
+}
+
+export async function deleteTagValidator(tag) {
+  if (!tag.id || !isString(tag.id))
+    return('incorrect tag id');
+  var hashtag = await retrieveTagById(tag.id);
+  if (!hashtag)
+    return('the tag selected does not exist');
   return undefined;
 }
 

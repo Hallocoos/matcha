@@ -39,4 +39,23 @@ export function knexUpdateById(body, id, targetTable) {
       return (result);
     });
 };
-// delete
+
+export function knexClearProfilePicture(userId, targetTable) {
+  return knex(targetTable)
+    .where('userId', userId)
+    .update('profilePicture', 0)
+    .then(function (result) {
+      // console.log(result);
+      return (result);
+    });
+};
+
+export function knexDeleteById(id, targetTable) {
+  return knex(targetTable)
+  .where ('id', id)
+  .del()
+  .then(function (result) {
+    // console.log(result);
+    return(result);
+  });
+};
