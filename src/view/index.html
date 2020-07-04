@@ -62,12 +62,40 @@
     <!-- email -->
     <!-- enable -->
     <h3>Pick a setting to change.</h3>
-    <input data-bind="value: loggedInUser.username">
-    <button data-bind="click: persistChangesToLoggedInUser">Save</button>
+
+
+
+
+    <b>Username</b>
+    <!-- ko if: settingEditing() != 'username'-->
+    <button data-bind="click: selectSettingEditing.bind($data, 'username')">Edit</button>
+    <div data-bind="text: loggedInUser.username"></div>
+    <!-- /ko -->
+    <!-- ko if: settingEditing() == 'username'-->
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <input data-bind="value: settingEditingWorkspace">
+    <!-- /ko -->
+    <br>
+
+
+
+
+    <b>Password</b>
+    <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
+    <div data-bind="text: loggedInUser.username"></div>
+    <br>
+    <b>Email</b>
+    <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
+    <div data-bind="text: loggedInUser.email"></div>
+    <br>
+    <b>Use Location</b>
+    <button data-bind="click: selectSettingEditing.bind($data, 'useLocation')">Edit</button>
+    <div data-bind="text: loggedInUser.username"></div>
   </div>
 
   <div data-bind="if: selectedView() == 'notifications'">
-    <h1>This will be notifications view.</h1>
+    <h1 data-bind="text: selectedView"></h1>
+    <!-- <h6>test</h6> -->
   </div>
 
   <div data-bind="if: selectedView() == 'reset'">
@@ -138,6 +166,7 @@
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
         viewModel.ownImages(data.images)
+        console.log(ko.toJS(viewModel.loggedInUser))
       } else {
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
       }
@@ -164,11 +193,35 @@
     password: ko.observable(''),
     reset: ko.observable(),
     selectedView: ko.observable(''),
+    settingEditing: ko.observable(),
+    settingEditingWorkspace: ko.observable(),
     token: ko.observable(),
     username: ko.observable(''),
 
     logOut() {
       window.location.replace("http://localhost:3000/matcha")
+    },
+
+    selectSettingEditing(setting, data) {
+      if (setting == "useLocation") {
+        // toggle useLocation property
+        // persist changes to db
+      } else {
+        viewModel.settingEditing(setting)
+        var existingData
+        switch (setting) {
+          case "username":
+            existingData = viewModel.loggedInUser.username()
+            break
+          case "password":
+            existingData = ""
+            break
+          case "email":
+            existingData = viewModel.loggedInUser.email()
+            break
+        }
+        viewModel.settingEditingWorkspace(existingData)
+      }
     },
 
     selectView(view, data) {
@@ -180,8 +233,12 @@
       // console.log(viewModel.selectedView())
     },
 
-    async persistChangesToLoggedInUser() {
+    async saveChangesToLoggedInUser() {
       var body = ko.toJSON(viewModel.loggedInUser())
+      // put the new data into the body js/json
+      // data = ko.toJS
+      // alter property
+      // body = stringify
       // console.log(body)
       await fetch("http://localhost:3000/updateUser", {
         method: "POST",
@@ -194,11 +251,8 @@
         response.json()
       ).then(data => {
         console.log(data)
-        // if (data.success) {
-        //   if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
-        // } else {
-        //   alert("Please request a new reset link.")
-        // }
+        // viewModel.selectSettingEditing("", null)
+        // viewModel.settingEditingWorkspace = ko.observable()
       }).catch(er => {
         document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
       })
@@ -350,7 +404,7 @@
       // if (!data.success) {
       //   alert(data.text)
       // } else {
-        if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+      if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
       // }
     }).catch(er => {
       // alert('Invalid credentials')
