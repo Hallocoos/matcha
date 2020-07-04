@@ -105,8 +105,6 @@ exports.seed = function (knex, Promise) {
           age: '20',
           countryName: 'uiop',
           city: 'uiop',
-          verified: 1, 
-          hash: await hash('uiop'),
           fame: 0,
           hash: await (await hash('uiop')).replace(/\//g, ''),
           longitude: 85.3654,
