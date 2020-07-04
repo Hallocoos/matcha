@@ -42,12 +42,12 @@ export async function updateUserValidator(request) {
   const user = request.body;
   if (user.username)
     var username = await retrieveUserByUsername(user.username);
-      if (username)
-        return ('Username is in use.');
+  if (username)
+    return ('Username is in use.');
   if (user.email)
     var email = await retrieveUserByEmail(user.email);
-      if (email)
-        return ('Email is in use.');
+  if (email)
+    return ('Email is in use.');
   if (user.username)
     if (!isString(user.username) && user.username.length < 4)
       return ('Username is Invalid');
@@ -77,6 +77,54 @@ export async function updateUserValidator(request) {
       return ('Tags are Invalid');
   return undefined;
 };
+
+export function newNotificationValidator(notification) {
+  if (!exists(notification.sendId) || !isNumeric(notification.sendId))
+    return ('SendId is Invalid.');
+  if (!exists(notification.receiveId) || !isNumeric(notification.receiveId))
+    return ('ReceiveId is Invalid.');
+  if (!exists(notification.message) || !isString(notification.message))
+    return ('Message is Invalid.');
+  return undefined;
+}
+
+export function newMatchValidator(match) {
+  if (!exists(match.acceptId) || !isNumeric(match.acceptId))
+    return ('AcceptId is Invalid.');
+  if (!exists(match.requestId) || !isNumeric(match.requestId))
+    return ('RequestId is Invalid.');
+  return undefined;
+}
+
+export function setUserAsMatchableValidator(user, images/*, tags*/) {
+  if (user) {
+    if (!exists(user.gender))
+      return ('User needs to set a gender.');
+    if (!exists(user.biography))
+      return ('User needs to create a biography.');
+    if (!exists(user.interest))
+      return ('User needs to set a target interest.');
+    if (!exists(user.tags))
+      return ('User needs to set a minimum of 5 tags.');
+  } else
+    return ('User does not exist.');
+  if (images) {
+    if (!profilePictureExists(images))
+      return ('User has not set a profile picture.');
+  } else
+    return ('User has no images.');
+  // if (tags) {
+
+  // } else
+  //   return ('User has not tags.');
+  return undefined;
+}
+
+export function idValidator(id) {
+  if (!exists(id) || !isNumeric(id))
+    return ('AcceptId is Invalid.');
+  return undefined;
+}
 
 export function exists(exists) {
   if (exists)
@@ -109,3 +157,10 @@ export function complexPassword(password) {
     return true;
   return false;
 };
+
+export function profilePictureExists(images) {
+  images = images.filter(obj => obj.profilePicture == true);
+  if (images)
+    return (true);
+  return (false);
+}

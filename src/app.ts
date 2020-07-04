@@ -26,11 +26,14 @@ app.use(loggerMiddleware);
 import auth from './controllers/auth';
 import admin from './controllers/admin';
 
-app.get('/matcha', async (request: Request, response: Response) => {
-  // validation();
-  // console.log('/testRoute');
-  response.sendFile(path.resolve('src/view/view.html'));
-});
+app.use('/matcha', express.static('src/view'))
+
+
+// app.get('/matcha', async (request: Request, response: Response) => {
+//   // validation();
+//   // console.log('/testRoute');
+//   response.sendFile(path.resolve('src/view/index.html'));
+// });
 
 app.use('/', auth);
 app.use('/', verifyToken(Roles.User), admin);

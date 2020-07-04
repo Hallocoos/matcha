@@ -1,47 +1,363 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
-  <link rel="stylesheet" type="text/css" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css"
-    href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 </head>
 
 <body>
-  <nav class="navbar navbar-default" role="navigation">
-    <div class="container">
-      <div class="navbar-header">
-        </button>
-        <a class="navbar-brand" href="/">Matcha</a>
-      </div>
-      <ul class="nav navbar-nav" data-bind="foreach: folders">
-        <li>
-          <a href="/" data-bind="text: $data"></a>
-        </li>
-      </ul>
+  <p data-bind="if: token(), style: {padding: 14}">
+    <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
+    <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
+    <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
+    <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
+    <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
+    <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
+    <hr>
+  </p>
+
+  <div data-bind="if: selectedView() == 'login'">
+    <h3>Enter credentials to log in</h3>
+    <table>
+      <tr>
+        <td>Username:</td>
+        <td>Password:</td>
+      </tr>
+      <tr>
+        <td>
+          <input data-bind="value: username">
+        </td>
+        <td>
+          <input data-bind="value: password">
+        </td>
+        <td>
+          <button data-bind="click: submitCreds">Log In</button>
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my
+              password</a>.</h6>
+        </td>
+      </tr>
+    </table>
+    <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.</h3>
+  </div>
+
+  <div data-bind="if: selectedView() == 'match'">
+    <h1>This will be match view.</h1>
+  </div>
+
+  <div data-bind="if: selectedView() == 'chat'">
+    <h1>This will be chat view.</h1>
+  </div>
+
+  <div data-bind="if: selectedView() == 'profile'">
+    <h1>This will be profile view.</h1>
+  </div>
+
+  <div data-bind="if: selectedView() == 'settings'">
+    <!-- username -->
+    <!-- password -->
+    <!-- email -->
+    <!-- enable -->
+    <h3>Pick a setting to change.</h3>
+    <input data-bind="value: loggedInUser.username">
+    <button data-bind="click: persistChangesToLoggedInUser">Save</button>
+  </div>
+
+  <div data-bind="if: selectedView() == 'notifications'">
+    <h1>This will be notifications view.</h1>
+  </div>
+
+  <div data-bind="if: selectedView() == 'reset'">
+    <h3>Please enter your new password:</h3>
+    <input data-bind="value: password">
+    <button data-bind="click: sendNewPassword">Reset Password</button>
+    <div><button data-bind="click: logOut">Return to Log In</button></div>
+  </div>
+
+  <div data-bind="if: selectedView() == 'resetrequest'">
+    <h3>Please provide your email address:</h3>
+    <input data-bind="value: email">
+    <button data-bind="click: sendResetPasswordRequest">Send Request</button>
+    <div><button data-bind="click: logOut">Return to Log In</button></div>
+  </div>
+
+  <div data-bind="if: selectedView() == 'register'">
+    <h3>Please provide the following information to register:</h3>
+    <div>Username:</div>
+    <input data-bind="value: newRegistration.username">
+    <div>Firstname:</div>
+    <input data-bind="value: newRegistration.firstname">
+    <div>Lastname:</div>
+    <input data-bind="value: newRegistration.lastname">
+    <div>Age:</div>
+    <input data-bind="value: newRegistration.age">
+    <div>Gender:</div>
+    <input data-bind="value: newRegistration.gender" list="genderList">
+    <datalist id="genderList">
+      <option value="other">
+      <option value="female">
+      <option value="male">
+    </datalist>
+    <div>Email:</div>
+    <input data-bind="value: newRegistration.email">
+    <div>Password:</div>
+    <input data-bind="value: newRegistration.password">
+    <button data-bind="click: sendNewRegistrationToDb">Register</button>
+    <p> </p>
+    <div>
+      <button data-bind="click: logOut">Return to Log In</button>
     </div>
-  </nav>
-  <h1 class="text-center">Matcha</h1>
+  </div>
+
+  <div id="errordiv"></div>
 
 </body>
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
+<script type='text/javascript' src='knockout.mapping.js'></script>
 <script>
-  function WebmailViewModel() {
-    var self = this;
-    self.folders = ['Match', 'Chat', 'Profile', 'Settings'];
+
+  async function putUserInViewModel() {
+    var body = JSON.stringify({
+      username: viewModel.username(),
+    })
+    await fetch("http://localhost:3000/profile", {
+      method: "POST",
+      body: body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + viewModel.token(),
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      // console.log(data)
+      if (data.user && data.images) {
+        viewModel.loggedInUser = ko.mapping.fromJS(data.user)
+        viewModel.ownImages(data.images)
+      } else {
+        if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
+      }
+    }).catch(er => {
+      document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
+    })
+    // console.log((viewModel.loggedInUser.username()))
+    // console.log(viewModel.ownImages())
+  }
+
+  var viewModel = {
+    email: ko.observable(''),
+    loggedInUser: null,
+    newRegistration: {
+      age: ko.observable(''),
+      email: ko.observable(''),
+      firstname: ko.observable(''),
+      gender: ko.observable(''),
+      lastname: ko.observable(''),
+      password: ko.observable(''),
+      username: ko.observable(''),
+    },
+    ownImages: ko.observable(),
+    password: ko.observable(''),
+    reset: ko.observable(),
+    selectedView: ko.observable(''),
+    token: ko.observable(),
+    username: ko.observable(''),
+
+    logOut() {
+      window.location.replace("http://localhost:3000/matcha")
+    },
+
+    selectView(view, data) {
+      // note here that params are switched around
+      // if unsure, use console.log to verify
+      // console.log(data)
+      // console.log(view)
+      viewModel.selectedView(view)
+      // console.log(viewModel.selectedView())
+    },
+
+    async persistChangesToLoggedInUser() {
+      var body = ko.toJSON(viewModel.loggedInUser())
+      // console.log(body)
+      await fetch("http://localhost:3000/updateUser", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        // if (data.success) {
+        //   if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+        // } else {
+        //   alert("Please request a new reset link.")
+        // }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+      })
+    },
+
+    async sendNewPassword() {
+      var body = JSON.stringify({
+        password: viewModel.password(),
+        hash: viewModel.reset(),
+      })
+      // console.log(body)
+      await fetch("http://localhost:3000/resetPassword", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        if (data.success) {
+          if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+        } else {
+          alert("Please request a new reset link.")
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error sending new password. Reason: " + er.message + "."
+      })
+    },
+
+    async sendNewRegistrationToDb() {
+      // { "username": "qwerqwer", 
+      // "password": "asdfasdf", 
+      // "email": "asdf@asdf.asdf", 
+      // "firstname": "asdfasdf", 
+      // "lastname": "asdfasdf", 
+      // "gender": "male/female/other" }
+      // console.log(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(viewModel.newRegistration.email()))
+      if (viewModel.newRegistration.username().length < 4)
+        alert("Username min 4 characters.")
+      else if (viewModel.newRegistration.firstname().length < 4) {
+        alert("Firstname min 4 characters.")
+      } else if (viewModel.newRegistration.lastname().length < 4) {
+        alert("Lastname min 4 characters.")
+      } else if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(viewModel.newRegistration.email()))) {
+        alert("Enter valid email address.")
+      } else if (viewModel.newRegistration.password().length < 8) {
+        alert("Password min 8 characters.")
+      } else {
+        var body = ko.toJSON(viewModel.newRegistration)
+        // console.log(body)
+        await fetch("http://localhost:3000/createUser", {
+          method: "POST",
+          body: body,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        }).then(response =>
+          response.json()
+        ).then(data => {
+          // console.log(data)
+          if (!data.success) {
+            alert(data.text)
+          } else {
+            if (!alert(data.text + " . Please confirm email address.")) { window.location.replace("http://localhost:3000/matcha") }
+          }
+        }).catch(er => {
+          // alert('Invalid credentials')
+          document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+        })
+      }
+    },
+
+    async sendResetPasswordRequest() {
+      var body = JSON.stringify({
+        email: viewModel.email()
+      })
+      // console.log(body)
+      await fetch("http://localhost:3000/forgotPassword", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        if (data.success == true) {
+          if (!alert(data.text)) { window.location.reload(); }
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error resetting pwd. Reason: " + er.message + "."
+      })
+    },
+
+    async submitCreds() {
+      var body = JSON.stringify({
+        username: viewModel.username(),
+        password: viewModel.password(),
+      })
+      await fetch("http://localhost:3000/login", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        // console.log(data)
+        if (data.token) {
+          viewModel.token(data.token)
+          viewModel.selectedView('notifications')
+          putUserInViewModel();
+        } else {
+          alert(data.text)
+        }
+      }).catch(er => {
+        // alert('Invalid credentials')
+        document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+      })
+    },
+
   };
 
-  ko.applyBindings(new WebmailViewModel());
-
-//   ko.components.login('login', {
-//     viewModel: { require: 'components/ko.components.login/ko.components.login.html' },
-//     template: { require: 'components/ko.components.login/ko.components.login.html' }
-// });
+  viewModel.selectedView('login')
+  const params = new URLSearchParams(window.location.search)
+  if (params.has("reset")) {
+    viewModel.reset(params.get("reset"))
+    viewModel.selectedView("reset")
+  }
+  if (params.has("verify")) {
+    // viewModel.verify(params.get("verify"))
+    // viewModel.selectedView("verify")
+    // var body = ko.toJSON(viewModel.newRegistration)
+    // console.log(body)
+    fetch("http://localhost:3000/verify/" + params.get("verify"), {
+      method: "GET",
+      // body: body,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      console.log(data)
+      // if (!data.success) {
+      //   alert(data.text)
+      // } else {
+        if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+      // }
+    }).catch(er => {
+      // alert('Invalid credentials')
+      document.getElementById("errordiv").innerHTML = "Error verifying email. Reason: " + er.message + "."
+    })
+  }
+  ko.applyBindings(viewModel);
 </script>
 
 </html>

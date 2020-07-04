@@ -18,10 +18,13 @@ export class User {
   countryName: string;
   regionName: string;
   city: string;
+  longitude: string;
+  latitude: string;
   zipcode: string;
+  distance: number;
   verified: boolean;
   tags: string[];
-  fameRating: number;
+  fame: number;
   hash: string;
 
   constructor(data: Partial<User>) {
@@ -98,6 +101,7 @@ export async function modifyUserPasswordByHash(body) {
     await knexUpdateById({ password: body.password }, user.id, 'users');
     return (await retrieveUserById(user.id));
   }
+  console.log(user)
   return (undefined);
 };
 
@@ -112,11 +116,30 @@ export async function modifyUserById(body) {
   return (await retrieveUserById(id));
 };
 
+/*
+ *  Function to handle wether a user is matchable
+ *  @Incoming Params: { id: value, matchable: false }
+*/
+export async function setUserAsMatchableById(id, matchable) {
+  await knexUpdateById({matchable: matchable}, id, 'users');
+  return (await retrieveUserById(id));
+};
+
+/*
+ *  Function to handle the increments on fame
+ *  @Incoming Params: { id: value, key1: value1, ... }
+*/
+export async function incrementUsersFameRating(id, amount) {
+  const user = await retrieveUserById(id);
+  await knexUpdateById({fame: user.fame + amount}, id, 'users');
+  return (await retrieveUserById(id));
+};
+
 export async function hashing(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(saltRounds);
   const hash = await bcrypt.hash(password, salt);
   if (hash)
-    return (await (hash).replace('/', ''));
+    return (hash);
   return (undefined);
 }
 

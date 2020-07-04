@@ -9,6 +9,8 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 3,
           requestId: 1,
+          accepter: 'qwerqwer',
+          requester: 'Hallocoos',
           accepted: true,
           blocked: false,
         });
@@ -18,6 +20,8 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 4,
           requestId: 2,
+          accepter: 'zxcvzxcv',
+          requester: 'asdfasdf',
           accepted: false,
           blocked: false,
         });
@@ -27,6 +31,8 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 4,
           requestId: 1,
+          accepter: 'zxcvzxcv',
+          requester: 'Hallocoos',
           accepted: true,
           blocked: true,
         });
@@ -36,6 +42,8 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 2,
           requestId: 3,
+          accepter: 'asdfasdf',
+          requester: 'qwerqwer',
           accepted: true,
           blocked: false,
         });
@@ -45,6 +53,8 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 4,
           requestId: 3,
+          accepter: 'zxcvzxcv',
+          requester: 'qwerqwer',
           accepted: true,
           blocked: false,
         });

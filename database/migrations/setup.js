@@ -12,14 +12,15 @@ exports.up = function (knex, Promise) {
       table.string('biography').defaultTo('')
       table.string('interest').defaultTo('')
       table.string('tags').defaultTo('')
-      table.string('ip').defaultTo('')
       table.string('countryName').defaultTo('')
-      table.string('regionName').defaultTo('')
       table.string('city').defaultTo('')
-      table.string('zipcode').defaultTo('')
+      table.string('longitude').defaultTo('')
+      table.string('latitude').defaultTo('')
       table.boolean('verified').defaultTo(false)
-      table.integer('fameRating').defaultTo(0)
+      table.integer('fame').defaultTo(0)
       table.string('hash').notNullable()
+      table.boolean('matchable').defaultTo(false)
+      table.boolean('locationTracking').defaultTo(true)
     })
     .createTable('images', function (table) {
       table.increments('id').primary()
@@ -31,6 +32,8 @@ exports.up = function (knex, Promise) {
       table.increments('id').primary()
       table.integer('acceptId').unsigned().references('id').inTable('users')
       table.integer('requestId').unsigned().references('id').inTable('users')
+      table.string('accepter').notNullable()
+      table.string('requester').notNullable()
       table.boolean('accepted').defaultTo(false)
       table.boolean('blocked').defaultTo(false)
     })
@@ -48,8 +51,8 @@ exports.up = function (knex, Promise) {
 
 exports.down = function (knex, Promise) {
   return knex.schema
-  .dropTable('notifications')
-  .dropTable('matches')
-  .dropTable('images')
-  .dropTable('users').then();
+    .dropTable('notifications')
+    .dropTable('matches')
+    .dropTable('images')
+    .dropTable('users').then();
 };
