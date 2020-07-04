@@ -1,10 +1,10 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating } from '../models/userModel';
+import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
+import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 
@@ -50,6 +50,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
   if (user)
     var notifications = await retrieveNotificationsByReceiveId(user.id);
   response.send({ notifications: notifications, success: false });
+  await setNotificationsAsSeenByReceiveId(user.id);
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -115,17 +116,22 @@ router.post('/uploadPicture', async (request: Request, response: Response) => {
   response.send({ text: '', success: true });
 });
 
-// { "id": 1, "max": 0, "min": 10000 }
+// { "id": 1, "max": 0, "min": 10000, category: "distance" }
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   // Distance
   let user = await retrieveUserById(request.body.id);
-  if (user) {
-    let allUsers = await calculateDistance(user);
+  let allUsers = await retrieveUsersByGender(user.interest, user.gender);
+  if (request.body.category == 'distance' && user) {
+    allUsers = await calculateDistance(user, allUsers);
     response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+  } else if (request.body.category == 'fame' && user) {
+    allUsers = allUsers.sort((a, b) => a.fame > b.fame ? -1 : a.fame < b.fame ? 1 : 0);
+    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+  // } else if (request.body.category == 'tags' && user) {
+  //   let allUsers = await calculateDistance(user);
+  //   response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
   } else
     response.send({ text: 'No matches have been found.', success: false });
-  // Tags - create model - select * from users inner join `matches` on users.id = matches.acceptId; (Basic Query)
-  // Fame rating
 });
 
 export default router;

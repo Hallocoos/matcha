@@ -50,8 +50,8 @@ exports.seed = function (knex, Promise) {
           tags: 'food',
           countryName: 'asdkjf',
           city: 'zxcvzxc',
-          fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          fame: 1000,
+          hash: await (await hash('asdfasdf')).replace(/\//g, ''),
           longitude: 17.0401,
           latitude: -32.1827
         });
@@ -71,7 +71,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          hash: await (await hash('qwerqwer')).replace(/\//g, ''),
           longitude: 73.3947,
           latitude: -84.4936
         });
@@ -91,7 +91,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqwevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          hash: await (await hash('zxcvzxcv')).replace(/\//g, ''),
           longitude: 25.3639,
           latitude: -15.3658
         });
@@ -113,10 +113,30 @@ exports.seed = function (knex, Promise) {
           verified: 1, 
           hash: await hash('uiop'),
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          hash: await (await hash('uiop')).replace(/\//g, ''),
           longitude: 85.3654,
           latitude: -75.3654,
           verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'sdfgsdfg',
+          password: await hash('sdfgsdfg'),
+          firstname: 'sdfgsdf',
+          lastname: 'sdfgsdfg',
+          email: 'sdfg@mailinator.com',
+          gender: 'female',
+          interest: 'male',
+          age: '21',
+          tags: 'fo3214126234od',
+          countryName: 'sdfgsdfg',
+          city: 'sdfgsdfg',
+          fame: 111111110,
+          hash: await (await hash('sdfgsdfg')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827
         });
     })
 };
