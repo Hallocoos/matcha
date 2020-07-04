@@ -45,7 +45,7 @@ export async function retrieveUsers(): Promise<User[]> {
  *  Function to handle getting valid matches by gender
  *  @Incoming Params: body = { interest = <string> }
 */
-export async function retrieveUsersByGender(interest, gender) {
+export async function retrieveUsersByGender(interest, gender, sort) {
   return knex.select()
     .from('users')
     .where('gender', interest)
@@ -74,7 +74,6 @@ export async function verifyUserByHash(hash: string): Promise<User> {
 };
 
 // function to handle get user by username
-// /login
 export async function retrieveUserByUsername(username: string) {
   const result = await knexSelectByColumn('username', username, 'users');
   if (result[0])
@@ -115,7 +114,6 @@ export async function modifyUserPasswordByHash(body) {
     await knexUpdateById({ password: body.password }, user.id, 'users');
     return (await retrieveUserById(user.id));
   }
-  console.log(user)
   return (undefined);
 };
 

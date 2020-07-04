@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender } from '../models/userModel';
+import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
@@ -116,22 +116,52 @@ router.post('/uploadPicture', async (request: Request, response: Response) => {
   response.send({ text: '', success: true });
 });
 
-// { "id": 1, "max": 0, "min": 10000, category: "distance" }
+/*
+  request.body = {
+    filters: {
+      // user table
+      columnFilter: string,
+      ageMax: integer,
+      ageMin: integer,
+      fameMin: integer,
+      fameMax: integer,
+      distanceMin: integer,
+      distanceMax: integer,
+      // tag table
+      tags: [ cat, dog, food, apple]
+    },
+    sorting: {
+      category: string <"age"/"fame"/"distance"/"tags">,
+      direction: string <"ascending"/"descending">,
+      tagsInCommon: integer,
+    }
+  }
+
+  OR
+
+  request.body = {
+    filters: undefined,
+    sorting: undefined
+  }
+*/
+
+// { "id": 1, "max": 0, "min": 10000, category: "distance", sort: "asc" }
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
-  // Distance
   let user = await retrieveUserById(request.body.id);
-  let allUsers = await retrieveUsersByGender(user.interest, user.gender);
+  let allUsers = await retrieveUsers();
   if (request.body.category == 'distance' && user) {
-    allUsers = await calculateDistance(user, allUsers);
+    allUsers = await calculateDistance(user, request.body.sort);
     response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
   } else if (request.body.category == 'fame' && user) {
-    allUsers = allUsers.sort((a, b) => a.fame > b.fame ? -1 : a.fame < b.fame ? 1 : 0);
+    allUsers = await retrieveUsersByGender(user.interest, user.gender, request.body.sort);
     response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
-  // } else if (request.body.category == 'tags' && user) {
+  }
+  //  else if (request.body.category == 'tags' && user) {
   //   let allUsers = await calculateDistance(user);
   //   response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
-  } else
-    response.send({ text: 'No matches have been found.', success: false });
+  // } else
+  //   response.send({ text: 'No matches have been found.', success: false });
+  response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
 });
 
 export default router;
