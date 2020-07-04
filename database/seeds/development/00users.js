@@ -99,24 +99,22 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('users')
         .insert({
-          username: 'uiop',
-          password: await hash('uiop'),
-          firstname: 'uiop',
-          lastname: 'uiop',
-          email: 'uiop@mailinator.com',
-          gender: 'female',
-          interest: 'female',
           age: '20',
-          tags: 'balls',
-          countryName: 'uiop',
           city: 'uiop',
-          verified: 1, 
-          hash: await hash('uiop'),
+          countryName: 'uiop',
+          email: 'uiop@mailinator.com',
           fame: 0,
+          firstname: 'uiop',
+          gender: 'female',
           hash: await (await hash('Hallocoos')).replace(/\//g, ''),
-          longitude: 85.3654,
+          interest: 'female',
+          lastname: 'uiop',
           latitude: -75.3654,
-          verified: 1
+          longitude: 85.3654,
+          password: await hash('uiop'),
+          tags: 'balls',
+          username: 'uiop',
+          verified: 1, 
         });
     })
 };
