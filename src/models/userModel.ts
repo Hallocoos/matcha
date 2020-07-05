@@ -63,7 +63,7 @@ export async function retrieveUsersByGender(filters, sorting, id, interest, gend
     .where('fame', '>', filters.fameMin || -1)
     .where('fame', '<', filters.fameMax || 100000)
     .where('matchable', 1)
-    .whereNot('id', id) // Need to take userId as parameter
+    .whereNot('id', id)
     .orderBy(sorting.category, direction)
     .then(function (result) {
       return result;

@@ -169,8 +169,6 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
     sorting: undefined
   }
 */
-
-// { "id": 1, "max": 0, "min": 10000, category: "distance", sort: "direction" }
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
   let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.sorting, request.body.id, user.interest, user.gender);
