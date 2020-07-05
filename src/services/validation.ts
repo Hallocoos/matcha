@@ -122,12 +122,14 @@ export async function updateUserValidator(request) {
   if (user.tags)
     if (!isString(user.tags))
       return ('Tags are Invalid');
+  const lngRegex = /^-?(([-+]?)([\d]{1,3})((\.)(\d+))?)/g;
+  const latRegex = /^-?([1-8]?[1-9]|[1-9]0)\.{1}\d{1,15}/g;
   if (user.longitude)
-    if (!isNumeric(user.longitude))
-      return ('Age is Invalid');
+    if (user.longitude < -180 || user.longitude > 180)
+      return ('Longitude is Invalid');
   if (user.latitude)
-    if (!isNumeric(user.latitude))
-      return ('Tags are Invalid');
+    if (user.latitude < -90 || user.latitude > 90)
+      return ('Latitude are Invalid');
   return undefined;
 };
 
