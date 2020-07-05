@@ -90,12 +90,59 @@
     <!-- email -->
     <!-- dis/enable gps-->
     <h3>Pick a setting to change.</h3>
-    <input data-bind="value: loggedInUser.username">
-    <button data-bind="click: persistChangesToLoggedInUser">Save</button>
+
+
+
+
+    <b>Username</b>
+    <!-- ko if: settingEditing() != 'username'-->
+    <button data-bind="click: selectSettingEditing.bind($data, 'username')">Edit</button>
+    <div data-bind="text: loggedInUser.username"></div>
+    <!-- /ko -->
+    <!-- ko if: settingEditing() == 'username'-->
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
+    <!-- /ko -->
+    <br>
+
+    <b>Password</b>
+    <!-- ko if: settingEditing() != 'password' -->
+    <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
+    <div data-bind="text: '********'"></div>
+    <!-- /ko -->
+    <!-- ko if: settingEditing() == 'password' -->
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
+    <!-- /ko -->
+    <br>
+
+    <b>Email</b>
+    <!-- ko if: settingEditing() != 'email' -->
+    <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
+    <div data-bind="text: loggedInUser.email"></div>
+    <!-- /ko -->
+    <!-- ko if: settingEditing() == 'email' -->
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
+    <!-- /ko -->
+    <br>
+
+    <b>Location Tracking</b>
+    <button data-bind="click: selectSettingEditing.bind($data, 'locationTracking')">Toggle</button>
+    <div data-bind="text: loggedInUser.locationTracking() == 1 ? 'Enabled' : 'Disabled'"></div>
+    <br>
+
   </div>
 
   <div data-bind="if: selectedView() == 'notifications'">
     <h1>This will be notifications view.</h1>
+    <!-- <h6>test</h6> -->
   </div>
 
   <div data-bind="if: selectedView() == 'reset'">
@@ -181,6 +228,12 @@
     // console.log(viewModel.ownImages())
   }
 
+  function resetSettingEditing() {
+    // console.log("reset setting editing called")
+    viewModel.settingEditing('')
+    viewModel.settingEditingWorkspace('')
+  }
+
   var viewModel = {
     email: ko.observable(''),
     loggedInUser: null,
@@ -197,11 +250,33 @@
     password: ko.observable(''),
     reset: ko.observable(),
     selectedView: ko.observable(''),
+    settingEditing: ko.observable(''),
+    settingEditingWorkspace: ko.observable(''),
     token: ko.observable(),
     username: ko.observable(''),
 
     logOut() {
       window.location.replace("http://localhost:3000/matcha")
+    },
+
+    async selectSettingEditing(setting, data) {
+      viewModel.settingEditing(setting)
+      var existingData
+      switch (setting) {
+        case "username":
+          existingData = viewModel.loggedInUser.username()
+          break
+        case "password":
+          existingData = ""
+          break
+        case "email":
+          existingData = viewModel.loggedInUser.email()
+          break
+        case "locationTracking":
+          viewModel.settingEditingWorkspace(viewModel.loggedInUser.locationTracking() == 1 ? 0 : 1)
+          await viewModel.saveChangesToLoggedInUser()
+      }
+      viewModel.settingEditingWorkspace(existingData)
     },
 
     selectView(view, data) {
@@ -210,12 +285,15 @@
       // console.log(data)
       // console.log(view)
       viewModel.selectedView(view)
+      resetSettingEditing()
       // console.log(viewModel.selectedView())
     },
 
-    async persistChangesToLoggedInUser() {
-      var body = ko.toJSON(viewModel.loggedInUser())
-      // console.log(body)
+    async saveChangesToLoggedInUser() {
+      var data = { id: viewModel.loggedInUser.id() }
+      data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
+      var body = JSON.stringify(data)
+      console.log(body)
       await fetch("http://localhost:3000/updateUser", {
         method: "POST",
         body: body,
@@ -226,21 +304,24 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
-        // if (data.success) {
-        //   if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
-        // } else {
-        //   alert("Please request a new reset link.")
-        // }
+        alert(data.text)
+        if (data.success) {
+          viewModel.loggedInUser[viewModel.settingEditing()](viewModel.settingEditingWorkspace())
+        }
+
+        // viewModel.selectSettingEditing("", null)
+        // viewModel.settingEditingWorkspace = ko.observable()
       }).catch(er => {
         document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
       })
+      resetSettingEditing()
+      // putUserInViewModel()
     },
 
     async sendNewPassword() {
       var body = JSON.stringify({
         password: viewModel.password(),
-        hash: viewModel.reset(),
+        hash: viewModel.reset() | viewModel.settingEditingWorkspace(),
       })
       // console.log(body)
       await fetch("http://localhost:3000/resetPassword", {
