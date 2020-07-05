@@ -79,18 +79,18 @@
     <!-- /ko -->
     <br>
 
-    <!-- <b>Password</b>
-    ko if: settingEditing() != 'password'
+    <b>Password</b>
+    <!-- ko if: settingEditing() != 'password' -->
     <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
     <div data-bind="text: '********'"></div>
-    /ko
-    ko if: settingEditing() == 'password'
+    <!-- /ko -->
+    <!-- ko if: settingEditing() == 'password' -->
     <button data-bind="click: saveChangesToLoggedInUser">Save</button>
     <div>
       <input data-bind="value: settingEditingWorkspace">
     </div>
-    /ko
-    <br> -->
+    <!-- /ko -->
+    <br>
 
     <b>Email</b>
     <!-- ko if: settingEditing() != 'email' -->
@@ -105,34 +105,11 @@
     <!-- /ko -->
     <br>
 
-    <!-- <b>Username</b>
-    ko if: settingEditing() != 'username'
-    <button data-bind="click: selectSettingEditing.bind($data, 'username')">Edit</button>
-    <div data-bind="text: loggedInUser.username"></div>
-    /ko
-    ko if: settingEditing() == 'username'
-    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-    <div>
-      <input data-bind="value: settingEditingWorkspace">
-    </div>
-    /ko
-    <br> -->
+    <b>Location Tracking</b>
+    <button data-bind="click: selectSettingEditing.bind($data, 'locationTracking')">Toggle</button>
+    <div data-bind="text: loggedInUser.locationTracking() == 1 ? 'Enabled' : 'Disabled'"></div>
+    <br>
 
-
-
-
-    <!-- <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
-    <div data-bind="text: loggedInUser.username"></div>
-    <br> -->
-    
-    <!-- <b>Email</b>
-    <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
-    <div data-bind="text: loggedInUser.email"></div>
-    <br> -->
-    
-    <!-- <b>Use Location</b>
-    <button data-bind="click: selectSettingEditing.bind($data, 'useLocation')">Edit</button>
-    <div data-bind="text: loggedInUser.username"></div> -->
   </div>
 
   <div data-bind="if: selectedView() == 'notifications'">
@@ -220,11 +197,11 @@
   }
 
   function resetSettingEditing() {
-    console.log("reset setting editing called")
+    // console.log("reset setting editing called")
     viewModel.settingEditing('')
     viewModel.settingEditingWorkspace('')
   }
-  
+
   var viewModel = {
     email: ko.observable(''),
     loggedInUser: null,
@@ -250,28 +227,24 @@
       window.location.replace("http://localhost:3000/matcha")
     },
 
-    selectSettingEditing(setting, data) {
-      if (setting == "useLocation") {
-        // toggle useLocation property
-        // persist changes to db
-      } else {
-        viewModel.settingEditing(setting)
-        var existingData
-        switch (setting) {
-          case "username":
-            existingData = viewModel.loggedInUser.username()
-            break
-          case "password":
-            existingData = ""
-            break
-          case "email":
-            existingData = viewModel.loggedInUser.email()
-            break
-        }
-        viewModel.settingEditingWorkspace(existingData)
+    async selectSettingEditing(setting, data) {
+      viewModel.settingEditing(setting)
+      var existingData
+      switch (setting) {
+        case "username":
+          existingData = viewModel.loggedInUser.username()
+          break
+        case "password":
+          existingData = ""
+          break
+        case "email":
+          existingData = viewModel.loggedInUser.email()
+          break
+        case "locationTracking":
+          viewModel.settingEditingWorkspace(viewModel.loggedInUser.locationTracking() == 1 ? 0 : 1)
+          await viewModel.saveChangesToLoggedInUser()
       }
-      console.log(viewModel.settingEditing())
-      console.log(viewModel.settingEditingWorkspace())
+      viewModel.settingEditingWorkspace(existingData)
     },
 
     selectView(view, data) {
@@ -285,11 +258,8 @@
     },
 
     async saveChangesToLoggedInUser() {
-      // data = ko.toJS
-      var data = {id: viewModel.loggedInUser.id()}
-      // alter property
+      var data = { id: viewModel.loggedInUser.id() }
       data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
-      // body = stringify
       var body = JSON.stringify(data)
       console.log(body)
       await fetch("http://localhost:3000/updateUser", {
