@@ -70,12 +70,6 @@ export async function retrieveUsersByGender(filters, sorting, id, interest, gend
     });
 };
 
-// knex.select('*').from('users').join('accounts', function() {
-//   this.on('accounts.id', '=', 'users.account_id').orOn('accounts.owner_id', '=', 'users.id')
-// })
-// Outputs:
-// select * from `users` inner join `accounts` on `accounts`.`id` = `users`.`account_id` or `accounts`.`owner_id` = `users`.`id`
-
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
   const result = await knexSelectByColumn('id', id, 'users');
