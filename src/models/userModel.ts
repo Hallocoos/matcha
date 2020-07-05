@@ -46,7 +46,6 @@ export async function retrieveUsers(): Promise<User[]> {
  *  @Incoming Params: body = { interest = <string> }
 */
 export async function retrieveUsersByGender(filters, interest, gender, orderByColumn, sort) {
-  console.log(filters);
   if (orderByColumn == 'distance' || orderByColumn == 'tags')
     orderByColumn = 'fame';
   if (sort == 'ascending')
@@ -58,10 +57,10 @@ export async function retrieveUsersByGender(filters, interest, gender, orderByCo
       gender: interest,
       interest: gender
     })
-    .where('age', '>', filters.ageMin)
-    .where('age', '<', filters.ageMax)
-    // .where('fame', '>', filters.fameMin)
-    // .where('fame', '<', filters.fameMax)
+    .where('age', '>', filters.ageMin || 0)
+    .where('age', '<', filters.ageMax || 1000)
+    .where('fame', '>', filters.fameMin || 0)
+    .where('fame', '<', filters.fameMax || 100000)
     .orderBy(orderByColumn, direction)
     .then(function (result) {
       return result;
