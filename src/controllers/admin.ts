@@ -9,6 +9,7 @@ import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, d
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
+import * as _ from 'underscore'; 
 
 const router = express.Router();
 
@@ -175,7 +176,7 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 */
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
-  let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.sorting, request.body.id, user.interest, user.gender);
+  let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
   // Distance Calculations
   matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
   // Adding tags to user Objects
@@ -207,8 +208,12 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       }
     }
   }
+  // Sort by category is specified direction
+  if (request.body.sorting.direction == 'ascending')
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
+  else
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category ).reverse();
   response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
-
 });
 
 export default router;
