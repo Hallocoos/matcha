@@ -1,4 +1,4 @@
-import { retrieveUserByUsername, retrieveUserByEmail, retrieveUserById } from '../models/userModel';
+import { retrieveUserByUsername, retrieveUserByEmail, hashing, retrieveUserById } from '../models/userModel';
 import { retrieveImageById, retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveTagById } from '../models/tagModel';
 
@@ -96,9 +96,12 @@ export async function updateUserValidator(request) {
   if (user.username)
     if (!isString(user.username) && user.username.length < 4)
       return ('Username is Invalid');
-  if (user.password)
+  if (user.password) {
     if (!isString(user.password) || !complexPassword(user.password))
       return ('Password is Invalid');
+    else
+      user.password = await hashing(user.password);
+  }
   if (user.firstname)
     if (!isString(user.firstname) || user.firstname.length < 4)
       return ('First name is Invalid');
