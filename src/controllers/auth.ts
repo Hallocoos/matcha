@@ -31,7 +31,6 @@ router.post('/login', async (request: Request, response: Response) => {
   else {
     var user = await retrieveUserByUsername(request.body.username);
     if (user && await bcrypt.compare(request.body.password, user.password)) {
-      console.log("Here");
       if (user.verified) {
         let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
         response.json({ token: token, text: 'Login was successful.', success: true });

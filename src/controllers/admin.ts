@@ -174,7 +174,6 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
   let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.sorting, request.body.id, user.interest, user.gender);
-  console.log(matchableUsers)
   // Distance Calculations
   matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
   // Adding tags to user Objects
@@ -206,7 +205,6 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       }
     }
   }
-  console.log(matchableUsers)
   response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
 
 });

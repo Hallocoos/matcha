@@ -17,7 +17,6 @@ class Image {
 export async function retrieveImagesByUserId(userId: string): Promise<Image> {
   const result = await knexSelectByColumn('userId', userId, 'images');
   if (result) {
-    // console.log(result)
     return (result);
   } else {
     return (undefined);
@@ -59,7 +58,6 @@ export function clearProfilePicture(userId, targetTable) {
     .where('userId', userId)
     .update('profilePicture', 0)
     .then(function (result) {
-      // console.log(result);
       return (result);
     });
 };
