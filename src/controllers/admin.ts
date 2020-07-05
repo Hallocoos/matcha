@@ -1,10 +1,12 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
-import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
-import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
+import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
+import { retrieveImagesByUserId, createImage, retrieveImageById, deleteImageById } from '../models/imageModel';
+
+import { createTag, deleteTagById } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 
@@ -19,7 +21,7 @@ router.post('/updateUser', async (request: Request, response: Response) => {
       user = await checkUserMatchability(user.id);
       response.send({ user: user, text: 'User has successfully been updated.', success: true });
     } else
-    response.send({ user: user, text: 'User does not exist.', success: false });
+      response.send({ user: user, text: 'User does not exist.', success: false });
   } else
     response.send({ text: errors, success: false });
 });
@@ -103,17 +105,42 @@ router.post('/getMatches', async (request: Request, response: Response) => {
     response.send({ text: 'Id is Invalid.', success: false });
 });
 
-// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: true }
+// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
 router.post('/uploadPicture', async (request: Request, response: Response) => {
-//   do error checks - let errors = idValidator(request.body.id);
-//   error protection - if (!errors)
-//     if (profilePicture)
-//       setUserImagesToNotProfilePictures();
-//     createImage(); - await addMatch(request.body);
-//     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
-//   else
-//     send error messages - response.send({ text: 'Id is Invalid.', success: false });
-  response.send({ text: '', success: true });
+  let errors = await newImageValidator(request.body);
+  if (!errors) {
+    await createImage(request.body);
+    response.send({ text: 'Image successfully uploaded.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+// { "id": "1" }
+router.post('/deletePicture', async (request: Request, response: Response) => {
+  let errors = await deleteImageValidator(request.body);
+  if (!errors) {
+    await deleteImageById(request.body);
+    response.send({ text: 'Image successfully deleted.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+router.post('/createTag', async (request: Request, response: Response) => {
+  let errors = await newTagValidator(request.body);
+  if (!errors) {
+    await createTag(request.body);
+    response.send({ text: 'Tag Successfully created.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+router.post('/deleteTag', async (request: Request, response: Response) => {
+  let errors = await deleteTagValidator(request.body);
+  if (!errors) {
+    await deleteTagById(request.body);
+    response.send({ text: 'Tag successfully deleted.', success: true });
+  } else
+    response.send({ text: errors, success: false });
 });
 
 /*

@@ -155,6 +155,4 @@ export async function retrieveMatchesById(userId) {
     });
 };
 
-
-
 export default Match;
