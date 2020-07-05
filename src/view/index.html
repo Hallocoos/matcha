@@ -262,7 +262,11 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
+        alert(data.text)
+        if (data.success) {
+          viewModel.loggedInUser[viewModel.settingEditing()](viewModel.settingEditingWorkspace())
+        }
+
         // viewModel.selectSettingEditing("", null)
         // viewModel.settingEditingWorkspace = ko.observable()
       }).catch(er => {
