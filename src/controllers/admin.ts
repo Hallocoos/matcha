@@ -144,6 +144,7 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 });
 
 /*
+  id: 1,
   request.body = {
     filters: {
       // user table
@@ -172,16 +173,14 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
   }
 */
 
-// { "id": 1, "max": 0, "min": 10000, category: "distance", sort: "asc" }
+// { "id": 1, "max": 0, "min": 10000, category: "distance", sort: "direction" }
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
-  let allUsers = await retrieveUsers();
+  let allUsers = await retrieveUsersByGender(request.body.filters, user.interest, user.gender, request.body.sorting.category, request.body.sorting.direction);
   if (request.body.category == 'distance' && user) {
-    allUsers = await calculateDistance(user, request.body.sort);
-    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+    allUsers = await calculateDistance(user, request.body.sort, allUsers);
   } else if (request.body.category == 'fame' && user) {
-    allUsers = await retrieveUsersByGender(user.interest, user.gender, request.body.sort);
-    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+    // allUsers = await retrieveUsersByGender(request.body.filters, user.interest, user.gender, request.body.category, request.body.sort);
   }
   //  else if (request.body.category == 'tags' && user) {
   //   let allUsers = await calculateDistance(user);

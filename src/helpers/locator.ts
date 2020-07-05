@@ -9,8 +9,7 @@ async function distance(lat1, lon1, lat2, lon2) {
     return 12742 * Math.asin(Math.sqrt(a));
 }
 
-export async function calculateDistance(user: User, sort) {
-    let allUsers = await retrieveUsersByGender(user.interest, user.gender, sort);
+export async function calculateDistance(user: User, sort, allUsers) {
     allUsers = allUsers.filter(obj => obj.id !== user.id);
     for (let i = 0; allUsers[i]; i++)
         allUsers[i].distance =

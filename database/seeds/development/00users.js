@@ -48,7 +48,7 @@ exports.seed = function (knex, Promise) {
           age: '21',
           countryName: 'asdkjf',
           city: 'zxcvzxc',
-          fame: 1000,
+          fame: 1000000,
           hash: await (await hash('asdfasdf')).replace(/\//g, ''),
           longitude: 17.0401,
           latitude: -32.1827
@@ -125,7 +125,7 @@ exports.seed = function (knex, Promise) {
           age: '21',
           countryName: 'sdfgsdfg',
           city: 'sdfgsdfg',
-          fame: 111111110,
+          fame: 110,
           hash: await (await hash('sdfgsdfg')).replace(/\//g, ''),
           longitude: 17.0401,
           latitude: -32.1827

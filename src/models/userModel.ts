@@ -45,11 +45,24 @@ export async function retrieveUsers(): Promise<User[]> {
  *  Function to handle getting valid matches by gender
  *  @Incoming Params: body = { interest = <string> }
 */
-export async function retrieveUsersByGender(interest, gender, sort) {
+export async function retrieveUsersByGender(filters, interest, gender, orderByColumn, sort) {
+  console.log(filters);
+  if (orderByColumn == 'distance' || orderByColumn == 'tags')
+    orderByColumn = 'fame';
+  if (sort == 'ascending')
+    var direction = 'asc';
+  else
+    var direction = 'desc';
   return knex.select()
-    .from('users')
-    .where('gender', interest)
-    .andWhere('interest', gender)
+    .from('users').where({
+      gender: interest,
+      interest: gender
+    })
+    .where('age', '>', filters.ageMin)
+    .where('age', '<', filters.ageMax)
+    // .where('fame', '>', filters.fameMin)
+    // .where('fame', '<', filters.fameMax)
+    .orderBy(orderByColumn, direction)
     .then(function (result) {
       return result;
     });

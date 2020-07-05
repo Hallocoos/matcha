@@ -1,5 +1,5 @@
 import * as knex from '../../database/knex'
-import { knexSelectByColumn, knexInsert, knexSelectAll, knexUpdateById, knexClearProfilePicture, knexDeleteById } from '../services/dbService';
+import { knexSelectByColumn, knexInsert, knexDeleteById } from '../services/dbService';
 
 class Image {
   id: string;
@@ -41,6 +41,16 @@ export async function createImage(body): Promise<Image> {
     await knexClearProfilePicture(body.userId, 'images');
   const result = await knexInsert(body, 'images');
   return (retrieveImageById(result[0]));
+};
+
+export function knexClearProfilePicture(userId, targetTable) {
+  return knex(targetTable)
+    .where('userId', userId)
+    .update('profilePicture', 0)
+    .then(function (result) {
+      // console.log(result);
+      return (result);
+    });
 };
 
 //function to delete an image by Id
