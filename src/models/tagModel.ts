@@ -22,6 +22,16 @@ export async function retrieveTagsByUserId(userId: string): Promise<Tag> {
   }
 };
 
+// function to handle get tags by userId
+export async function retrieveTagsByMultipleUserIds(userIds): Promise<Tag> {
+  return knex.select()
+  .from('tags')
+  .whereIn('userId', userIds)
+  .then(function (result) {
+    return (result);
+  });
+};
+
 // function to handle get tags by tag.id
 export async function retrieveTagById(id: string): Promise<Tag> {
   const result = await knexSelectByColumn('id', id, 'tags');

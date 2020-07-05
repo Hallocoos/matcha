@@ -41,6 +41,35 @@ export async function retrieveUsers(): Promise<User[]> {
   return (undefined);
 };
 
+/*
+ *  Function to handle getting valid matches by gender
+ *  @Incoming Params: body = { interest = <string> }
+*/
+export async function retrieveUsersByGender(filters, sorting, id, interest, gender) {
+  if (sorting.category == 'distance' || sorting.category == 'tags')
+    sorting.category = 'fame';
+  if (sorting.direction == 'descending')
+    var direction = 'DESC';
+  else
+    var direction = 'ASC';
+  return knex.select()
+    .from('users')
+    .where({
+      gender: interest,
+      interest: gender
+    })
+    .where('age', '>', filters.ageMin || 17)
+    .where('age', '<', filters.ageMax || 100)
+    .where('fame', '>', filters.fameMin || -1)
+    .where('fame', '<', filters.fameMax || 100000)
+    .where('matchable', 1)
+    .whereNot('id', id)
+    .orderBy(sorting.category, direction)
+    .then(function (result) {
+      return result;
+    });
+};
+
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
   const result = await knexSelectByColumn('id', id, 'users');
@@ -60,7 +89,6 @@ export async function verifyUserByHash(hash: string): Promise<User> {
 };
 
 // function to handle get user by username
-// /login
 export async function retrieveUserByUsername(username: string) {
   const result = await knexSelectByColumn('username', username, 'users');
   if (result[0])
@@ -101,7 +129,6 @@ export async function modifyUserPasswordByHash(body) {
     await knexUpdateById({ password: body.password }, user.id, 'users');
     return (await retrieveUserById(user.id));
   }
-  console.log(user)
   return (undefined);
 };
 
@@ -117,12 +144,30 @@ export async function modifyUserById(body) {
 };
 
 /*
+ *  Function to handle wether a user is online
+ *  @Incoming Params: { id: value, matchable: false }
+*/
+export async function setUserAsOnlineStatus(id, status) {
+  await knexUpdateById({ online: status, lastSeen: knex.fn.now() }, id, 'users');
+  return (await retrieveUserById(id));
+};
+
+/*
+ *  Function to handle wether a user is matchable
+ *  @Incoming Params: { id: value, matchable: false }
+*/
+export async function setUserAsMatchableById(id, matchable) {
+  await knexUpdateById({ matchable: matchable }, id, 'users');
+  return (await retrieveUserById(id));
+};
+
+/*
  *  Function to handle the increments on fame
  *  @Incoming Params: { id: value, key1: value1, ... }
 */
 export async function incrementUsersFameRating(id, amount) {
   const user = await retrieveUserById(id);
-  await knexUpdateById({fame: user.fame + amount}, id, 'users');
+  await knexUpdateById({ fame: user.fame + amount }, id, 'users');
   return (await retrieveUserById(id));
 };
 
