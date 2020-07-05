@@ -52,11 +52,10 @@
     <h1>This will be chat view.</h1>
   </div>
 
-  <!-- ko if: selectedView() == 'profile' -->
-  <!-- <div data-bind="if: selectedView() == 'profile'"> -->
+  <div data-bind="if: selectedView() == 'profile'">
     <!-- 
       wip   images can display, implement set as profile pic
-      username change in settings
+      username no edit
       firstname
       lastname
       age
@@ -65,24 +64,160 @@
       interest
       tags
       famerating not editable
-      gps dis/enable in settings, implement editing if enabled
+      gps implement editing
     -->
     <div data-bind="foreach: {data: ownImageSources, as: 'imageSource'}">
       <img width="15%" height="auto" data-bind="attr: {src: imageSource}">
     </div>
-    
+    <br>
+
     <div>
-      <b>Username</b>
-      <!-- ko if: $root.settingEditing !=  'username'-->
-      <button data-bind="click: selectSettingEditing.bind()">Edit</button>
+      <b>Username</b> <!-- no edit -->
+      <div data-bind="text: loggedInUser.username"></div>
+      <br>
+
+      <b>firstname</b>
+      <!-- ko if: settingEditing() != 'firstname'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'firstname')">Edit</button>
+      <div data-bind="text: loggedInUser.firstname"></div>
       <!-- /ko -->
-      <!-- ko if: $root.settingEditing ==  'username'-->
-      <button data-bind="click: persistChangesToLoggedInUser">Save</button>
+      <!-- ko if: settingEditing() == 'firstname'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace">
+      </div>
       <!-- /ko -->
+      <br>
+
+      <b>lastname</b>
+      <!-- ko if: settingEditing() != 'lastname'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'lastname')">Edit</button>
+      <div data-bind="text: loggedInUser.lastname"></div>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'lastname'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace">
+      </div>
+      <!-- /ko -->
+      <br>
+
+      <b>age</b>
+      <!-- ko if: settingEditing() != 'age'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'age')">Edit</button>
+      <div data-bind="text: loggedInUser.age"></div>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'age'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace">
+      </div>
+      <!-- /ko -->
+      <br>
+
+      <b>gender</b>
+      <!-- ko if: settingEditing() != 'gender'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'gender')">Edit</button>
+      <div data-bind="text: loggedInUser.gender"></div>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'gender'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace" list="genderList">
+        <datalist id="genderList">
+          <option value="other">
+          <option value="female">
+          <option value="male">
+        </datalist>
+      </div>
+      <!-- /ko -->
+      <br>
+
+      <b>biography</b>
+      <!-- ko if: settingEditing() != 'biography'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'biography')">Edit</button>
+      <div data-bind="text: loggedInUser.biography() ? loggedInUser.biography : 'Not yet completed.'"></div>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'biography'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace">
+      </div>
+      <!-- /ko -->
+      <br>
+
+      <b>interest</b>
+      <!-- ko if: settingEditing() != 'interest'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'interest')">Edit</button>
+      <div data-bind="text: loggedInUser.interest"></div>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'interest'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace" list="genderList">
+        <datalist id="genderList">
+          <option value="other">
+          <option value="female">
+          <option value="male">
+        </datalist>
+      </div>
+      <!-- /ko -->
+      <br>
+
+      <b>tags</b>
+      <!-- ko if: settingEditing() != 'tags'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'tags')">Edit</button>
+      <div data-bind="text: loggedInUser.tags"></div>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'tags'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace">
+      </div>
+      <!-- /ko -->
+      <br>
+
+      <b>fame not editable</b> <!-- no edit -->
+      <div
+        data-bind="text: loggedInUser.fame() ? loggedInUser.fame : 'No fame rating yet. Interact with other users to increase.'">
+      </div>
+      <br>
+
+      <!-- ko if: loggedInUser.locationTracking -->
+      <b>gps implement editing</b>
+      <!-- ko if: settingEditing() != 'gps'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'gps')">Edit</button>
+      <table>
+        <tr>
+          <td>
+            <div data-bind="text: 'Latitude:'"></div>
+          </td>
+          <td>
+            <div data-bind="text: loggedInUser.latitude"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div data-bind="text: 'Longitude:'"></div>
+          </td>
+          <td>
+            <div data-bind="text: loggedInUser.longitude"></div>
+          </td>
+        </tr>
+      </table>
+      <!-- /ko -->
+      <!-- ko if: settingEditing() == 'gps'-->
+      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+      <div>
+        <input data-bind="value: settingEditingWorkspace">
+      </div>
+      <!-- /ko -->
+      <br>
+      <!-- /ko -->
+
     </div>
-    
-  <!-- </div> -->
-  <!-- /ko -->
+
+  </div>
 
   <div data-bind="if: selectedView() == 'settings'">
     <!-- username -->
@@ -110,7 +245,6 @@
     <b>Password</b>
     <!-- ko if: settingEditing() != 'password' -->
     <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
-    <div data-bind="text: '********'"></div>
     <!-- /ko -->
     <!-- ko if: settingEditing() == 'password' -->
     <button data-bind="click: saveChangesToLoggedInUser">Save</button>
@@ -209,23 +343,21 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      // console.log(data)
+      console.log(data)
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
         viewModel.ownImageSources([])
         data.images.forEach(image => {
           viewModel.ownImageSources().push("data:image/png;base64, " + image.image)
         });
-        // viewModel.ownImageSources(data.images)
-        // console.log(ko.toJS(viewModel.ownImageSources()))
       } else {
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
       }
     }).catch(er => {
       document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
     })
-    // console.log((viewModel.loggedInUser.username()))
-    // console.log(viewModel.ownImages())
+    // console.log(ko.toJS(viewModel.loggedInUser))
+    // console.log(viewModel.ownImageSources())
   }
 
   function resetSettingEditing() {
@@ -263,18 +395,18 @@
       viewModel.settingEditing(setting)
       var existingData
       switch (setting) {
-        case "username":
-          existingData = viewModel.loggedInUser.username()
+        case "locationTracking":
+          viewModel.settingEditingWorkspace(viewModel.loggedInUser.locationTracking() == 1 ? 0 : 1)
+          await viewModel.saveChangesToLoggedInUser()
           break
         case "password":
           existingData = ""
           break
-        case "email":
-          existingData = viewModel.loggedInUser.email()
+        case "gps":
+          existingData = viewModel.loggedInUser.latitude() + ", " + viewModel.loggedInUser.longitude()
           break
-        case "locationTracking":
-          viewModel.settingEditingWorkspace(viewModel.loggedInUser.locationTracking() == 1 ? 0 : 1)
-          await viewModel.saveChangesToLoggedInUser()
+        default:
+          existingData = viewModel.loggedInUser[setting]()
       }
       viewModel.settingEditingWorkspace(existingData)
     },
@@ -291,7 +423,14 @@
 
     async saveChangesToLoggedInUser() {
       var data = { id: viewModel.loggedInUser.id() }
-      data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
+      // add switch statement for gps handling
+      if (viewModel.settingEditing() == "gps") {
+        var gps = viewModel.settingEditingWorkspace().replace(" ", "").split(",")
+        data["latitude"] = gps[0]
+        data["longitude"] = gps[1]
+      } else {
+        data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
+      }
       var body = JSON.stringify(data)
       console.log(body)
       await fetch("http://localhost:3000/updateUser", {
@@ -304,18 +443,20 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        alert(data.text)
         if (data.success) {
-          viewModel.loggedInUser[viewModel.settingEditing()](viewModel.settingEditingWorkspace())
+          if (viewModel.settingEditing() == "gps") {
+            var gps = viewModel.settingEditingWorkspace().replace(" ", "").split(",")
+            viewModel.loggedInUser.latitude(gps[0])
+            viewModel.loggedInUser.longitude(gps[1])
+          } else {
+            viewModel.loggedInUser[viewModel.settingEditing()](viewModel.settingEditingWorkspace())
+          }
         }
-
-        // viewModel.selectSettingEditing("", null)
-        // viewModel.settingEditingWorkspace = ko.observable()
+        alert(data.text)
       }).catch(er => {
         document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
       })
       resetSettingEditing()
-      // putUserInViewModel()
     },
 
     async sendNewPassword() {
