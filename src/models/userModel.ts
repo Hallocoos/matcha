@@ -45,27 +45,36 @@ export async function retrieveUsers(): Promise<User[]> {
  *  Function to handle getting valid matches by gender
  *  @Incoming Params: body = { interest = <string> }
 */
-export async function retrieveUsersByGender(filters, interest, gender, orderByColumn, sort) {
-  if (orderByColumn == 'distance' || orderByColumn == 'tags')
-    orderByColumn = 'fame';
-  if (sort == 'ascending')
-    var direction = 'asc';
+export async function retrieveUsersByGender(filters, sorting, id, interest, gender) {
+  if (sorting.category == 'distance' || sorting.category == 'tags')
+    sorting.category = 'fame';
+  if (sorting.direction == 'descending')
+    var direction = 'DESC';
   else
-    var direction = 'desc';
+    var direction = 'ASC';
   return knex.select()
-    .from('users').where({
+    .from('users')
+    .where({
       gender: interest,
       interest: gender
     })
-    .where('age', '>', filters.ageMin || 0)
-    .where('age', '<', filters.ageMax || 1000)
-    .where('fame', '>', filters.fameMin || 0)
+    .where('age', '>', filters.ageMin || 17)
+    .where('age', '<', filters.ageMax || 100)
+    .where('fame', '>', filters.fameMin || -1)
     .where('fame', '<', filters.fameMax || 100000)
-    .orderBy(orderByColumn, direction)
+    .where('matchable', 1)
+    .whereNot('id', id) // Need to take userId as parameter
+    .orderBy(sorting.category, direction)
     .then(function (result) {
       return result;
     });
 };
+
+// knex.select('*').from('users').join('accounts', function() {
+//   this.on('accounts.id', '=', 'users.account_id').orOn('accounts.owner_id', '=', 'users.id')
+// })
+// Outputs:
+// select * from `users` inner join `accounts` on `accounts`.`id` = `users`.`account_id` or `accounts`.`owner_id` = `users`.`id`
 
 // function to handle get user by id
 export async function retrieveUserById(id: string): Promise<User> {
@@ -145,7 +154,7 @@ export async function modifyUserById(body) {
  *  @Incoming Params: { id: value, matchable: false }
 */
 export async function setUserAsOnlineStatus(id, status) {
-  await knexUpdateById({online: status, lastSeen: knex.fn.now()}, id, 'users');
+  await knexUpdateById({ online: status, lastSeen: knex.fn.now() }, id, 'users');
   return (await retrieveUserById(id));
 };
 
@@ -154,7 +163,7 @@ export async function setUserAsOnlineStatus(id, status) {
  *  @Incoming Params: { id: value, matchable: false }
 */
 export async function setUserAsMatchableById(id, matchable) {
-  await knexUpdateById({matchable: matchable}, id, 'users');
+  await knexUpdateById({ matchable: matchable }, id, 'users');
   return (await retrieveUserById(id));
 };
 
@@ -164,7 +173,7 @@ export async function setUserAsMatchableById(id, matchable) {
 */
 export async function incrementUsersFameRating(id, amount) {
   const user = await retrieveUserById(id);
-  await knexUpdateById({fame: user.fame + amount}, id, 'users');
+  await knexUpdateById({ fame: user.fame + amount }, id, 'users');
   return (await retrieveUserById(id));
 };
 

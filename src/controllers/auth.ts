@@ -30,7 +30,6 @@ router.post('/login', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
   else {
     var user = await retrieveUserByUsername(request.body.username);
-    console.log(user);
     if (user && await bcrypt.compare(request.body.password, user.password)) {
       console.log("Here");
       if (user.verified) {

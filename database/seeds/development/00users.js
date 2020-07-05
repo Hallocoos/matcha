@@ -32,6 +32,7 @@ exports.seed = function (knex, Promise) {
           hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 31.2836,
           latitude: -32.2541,
+          matchable: 1,
           verified: 1
         });
     })
@@ -48,10 +49,12 @@ exports.seed = function (knex, Promise) {
           age: '21',
           countryName: 'asdkjf',
           city: 'zxcvzxc',
-          fame: 1000000,
+          fame: 1000,
           hash: await (await hash('asdfasdf')).replace(/\//g, ''),
           longitude: 17.0401,
-          latitude: -32.1827
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
         });
     })
     .then(async function () {
@@ -67,10 +70,33 @@ exports.seed = function (knex, Promise) {
           age: '22',
           countryName: 'wevfqevf',
           city: 'wevfqwevfq',
+          fame: 1,
+          hash: await (await hash('qwerqwer')).replace(/\//g, ''),
+          longitude: 73.3947,
+          latitude: -84.4936,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'wertwert',
+          password: await hash('wertwert'),
+          firstname: 'wertwert',
+          lastname: 'wertwert',
+          email: 'wert@mailinator.com',
+          gender: 'male',
+          interest: 'male',
+          age: '22',
+          countryName: 'wevfqevf',
+          city: 'wevfqwevfq',
           fame: 0,
           hash: await (await hash('qwerqwer')).replace(/\//g, ''),
           longitude: 73.3947,
-          latitude: -84.4936
+          latitude: -84.4936,
+          matchable: 1,
+          verified: 1
         });
     })
     .then(async function () {
@@ -89,7 +115,9 @@ exports.seed = function (knex, Promise) {
           fame: 0,
           hash: await (await hash('zxcvzxcv')).replace(/\//g, ''),
           longitude: 25.3639,
-          latitude: -15.3658
+          latitude: -15.3658,
+          matchable: 1,
+          verified: 1
         });
     })
     .then(async function () {
@@ -106,9 +134,10 @@ exports.seed = function (knex, Promise) {
           countryName: 'uiop',
           city: 'uiop',
           fame: 0,
-          hash: await (await hash('uiop')).replace(/\//g, ''),
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 85.3654,
           latitude: -75.3654,
+          matchable: 1,
           verified: 1
         });
     })
@@ -128,7 +157,9 @@ exports.seed = function (knex, Promise) {
           fame: 110,
           hash: await (await hash('sdfgsdfg')).replace(/\//g, ''),
           longitude: 17.0401,
-          latitude: -32.1827
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
         });
     })
 };

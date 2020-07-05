@@ -24,6 +24,16 @@ export async function retrieveImagesByUserId(userId: string): Promise<Image> {
   }
 };
 
+// function to handle get tags by userId
+export async function retrieveImagesByMultipleUserIds(userIds): Promise<Image> {
+  return knex.select()
+  .from('images')
+  .whereIn('userId', userIds)
+  .then(function (result) {
+    return (result);
+  });
+};
+
 // function to handle get images by image.id
 export async function retrieveImageById(id: string): Promise<Image> {
   const result = await knexSelectByColumn('id', id, 'images');
@@ -34,16 +44,17 @@ export async function retrieveImageById(id: string): Promise<Image> {
   }
 };
 
+
 // function to handle creation of new images
 // body = { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
 export async function createImage(body): Promise<Image> {
   if (body.profilePicture)
-    await knexClearProfilePicture(body.userId, 'images');
+    await clearProfilePicture(body.userId, 'images');
   const result = await knexInsert(body, 'images');
   return (retrieveImageById(result[0]));
 };
 
-export function knexClearProfilePicture(userId, targetTable) {
+export function clearProfilePicture(userId, targetTable) {
   return knex(targetTable)
     .where('userId', userId)
     .update('profilePicture', 0)

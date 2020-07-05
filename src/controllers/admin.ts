@@ -4,9 +4,9 @@ import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUser
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
-import { retrieveImagesByUserId, createImage, retrieveImageById, deleteImageById } from '../models/imageModel';
+import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 
-import { createTag, deleteTagById } from '../models/tagModel';
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 
@@ -147,15 +147,12 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
   id: 1,
   request.body = {
     filters: {
-      // user table
-      columnFilter: string,
       ageMax: integer,
       ageMin: integer,
       fameMin: integer,
       fameMax: integer,
       distanceMin: integer,
       distanceMax: integer,
-      // tag table
       tags: [ cat, dog, food, apple]
     },
     sorting: {
@@ -176,18 +173,42 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 // { "id": 1, "max": 0, "min": 10000, category: "distance", sort: "direction" }
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
-  let allUsers = await retrieveUsersByGender(request.body.filters, user.interest, user.gender, request.body.sorting.category, request.body.sorting.direction);
-  if (request.body.category == 'distance' && user) {
-    allUsers = await calculateDistance(user, request.body.sort, allUsers);
-  } else if (request.body.category == 'fame' && user) {
-    // allUsers = await retrieveUsersByGender(request.body.filters, user.interest, user.gender, request.body.category, request.body.sort);
+  let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.sorting, request.body.id, user.interest, user.gender);
+  console.log(matchableUsers)
+  // Distance Calculations
+  matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
+  // Adding tags to user Objects
+  var userIds = new Array;
+  var j, i;
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].tags = new Array;
   }
-  //  else if (request.body.category == 'tags' && user) {
-  //   let allUsers = await calculateDistance(user);
-  //   response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
-  // } else
-  //   response.send({ text: 'No matches have been found.', success: false });
-  response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+  // Append Tags to users
+  let userTags = await retrieveTagsByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userTags[j]; j++) {
+      if (matchableUsers[i].id == userTags[j].userId) {
+        matchableUsers[i].tags.push(userTags[j].tag);
+      }
+    }
+  }
+  // Append Images to users
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].images = new Array;
+  }
+  let userImages = await retrieveImagesByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userImages[j]; j++) {
+      if (matchableUsers[i].id == userImages[j].userId) {
+        matchableUsers[i].images.push(userImages[j].image);
+      }
+    }
+  }
+  console.log(matchableUsers)
+  response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+
 });
 
 export default router;
