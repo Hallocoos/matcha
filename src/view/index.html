@@ -52,15 +52,43 @@
     <h1>This will be chat view.</h1>
   </div>
 
-  <div data-bind="if: selectedView() == 'profile'">
-    <h1>This will be profile view.</h1>
-  </div>
+  <!-- ko if: selectedView() == 'profile' -->
+  <!-- <div data-bind="if: selectedView() == 'profile'"> -->
+    <!-- 
+      wip   images can display, implement set as profile pic
+      username change in settings
+      firstname
+      lastname
+      age
+      gender
+      biography
+      interest
+      tags
+      famerating not editable
+      gps dis/enable in settings, implement editing if enabled
+    -->
+    <div data-bind="foreach: {data: ownImageSources, as: 'imageSource'}">
+      <img width="15%" height="auto" data-bind="attr: {src: imageSource}">
+    </div>
+    
+    <div>
+      <b>Username</b>
+      <!-- ko if: $root.settingEditing !=  'username'-->
+      <button data-bind="click: selectSettingEditing.bind()">Edit</button>
+      <!-- /ko -->
+      <!-- ko if: $root.settingEditing ==  'username'-->
+      <button data-bind="click: persistChangesToLoggedInUser">Save</button>
+      <!-- /ko -->
+    </div>
+    
+  <!-- </div> -->
+  <!-- /ko -->
 
   <div data-bind="if: selectedView() == 'settings'">
     <!-- username -->
     <!-- password -->
     <!-- email -->
-    <!-- enable -->
+    <!-- dis/enable gps-->
     <h3>Pick a setting to change.</h3>
     <input data-bind="value: loggedInUser.username">
     <button data-bind="click: persistChangesToLoggedInUser">Save</button>
@@ -137,7 +165,12 @@
       // console.log(data)
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
-        viewModel.ownImages(data.images)
+        viewModel.ownImageSources([])
+        data.images.forEach(image => {
+          viewModel.ownImageSources().push("data:image/png;base64, " + image.image)
+        });
+        // viewModel.ownImageSources(data.images)
+        // console.log(ko.toJS(viewModel.ownImageSources()))
       } else {
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
       }
@@ -160,7 +193,7 @@
       password: ko.observable(''),
       username: ko.observable(''),
     },
-    ownImages: ko.observable(),
+    ownImageSources: ko.observable([]),
     password: ko.observable(''),
     reset: ko.observable(),
     selectedView: ko.observable(''),
@@ -350,7 +383,7 @@
       // if (!data.success) {
       //   alert(data.text)
       // } else {
-        if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
+      if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
       // }
     }).catch(er => {
       // alert('Invalid credentials')
