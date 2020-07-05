@@ -79,18 +79,58 @@
     <!-- /ko -->
     <br>
 
-
-
-
     <!-- <b>Password</b>
+    ko if: settingEditing() != 'password'
     <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
-    <div data-bind="text: loggedInUser.username"></div>
-    <br>
+    <div data-bind="text: '********'"></div>
+    /ko
+    ko if: settingEditing() == 'password'
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
+    /ko
+    <br> -->
+
     <b>Email</b>
+    <!-- ko if: settingEditing() != 'email' -->
     <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
     <div data-bind="text: loggedInUser.email"></div>
+    <!-- /ko -->
+    <!-- ko if: settingEditing() == 'email' -->
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
+    <!-- /ko -->
     <br>
-    <b>Use Location</b>
+
+    <!-- <b>Username</b>
+    ko if: settingEditing() != 'username'
+    <button data-bind="click: selectSettingEditing.bind($data, 'username')">Edit</button>
+    <div data-bind="text: loggedInUser.username"></div>
+    /ko
+    ko if: settingEditing() == 'username'
+    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+    <div>
+      <input data-bind="value: settingEditingWorkspace">
+    </div>
+    /ko
+    <br> -->
+
+
+
+
+    <!-- <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
+    <div data-bind="text: loggedInUser.username"></div>
+    <br> -->
+    
+    <!-- <b>Email</b>
+    <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
+    <div data-bind="text: loggedInUser.email"></div>
+    <br> -->
+    
+    <!-- <b>Use Location</b>
     <button data-bind="click: selectSettingEditing.bind($data, 'useLocation')">Edit</button>
     <div data-bind="text: loggedInUser.username"></div> -->
   </div>
@@ -279,7 +319,7 @@
     async sendNewPassword() {
       var body = JSON.stringify({
         password: viewModel.password(),
-        hash: viewModel.reset(),
+        hash: viewModel.reset() | viewModel.settingEditingWorkspace(),
       })
       // console.log(body)
       await fetch("http://localhost:3000/resetPassword", {
