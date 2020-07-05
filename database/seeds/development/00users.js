@@ -92,7 +92,7 @@ exports.seed = function (knex, Promise) {
           countryName: 'wevfqevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('qwerqwer')).replace(/\//g, ''),
+          hash: await (await hash('wertwert')).replace(/\//g, ''),
           longitude: 73.3947,
           latitude: -84.4936,
           matchable: 1,
