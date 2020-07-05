@@ -99,8 +99,7 @@ export async function updateUserValidator(request) {
   if (user.password) {
     if (!isString(user.password) || !complexPassword(user.password))
       return ('Password is Invalid');
-    else
-      user.password = await hashing(user.password);
+    user.password = await hashing(user.password);
   }
   if (user.firstname)
     if (!isString(user.firstname) || user.firstname.length < 4)
