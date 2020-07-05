@@ -47,7 +47,7 @@ export async function newImageValidator(image) {
     return ('Invalid User.');
   var pictures = await retrieveImagesByUserId(image.userId);
   if (pictures[4])
-    return('max allowed pictures already reached');
+    return ('max allowed pictures already reached');
   if (!image.image || !isString(image.image))
     return ('Invalid image.');
   if (!(typeof image.profilePicture === "boolean"))
@@ -57,10 +57,10 @@ export async function newImageValidator(image) {
 
 export async function deleteImageValidator(image) {
   if (!image.id || !isString(image.id))
-    return('incorrect image id');
+    return ('incorrect image id');
   var picture = await retrieveImageById(image.id);
   if (!picture)
-    return('the picture selected does not exist');
+    return ('the picture selected does not exist');
   return undefined;
 }
 
@@ -76,10 +76,10 @@ export async function newTagValidator(tag) {
 
 export async function deleteTagValidator(tag) {
   if (!tag.id || !isString(tag.id))
-    return('incorrect tag id');
+    return ('Invalid tag.');
   var hashtag = await retrieveTagById(tag.id);
   if (!hashtag)
-    return('the tag selected does not exist');
+    return ('Invalid tag.');
   return undefined;
 }
 
@@ -122,6 +122,12 @@ export async function updateUserValidator(request) {
   if (user.tags)
     if (!isString(user.tags))
       return ('Tags are Invalid');
+  if (user.longitude)
+    if (!isNumeric(user.longitude))
+      return ('Age is Invalid');
+  if (user.latitude)
+    if (!isNumeric(user.latitude))
+      return ('Tags are Invalid');
   return undefined;
 };
 
@@ -140,6 +146,26 @@ export function newMatchValidator(match) {
     return ('AcceptId is Invalid.');
   if (!exists(match.requestId) || !isNumeric(match.requestId))
     return ('RequestId is Invalid.');
+  return undefined;
+}
+
+export function setUserAsMatchableValidator(user, images, tags) {
+  if (user) {
+    if (!exists(user.gender))
+      return ('User needs to set a gender.');
+    if (!exists(user.biography))
+      return ('User needs to create a biography.');
+    if (!exists(user.interest))
+      return ('User needs to set a target interest.');
+  } else
+    return ('User does not exist.');
+  if (images) {
+    if (!profilePictureExists(images))
+      return ('User has not set a profile picture.');
+  } else
+    return ('User has no images.');
+  if (!tags)
+    return ('User has no tags.');
   return undefined;
 }
 
@@ -180,3 +206,10 @@ export function complexPassword(password) {
     return true;
   return false;
 };
+
+export function profilePictureExists(images) {
+  images = images.filter(obj => obj.profilePicture == true);
+  if (images)
+    return (true);
+  return (false);
+}

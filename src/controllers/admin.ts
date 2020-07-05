@@ -1,24 +1,29 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
+import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
+import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
-import { retrieveImagesByUserId, createImage, retrieveImageById, deleteImageById } from '../models/imageModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
-import { createTag, deleteTagById } from '../models/tagModel';
+import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
+
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
+import { checkUserMatchability } from '../services/setUserAsMatchable';
 
 const router = express.Router();
 
 // {"id":"2", "countryName": "South Africa", ...other...}
 router.post('/updateUser', async (request: Request, response: Response) => {
   let errors = await updateUserValidator(request);
-  if (errors)
-    response.send({ text: errors, success: false });
-  else {
+  if (!errors) {
     var user = await modifyUserById(request.body);
-    response.send({ user: user, text: 'User has successfully been updated.', success: true });
-  }
+    if (user) {
+      user = await checkUserMatchability(user.id);
+      response.send({ user: user, text: 'User has successfully been updated.', success: true });
+    } else
+      response.send({ user: user, text: 'User does not exist.', success: false });
+  } else
+    response.send({ text: errors, success: false });
 });
 
 // {"username": "Hallocoos"}
@@ -47,6 +52,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
   if (user)
     var notifications = await retrieveNotificationsByReceiveId(user.id);
   response.send({ notifications: notifications, success: false });
+  await setNotificationsAsSeenByReceiveId(user.id);
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -104,7 +110,7 @@ router.post('/uploadPicture', async (request: Request, response: Response) => {
   let errors = await newImageValidator(request.body);
   if (!errors) {
     await createImage(request.body);
-    response.send({text: 'Image successfully uploaded.', success: true });
+    response.send({ text: 'Image successfully uploaded.', success: true });
   } else
     response.send({ text: errors, success: false });
 });
@@ -114,7 +120,7 @@ router.post('/deletePicture', async (request: Request, response: Response) => {
   let errors = await deleteImageValidator(request.body);
   if (!errors) {
     await deleteImageById(request.body);
-    response.send({text: 'Image successfully deleted.', success: true });
+    response.send({ text: 'Image successfully deleted.', success: true });
   } else
     response.send({ text: errors, success: false });
 });
@@ -123,7 +129,7 @@ router.post('/createTag', async (request: Request, response: Response) => {
   let errors = await newTagValidator(request.body);
   if (!errors) {
     await createTag(request.body);
-    response.send({text: 'Tag Successfully created.', success: true });
+    response.send({ text: 'Tag Successfully created.', success: true });
   } else
     response.send({ text: errors, success: false });
 });
@@ -132,22 +138,77 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
   let errors = await deleteTagValidator(request.body);
   if (!errors) {
     await deleteTagById(request.body);
-    response.send({text: 'Tag successfully deleted.', success: true });
+    response.send({ text: 'Tag successfully deleted.', success: true });
   } else
     response.send({ text: errors, success: false });
 });
 
-// { "id": 1, "max": 0, "min": 10000 }
+/*
+  id: 1,
+  request.body = {
+    filters: {
+      ageMax: integer,
+      ageMin: integer,
+      fameMin: integer,
+      fameMax: integer
+      // ===================== Not Implemented =====================
+      // , distanceMin: integer,
+      // distanceMax: integer,
+      // tags: [ cat, dog, food, apple]
+      // ===================== Not Implemented =====================
+    },
+    sorting: {
+      category: string <"age"/"fame"/"distance"/"tags">,
+      direction: string <"ascending"/"descending">
+      // ===================== Not Implemented =====================
+      // , // tagsInCommon: integer,
+      // ===================== Not Implemented =====================
+    }
+  }
+
+  OR
+
+  request.body = {
+    filters: undefined,
+    sorting: undefined
+  }
+*/
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
-  // Distance
   let user = await retrieveUserById(request.body.id);
-  if (user) {
-    let allUsers = await calculateDistance(user);
-    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
-  } else
-    response.send({ text: 'No matches have been found.', success: false });
-  // Tags - create model - select * from users inner join `matches` on users.id = matches.acceptId; (Basic Query)
-  // Fame rating
+  let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.sorting, request.body.id, user.interest, user.gender);
+  // Distance Calculations
+  matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
+  // Adding tags to user Objects
+  var userIds = new Array;
+  var j, i;
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].tags = new Array;
+  }
+  // Append Tags to users
+  let userTags = await retrieveTagsByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userTags[j]; j++) {
+      if (matchableUsers[i].id == userTags[j].userId) {
+        matchableUsers[i].tags.push(userTags[j].tag);
+      }
+    }
+  }
+  // Append Images to users
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].images = new Array;
+  }
+  let userImages = await retrieveImagesByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userImages[j]; j++) {
+      if (matchableUsers[i].id == userImages[j].userId) {
+        matchableUsers[i].images.push(userImages[j].image);
+      }
+    }
+  }
+  response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+
 });
 
 export default router;

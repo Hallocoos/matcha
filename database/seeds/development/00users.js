@@ -26,13 +26,13 @@ exports.seed = function (knex, Promise) {
           gender: 'male',
           interest: 'female',
           age: '20',
-          tags: 'some',
           countryName: 'South Africa',
           city: 'Cape Town',
           fame: 0,
           hash: await (await hash('Hallocoos')).replace(/\//g, ''),
           longitude: 31.2836,
           latitude: -32.2541,
+          matchable: 1,
           verified: 1
         });
     })
@@ -47,13 +47,14 @@ exports.seed = function (knex, Promise) {
           gender: 'female',
           interest: 'male',
           age: '21',
-          tags: 'food',
           countryName: 'asdkjf',
           city: 'zxcvzxc',
-          fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          fame: 1000,
+          hash: await (await hash('asdfasdf')).replace(/\//g, ''),
           longitude: 17.0401,
-          latitude: -32.1827
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
         });
     })
     .then(async function () {
@@ -67,13 +68,35 @@ exports.seed = function (knex, Promise) {
           gender: 'male',
           interest: 'male',
           age: '22',
-          tags: 'sucks',
+          countryName: 'wevfqevf',
+          city: 'wevfqwevfq',
+          fame: 1,
+          hash: await (await hash('qwerqwer')).replace(/\//g, ''),
+          longitude: 73.3947,
+          latitude: -84.4936,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'wertwert',
+          password: await hash('wertwert'),
+          firstname: 'wertwert',
+          lastname: 'wertwert',
+          email: 'wert@mailinator.com',
+          gender: 'male',
+          interest: 'male',
+          age: '22',
           countryName: 'wevfqevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          hash: await (await hash('wertwert')).replace(/\//g, ''),
           longitude: 73.3947,
-          latitude: -84.4936
+          latitude: -84.4936,
+          matchable: 1,
+          verified: 1
         });
     })
     .then(async function () {
@@ -87,34 +110,56 @@ exports.seed = function (knex, Promise) {
           gender: 'female',
           interest: 'female',
           age: '20',
-          tags: 'balls',
           countryName: 'wevfqwevf',
           city: 'wevfqwevfq',
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          hash: await (await hash('zxcvzxcv')).replace(/\//g, ''),
           longitude: 25.3639,
-          latitude: -15.3658
+          latitude: -15.3658,
+          matchable: 1,
+          verified: 1
         });
     })
     .then(async function () {
       return knex('users')
         .insert({
-          age: '20',
-          city: 'uiop',
-          countryName: 'uiop',
-          email: 'uiop@mailinator.com',
-          fame: 0,
-          firstname: 'uiop',
-          gender: 'female',
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
-          interest: 'female',
-          lastname: 'uiop',
-          latitude: -75.3654,
-          longitude: 85.3654,
-          password: await hash('uiop'),
-          tags: 'balls',
           username: 'uiop',
-          verified: 1, 
+          password: await hash('uiop'),
+          firstname: 'uiop',
+          lastname: 'uiop',
+          email: 'uiop@mailinator.com',
+          gender: 'female',
+          interest: 'female',
+          age: '20',
+          countryName: 'uiop',
+          city: 'uiop',
+          fame: 0,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 85.3654,
+          latitude: -75.3654,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'sdfgsdfg',
+          password: await hash('sdfgsdfg'),
+          firstname: 'sdfgsdf',
+          lastname: 'sdfgsdfg',
+          email: 'sdfg@mailinator.com',
+          gender: 'female',
+          interest: 'male',
+          age: '21',
+          countryName: 'sdfgsdfg',
+          city: 'sdfgsdfg',
+          fame: 110,
+          hash: await (await hash('sdfgsdfg')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
         });
     })
 };

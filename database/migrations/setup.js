@@ -19,7 +19,10 @@ exports.up = function (knex, Promise) {
       table.boolean('verified').defaultTo(false)
       table.integer('fame').defaultTo(0)
       table.string('hash').notNullable()
+      table.boolean('matchable').defaultTo(false)
       table.boolean('locationTracking').defaultTo(true)
+      table.boolean('online').defaultTo(false)
+      table.timestamp('lastSeen').defaultTo(knex.fn.now())
     })
     .createTable('images', function (table) {
       table.increments('id').primary()
