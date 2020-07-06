@@ -9,7 +9,7 @@ import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, d
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
-import * as _ from 'underscore'; 
+import * as _ from 'underscore';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 router.post('/profile', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
   if (user) {
-    var images = await retrieveImagesByUserId(user.id);
+    const images = await retrieveImagesByUserId(user.id);
     await incrementUsersFameRating(user.id, 1);
     response.send({ user: user, images: images });
   } else
@@ -210,10 +210,20 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   }
   // Sort by category is specified direction
   if (request.body.sorting.direction == 'ascending')
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
   else
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category ).reverse();
-  response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
+  // Filter out users by distance
+  matchableUsers = matchableUsers.filter(obj => (
+    obj.distance >= request.body.filters.distanceMin && obj.distance <= request.body.filters.distanceMax));
+  console.log(matchableUsers);
+  // Count similar tags
+  // Filter out by amount of correlation tags
+  // Determine reponse based on whether any users still exist after filtering
+  if (matchableUsers[0])
+    response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+  else
+    response.send({ matches: matchableUsers, text: 'No matches have been found.', success: true });
 });
 
 export default router;
