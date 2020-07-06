@@ -50,8 +50,8 @@ export async function newImageValidator(image) {
     return ('max allowed pictures already reached');
   if (!image.image || !isString(image.image))
     return ('Invalid image.');
-  if (!(typeof image.profilePicture === "boolean"))
-    return ('Profile picture not boolean.');
+  if (!(image.profilePicture == 1 || image.profilePicture == 0))
+    return ('Profile picture not valid.');
   return undefined;
 }
 
