@@ -27,7 +27,7 @@
           <input data-bind="value: username">
         </td>
         <td>
-          <input data-bind="value: password">
+          <input type="password" data-bind="value: password">
         </td>
         <td>
           <button data-bind="click: submitCreds">Log In</button>
@@ -130,11 +130,11 @@
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
         <input data-bind="value: settingEditingWorkspace" list="genderList">
-        <datalist id="genderList">
-          <option value="other">
-          <option value="female">
-          <option value="male">
-        </datalist>
+        <select id="genderList">
+          <option value="other">other</option>
+          <option value="female">female</option>
+          <option value="male">male</option>
+        </select>
       </div>
       <!-- /ko -->
       <br>
@@ -161,11 +161,11 @@
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
         <input data-bind="value: settingEditingWorkspace" list="genderList">
-        <datalist id="genderList">
-          <option value="other">
-          <option value="female">
-          <option value="male">
-        </datalist>
+        <select id="genderList">
+          <option value="other">other</option>
+          <option value="female">female</option>
+          <option value="male">male</option>
+        </select>
       </div>
       <!-- /ko -->
       <br>
@@ -287,7 +287,7 @@
 
   <div data-bind="if: selectedView() == 'reset'">
     <h3>Please enter your new password:</h3>
-    <input data-bind="value: password">
+    <input type="password" data-bind="value: password">
     <button data-bind="click: sendNewPassword">Reset Password</button>
     <div><button data-bind="click: logOut">Return to Log In</button></div>
   </div>
@@ -310,19 +310,18 @@
     <div>Age:</div>
     <input data-bind="value: newRegistration.age">
     <div>Gender:</div>
-    <input data-bind="value: newRegistration.gender" list="genderList">
-    <datalist id="genderList">
-      <option value="other">
-      <option value="female">
-      <option value="male">
-    </datalist>
+    <select id="genderList" data-bind="value: newRegistration.gender" list="genderList">
+      <option value="other">other</option>
+      <option value="female">female</option>
+      <option value="male">male</option>
+    </select>
     <div>Email:</div>
     <input data-bind="value: newRegistration.email">
     <div>Password:</div>
-    <input data-bind="value: newRegistration.password">
-    <button data-bind="click: sendNewRegistrationToDb">Register</button>
+    <input type="password" data-bind="value: newRegistration.password">
     <p> </p>
     <div>
+      <button data-bind="click: sendNewRegistrationToDb">Register</button>
       <button data-bind="click: logOut">Return to Log In</button>
     </div>
   </div>
