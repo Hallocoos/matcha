@@ -38,7 +38,7 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiver: userProfile.username,
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
-        message: userProfile.username + '\'s profile has been viewed by ' + userViewer.username
+        message: userViewer.username + ' had viewed your profile'
       }
       await addNotification(body);
       await incrementUsersFameRating(userProfile.id, 1);
@@ -96,6 +96,14 @@ router.post('/createMatch', async (request: Request, response: Response) => {
       request.body.requester = requester.username;
       await incrementUsersFameRating(accepter.id, 5);
       await addMatch(request.body);
+      let body = {
+        sender: requester.username,
+        receiver: accepter.username,
+        sendId: request.body.requestId,
+        receiveId: request.body.acceptId,
+        message: requester.username + ' has liked your profile'
+      }
+      await addNotification(body);
       response.send({ text: 'The recipient will be notified.', success: true });
     }
   } else
