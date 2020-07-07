@@ -222,6 +222,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       }
     }
   }
+  // remove blocked users and remove users that have already been matched with
   // Sort by category is specified direction
   if (request.body.sorting.direction == 'ascending')
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
