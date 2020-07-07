@@ -12,7 +12,6 @@ export async function sendNewUserEmail(data) {
     logger: true,
     debug: true,
     tls: {
-      // do not fail on invalid certs
       rejectUnauthorized: false
     }
   });
@@ -43,7 +42,6 @@ export async function resetUserPassword(email, hash) {
     logger: true,
     debug: true,
     tls: {
-      // do not fail on invalid certs
       rejectUnauthorized: false
     }
   });
