@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { modifyUserPasswordByHash, verifyUserByHash, retrieveUserByUsername, retrieveUserByEmail, addUser, hashing, User } from '../models/userModel';
+import { setUserAsOnlineStatus, modifyUserPasswordByHash, verifyUserByHash, retrieveUserByUsername, retrieveUserByEmail, addUser, hashing, User } from '../models/userModel';
 import { createUserValidator, resetPasswordValidator, userLoginValidator } from '../services/validation';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
@@ -9,7 +9,7 @@ import { locateUser } from "../helpers/locator";
 
 const router = express.Router();
 
-// { "username": "qwerqwer", "password": "asdfasdf", "email": "asdf@asdf.asdf", "firstname": "asdfasdf", "lastname": "asdfasdf", "gender": "male/female/other" }
+// { "username": "qwerqwer", "password": "asdfasdf", "email": "asdf@asdf.asdf", "firstname": "asdfasdf", "lastname": "asdfasdf", "gender": "male/female/other" "age": "94"}
 router.post('/createUser', async (request: Request, response: Response) => {
   let errors = await createUserValidator(request);
   if (!errors) {
@@ -29,17 +29,24 @@ router.post('/login', async (request: Request, response: Response) => {
   if (errors)
     response.send({ text: errors, success: false });
   else {
-    var user = new User(await retrieveUserByUsername(request.body.username));
+    var user = await retrieveUserByUsername(request.body.username);
     if (user && await bcrypt.compare(request.body.password, user.password)) {
       if (user.verified) {
         let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
         response.json({ token: token, text: 'Login was successful.', success: true });
+        await setUserAsOnlineStatus(user.id, true);
         await locateUser(user).catch(e => response.send({ text: e, success: false }));
       } else
         response.send({ text: 'Please verify your account via your associated email account.', success: false });
     } else
       response.send({ text: 'Username or Password was incorrect.', success: false });
   }
+});
+
+// { id: 1 }
+router.post('/logout', async (request: Request, response: Response) => {
+  await setUserAsOnlineStatus(request.body.id, false);
+  response.send({ text: 'Username has been logged out.', success: true });
 });
 
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6

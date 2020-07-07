@@ -1,4 +1,6 @@
-import { retrieveUserByUsername, retrieveUserByEmail } from '../models/userModel';
+import { retrieveUserByUsername, retrieveUserByEmail, hashing, retrieveUserById } from '../models/userModel';
+import { retrieveImageById, retrieveImagesByUserId } from '../models/imageModel';
+import { retrieveTagById } from '../models/tagModel';
 
 export async function createUserValidator(request) {
   const user = request.body;
@@ -38,6 +40,49 @@ export function resetPasswordValidator(data) {
   return undefined;
 }
 
+export async function newImageValidator(image) {
+  if (image.userId && isNumeric(image.userId))
+    var user = await retrieveUserById(image.userId);
+  if (!user)
+    return ('Invalid User.');
+  var pictures = await retrieveImagesByUserId(image.userId);
+  if (pictures[4])
+    return ('max allowed pictures already reached');
+  if (!image.image || !isString(image.image))
+    return ('Invalid image.');
+  if (!(image.profilePicture == 1 || image.profilePicture == 0))
+    return ('Profile picture not valid.');
+  return undefined;
+}
+
+export async function deleteImageValidator(image) {
+  if (!image.id || !isString(image.id))
+    return ('incorrect image id');
+  var picture = await retrieveImageById(image.id);
+  if (!picture)
+    return ('the picture selected does not exist');
+  return undefined;
+}
+
+export async function newTagValidator(tag) {
+  if (tag.userId && isNumeric(tag.userId))
+    var user = await retrieveUserById(tag.userId);
+  if (!user)
+    return ('Invalid User.');
+  if (!tag.tag || !isString(tag.tag))
+    return ('Invalid tag.');
+  return undefined;
+}
+
+export async function deleteTagValidator(tag) {
+  if (!tag.id || !isString(tag.id))
+    return ('Invalid tag.');
+  var hashtag = await retrieveTagById(tag.id);
+  if (!hashtag)
+    return ('Invalid tag.');
+  return undefined;
+}
+
 export async function updateUserValidator(request) {
   const user = request.body;
   if (user.username)
@@ -51,9 +96,11 @@ export async function updateUserValidator(request) {
   if (user.username)
     if (!isString(user.username) && user.username.length < 4)
       return ('Username is Invalid');
-  if (user.password)
+  if (user.password) {
     if (!isString(user.password) || !complexPassword(user.password))
       return ('Password is Invalid');
+    user.password = await hashing(user.password);
+  }
   if (user.firstname)
     if (!isString(user.firstname) || user.firstname.length < 4)
       return ('First name is Invalid');
@@ -75,6 +122,12 @@ export async function updateUserValidator(request) {
   if (user.tags)
     if (!isString(user.tags))
       return ('Tags are Invalid');
+  if (user.longitude)
+    if (user.longitude < -180 || user.longitude > 180)
+      return ('Longitude is Invalid');
+  if (user.latitude)
+    if (user.latitude < -90 || user.latitude > 90)
+      return ('Latitude are Invalid');
   return undefined;
 };
 
@@ -93,6 +146,26 @@ export function newMatchValidator(match) {
     return ('AcceptId is Invalid.');
   if (!exists(match.requestId) || !isNumeric(match.requestId))
     return ('RequestId is Invalid.');
+  return undefined;
+}
+
+export function setUserAsMatchableValidator(user, images, tags) {
+  if (user) {
+    if (!exists(user.gender))
+      return ('User needs to set a gender.');
+    if (!exists(user.biography))
+      return ('User needs to create a biography.');
+    if (!exists(user.interest))
+      return ('User needs to set a target interest.');
+  } else
+    return ('User does not exist.');
+  if (images) {
+    if (!profilePictureExists(images))
+      return ('User has not set a profile picture.');
+  } else
+    return ('User has no images.');
+  if (!tags)
+    return ('User has no tags.');
   return undefined;
 }
 
@@ -133,3 +206,10 @@ export function complexPassword(password) {
     return true;
   return false;
 };
+
+export function profilePictureExists(images) {
+  images = images.filter(obj => obj.profilePicture == true);
+  if (images)
+    return (true);
+  return (false);
+}

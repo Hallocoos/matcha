@@ -1,33 +1,42 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
 import {
   modifyUserById,
+  retrieveUsersByGender,
   retrieveUserByUsername,
   retrieveUserById,
+  retrieveUsers,
   incrementUsersFameRating,
   retrieveUserByHash,
   deleteUsersImagesById,
   deleteUsersMatchesById,
   deleteUsersNotificationsById,
   deleteUserByHash } from '../models/userModel';
+import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
-import { retrieveImagesByUserId } from '../models/imageModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
+import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
+
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import {reportUser} from "../helpers/email";
+import { checkUserMatchability } from '../services/setUserAsMatchable';
+import * as _ from 'underscore';
 
 const router = express.Router();
 
 // {"id":"2", "countryName": "South Africa", ...other...}
 router.post('/updateUser', async (request: Request, response: Response) => {
   let errors = await updateUserValidator(request);
-  if (errors)
-    response.send({ text: errors, success: false });
-  else {
+  if (!errors) {
     var user = await modifyUserById(request.body);
-    response.send({ user: user, text: 'User has successfully been updated.', success: true });
-  }
+    if (user) {
+      user = await checkUserMatchability(user.id);
+      response.send({ user: user, text: 'User has successfully been updated.', success: true });
+    } else
+      response.send({ user: user, text: 'User does not exist.', success: false });
+  } else
+    response.send({ text: errors, success: false });
 });
 
 // {"username": "Hallocoos"}
@@ -56,6 +65,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
   if (user)
     var notifications = await retrieveNotificationsByReceiveId(user.id);
   response.send({ notifications: notifications, success: false });
+  await setNotificationsAsSeenByReceiveId(user.id);
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -108,30 +118,117 @@ router.post('/getMatches', async (request: Request, response: Response) => {
     response.send({ text: 'Id is Invalid.', success: false });
 });
 
-// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: true }
+// { userId: 1, image: <base64 string> "nhvf4qnhnhvqvfqnuhqwevfnuh", profilePicture: false }
 router.post('/uploadPicture', async (request: Request, response: Response) => {
-//   do error checks - let errors = idValidator(request.body.id);
-//   error protection - if (!errors)
-//     if (profilePicture)
-//       setUserImagesToNotProfilePictures();
-//     createImage(); - await addMatch(request.body);
-//     send a success response - response.send({ text: 'The recipient will be notified.', success: true });
-//   else
-//     send error messages - response.send({ text: 'Id is Invalid.', success: false });
-  response.send({ text: '', success: true });
+  let errors = await newImageValidator(request.body);
+  if (!errors) {
+    await createImage(request.body);
+    response.send({ text: 'Image successfully uploaded.', success: true });
+  } else
+    response.send({ text: errors, success: false });
 });
 
-// { "id": 1, "max": 0, "min": 10000 }
-router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
-  // Distance
-  let user = await retrieveUserById(request.body.id);
-  if (user) {
-    let allUsers = await calculateDistance(user);
-    response.send({ matches: allUsers, text: 'Matches have been found.', success: true });
+// { "id": "1" }
+router.post('/deletePicture', async (request: Request, response: Response) => {
+  let errors = await deleteImageValidator(request.body);
+  if (!errors) {
+    await deleteImageById(request.body);
+    response.send({ text: 'Image successfully deleted.', success: true });
   } else
-    response.send({ text: 'No matches have been found.', success: false });
-  // Tags - create model - select * from users inner join `matches` on users.id = matches.acceptId; (Basic Query)
-  // Fame rating
+    response.send({ text: errors, success: false });
+});
+
+router.post('/createTag', async (request: Request, response: Response) => {
+  let errors = await newTagValidator(request.body);
+  if (!errors) {
+    await createTag(request.body);
+    response.send({ text: 'Tag Successfully created.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+router.post('/deleteTag', async (request: Request, response: Response) => {
+  let errors = await deleteTagValidator(request.body);
+  if (!errors) {
+    await deleteTagById(request.body);
+    response.send({ text: 'Tag successfully deleted.', success: true });
+  } else
+    response.send({ text: errors, success: false });
+});
+
+/*
+  id: 1,
+  request.body = {
+    filters: {
+      ageMax: integer,
+      ageMin: integer,
+      fameMin: integer,
+      fameMax: integer
+      // ===================== Not Implemented =====================
+      // , distanceMin: integer,
+      // distanceMax: integer,
+      // tags: [ cat, dog, food, apple]
+      // ===================== Not Implemented =====================
+    },
+    sorting: {
+      category: string <"age"/"fame"/"distance"/"tags">,
+      direction: string <"ascending"/"descending">
+      // ===================== Not Implemented =====================
+      // , // tagsInCommon: integer,
+      // ===================== Not Implemented =====================
+    }
+  }
+
+  OR
+
+  request.body = {
+    filters: undefined,
+    sorting: undefined
+  }
+*/
+router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
+  let user = await retrieveUserById(request.body.id);
+  let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
+  // Distance Calculations
+  matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
+  // Adding tags to user Objects
+  var userIds = new Array;
+  var j, i;
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].tags = new Array;
+  }
+  // Append Tags to users
+  let userTags = await retrieveTagsByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userTags[j]; j++) {
+      if (matchableUsers[i].id == userTags[j].userId) {
+        matchableUsers[i].tags.push(userTags[j].tag);
+      }
+    }
+  }
+  // Append Images to users
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].images = new Array;
+  }
+  let userImages = await retrieveImagesByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userImages[j]; j++) {
+      if (matchableUsers[i].id == userImages[j].userId) {
+        matchableUsers[i].images.push(userImages[j].image);
+      }
+    }
+  }
+  // Sort by category is specified direction
+  if (request.body.sorting.direction == 'ascending')
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
+  else
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category ).reverse();
+  if (matchableUsers[0])
+    response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+  else
+    response.send({ matches: matchableUsers, text: 'Sorry, no new matches at this time', success: false });
 });
 // {"id":2} -reports 'asdf'
 router.post('/reportFalseAccount', async(request: Request, response: Response) => {

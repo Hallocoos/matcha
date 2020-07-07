@@ -29,8 +29,8 @@ app.use('/matcha', express.static('src/view'))
 
 
 // app.get('/matcha', async (request: Request, response: Response) => {
-//   // validation();
-//   // console.log('/testRoute');
+//   validation();
+//   console.log('/testRoute');
 //   response.sendFile(path.resolve('src/view/index.html'));
 // });
 

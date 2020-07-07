@@ -19,10 +19,14 @@ exports.up = function (knex, Promise) {
       table.boolean('verified').defaultTo(false)
       table.integer('fame').defaultTo(0)
       table.string('hash').notNullable()
+      table.boolean('matchable').defaultTo(false)
+      table.boolean('locationTracking').defaultTo(true)
+      table.boolean('online').defaultTo(false)
+      table.timestamp('lastSeen').defaultTo(knex.fn.now())
     })
     .createTable('images', function (table) {
       table.increments('id').primary()
-      table.string('image').notNullable()
+      table.text('image','longtext').notNullable()
       table.boolean('profilePicture').defaultTo(false)
       table.integer('userId').unsigned().references('id').inTable('users')
     })
@@ -44,13 +48,19 @@ exports.up = function (knex, Promise) {
       table.string('message').notNullable()
       table.timestamp('createdAt').defaultTo(knex.fn.now())
       table.boolean('seen').defaultTo(false)
+    })
+    .createTable('tags', function (table) {
+      table.increments('id').primary()
+      table.integer('userId').unsigned().references('id').inTable('users')
+      table.string('tag').notNullable()
     }).then();
 };
 
 exports.down = function (knex, Promise) {
   return knex.schema
-    .dropTable('notifications')
-    .dropTable('matches')
-    .dropTable('images')
-    .dropTable('users').then();
+  .dropTable('tags')
+  .dropTable('notifications')
+  .dropTable('matches')
+  .dropTable('images')
+  .dropTable('users').then();
 };
