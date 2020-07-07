@@ -40,10 +40,7 @@ export async function resetUserPassword(email, hash) {
       pass: process.env.emailPass
     },
     logger: true,
-    debug: true,
-    tls: {
-      rejectUnauthorized: false
-    }
+    debug: true
   });
   var mailOptions = {
     from: process.env.emailUser,
@@ -52,7 +49,6 @@ export async function resetUserPassword(email, hash) {
     text: 'A password reset has been requested on this account!\n' +
       'Please visit localhost:3000/matcha?reset=' + hash + ' to reset your password.'
   };
-  console.log(transporter);
   return await transporter.sendMail(mailOptions, async function (error, info) {
     if (error)
       return (false);
