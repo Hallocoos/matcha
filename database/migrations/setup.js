@@ -26,7 +26,7 @@ exports.up = function (knex, Promise) {
     })
     .createTable('images', function (table) {
       table.increments('id').primary()
-      table.string('image').notNullable()
+      table.text('image','longtext').notNullable()
       table.boolean('profilePicture').defaultTo(false)
       table.integer('userId').unsigned().references('id').inTable('users')
     })
