@@ -223,7 +223,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   if (matchableUsers[0])
     response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
   else
-    response.send({ matches: matchableUsers, text: 'No matches have been found.', success: true });
+    response.send({ text: 'No matches have been found.', success: false });
 });
 
 export default router;
