@@ -46,16 +46,18 @@ export async function retrieveUsers(): Promise<User[]> {
  *  @Incoming Params: body = { interest = <string> }
 */
 export async function retrieveUsersByGender(filters, id, interest, gender) {
+  var preference = [interest];
+  if (interest == 'any')
+    preference = ['female','male','other'];
+  var sex = [gender, 'any'];
+  if (gender == 'other')
+    sex = ['any'];
   return knex.select()
     .from('users')
-    .where({
-      gender: interest,
-      interest: gender
-    })
-    .where('age', '>', filters.ageMin || 17)
-    .where('age', '<', filters.ageMax || 100)
-    .where('fame', '>', filters.fameMin || -1)
-    .where('fame', '<', filters.fameMax || 100000)
+    .whereIn('gender', preference)
+    .whereIn('interest', sex)
+    .whereBetween('age', [filters.ageMin || 17, filters.ageMax || 100])
+    .whereBetween('fame', [filters.fameMin || -1, filters.fameMax || 100000])
     .where('matchable', 1)
     .whereNot('id', id)
     .then(function (result) {
