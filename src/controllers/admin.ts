@@ -213,7 +213,10 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
   else
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category ).reverse();
-  response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+  if (matchableUsers[0])
+    response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+  else
+    response.send({ matches: matchableUsers, text: 'Sorry, no new matches at this time', success: false });
 });
 
 export default router;
