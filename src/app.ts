@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv';
 import * as express from 'express';
 import { Request, Response } from 'express';
 import { verifyToken, Roles } from './services/jwt';
-import * as path from 'path';
 
 const app = express();
 dotenv.config();
@@ -20,7 +19,7 @@ function loggerMiddleware(request: Request, response: Response, next): void {
     console.info(`${date} - ${request.method} ${request.path}`);
   }
   next();
-};
+}
 app.use(loggerMiddleware);
 
 import auth from './controllers/auth';

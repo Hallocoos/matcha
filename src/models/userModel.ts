@@ -59,10 +59,9 @@ export async function verifyUserByHash(hash: string): Promise<User> {
     });
 };
 
-export async function deleteUserById(userId) {
-  return knex('notifications')
-      .where('sendId', userId)
-      .orWhere('receiveId', userId)
+export async function deleteUserByHash(hash) {
+  return knex('users')
+      .where('hash', hash)
       .del()
       .then(function (result) {
         return (result);

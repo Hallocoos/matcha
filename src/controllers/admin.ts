@@ -7,8 +7,10 @@ import {
   retrieveUserById,
   incrementUsersFameRating,
   retrieveUserByHash,
-  deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserById
-} from '../models/userModel';
+  deleteUsersImagesById,
+  deleteUsersMatchesById,
+  deleteUsersNotificationsById,
+  deleteUserByHash } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification } from '../models/notificationModel';
@@ -151,7 +153,7 @@ router.post('/terminate/:hash', async(request: Request, response:Response) => {
   await deleteUsersImagesById(user.id)
   await deleteUsersMatchesById(user.id)
   await deleteUsersNotificationsById(user.id)
-  await deleteUserById(user.id)
+  await deleteUserByHash(request.params.hash)
   if (user)
     response.send({ text: 'User has been deleted.', success: true });
   else
