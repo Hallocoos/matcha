@@ -46,7 +46,7 @@ export async function retrieveUsers(): Promise<User[]> {
  *  @Incoming Params: body = { interest = <string> }
 */
 export async function retrieveUsersByGender(filters, id, interest, gender) {
-  return knex.select('username', 'firstname', 'lastname', 'age', 'gender', 'biography', 'interest', 'tags', 'countryName', 'city', 'fame')
+  return knex.select()
     .from('users')
     .where({
       gender: interest,
