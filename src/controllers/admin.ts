@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
+import { addMatch, retrieveMatchByIds, retrieveMatchesById, acceptMatch } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
@@ -89,9 +89,21 @@ router.post('/createMatch', async (request: Request, response: Response) => {
     let match = await retrieveMatchByIds(accepter.id, requester.id);
     if (!accepter.username && !requester.username)
       response.send({ text: 'The user you have tried to match with does not exist.', success: false });
-    else if (match)
-      response.send({ text: 'Users are already matched.', success: false });
-    else {
+    else if (match && match.acceptId === requester.id && match.requestId === accepter.id) {
+      await acceptMatch(accepter.id, requester.id);
+      let body = {
+        sender: accepter.username,
+        receiver: requester.username,
+        sendId: accepter.id,
+        receiveId: requester.id,
+        message: requester.username + ' has liked you back.'
+      }
+      await addNotification(body);
+      await incrementUsersFameRating(accepter.id, 5);
+      response.send({ text: 'Users have been matched.', success: true });
+    } else if (match && match.acceptId === accepter.id && match.requestId === requester.id) {
+      response.send({ text: 'Users have already been suggested to match.', success: false });
+    } else {
       request.body.accepter = accepter.username;
       request.body.requester = requester.username;
       await incrementUsersFameRating(accepter.id, 5);
