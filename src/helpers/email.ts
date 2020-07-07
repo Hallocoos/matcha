@@ -8,6 +8,9 @@ export function sendNewUserEmail(data) {
     auth: {
       user: process.env.emailUser,
       pass: process.env.emailPass
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
   var mailOptions = {
@@ -32,6 +35,9 @@ export function resetUserPassword(email, hash) {
     auth: {
       user: process.env.emailUser,
       pass: process.env.emailPass
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
   var mailOptions = {
