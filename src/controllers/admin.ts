@@ -27,13 +27,24 @@ router.post('/updateUser', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
-// {"username": "Hallocoos"}
+// {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
-  const user = await retrieveUserByUsername(request.body.username);
-  if (user) {
-    var images = await retrieveImagesByUserId(user.id);
-    await incrementUsersFameRating(user.id, 1);
-    response.send({ user: user, images: images });
+  const userProfile = await retrieveUserById(request.body.profileId);
+  if (userProfile) {
+    if (request.body.viewerId) {
+      const userViewer = await retrieveUserById(request.body.viewerId);
+      const body = {
+        sender: userViewer.username,
+        receiver: userProfile.username,
+        sendId: request.body.viewerId,
+        receiveId: request.body.profileId,
+        message: userProfile.username + '\'s profile has been viewed by ' + userViewer.username
+      }
+      await addNotification(body);
+      await incrementUsersFameRating(userProfile.id, 1);
+    }
+    var images = await retrieveImagesByUserId(userProfile.id);
+    response.send({ user: userProfile, images: images });
   } else
     response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
 });
