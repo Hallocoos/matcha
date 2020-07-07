@@ -59,44 +59,42 @@ export async function verifyUserByHash(hash: string): Promise<User> {
     });
 };
 
-
-export async function deleteUserByHash(hash: string): Promise<User> {
+export async function deleteUserById(userId) {
   return knex('notifications')
-      .where('notifications', hash)
+      .where('sendId', userId)
+      .orWhere('receiveId', userId)
       .del()
-      .returning("hash: "+hash)
-      .then(deleteUsersImagesByHash(hash))
-      .catch(function(error) {
-        console.log(error);
+      .then(function (result) {
+        return (result);
+    });
+};
+
+export async function deleteUsersImagesById(userId) {
+  return knex('images')
+      .where('userId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
       });
 };
 
-export async function deleteUsersImagesByHash(hash: String): Promise<User> {
-  return knex('images')
-      .where('hash', hash)
-      .del().then(deleteUsersMatchesByHash(hash))
-      .catch(function (error) {
-        console.log(error);
-      });
-}
-
-export async function deleteUsersMatchesByHash(hash: String): Promise<User> {
+export async function deleteUsersMatchesById(userId) {
   return knex('matches')
-      .where('hash', hash)
-      .del().then(deleteUsersNotificationsByHash(hash))
-      .catch(function (error) {
-        console.log(error);
+      .where('requestId', userId)
+      .orWhere('acceptId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
       });
-}
+};
 
-export async function deleteUsersNotificationsByHash(hash: String): Promise<User> {
-  return knex('users')
-      .where('hash', hash)
-      .del().then(function () {
-        console.log("it worked [images]")
-      })
-      .catch(function (error) {
-        console.log(error);
+export async function deleteUsersNotificationsById(userId) {
+  return knex('notifications')
+      .where('sendId', userId)
+      .orWhere('receiveId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
       });
 }
 

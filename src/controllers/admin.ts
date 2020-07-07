@@ -6,7 +6,8 @@ import {
   retrieveUserByUsername,
   retrieveUserById,
   incrementUsersFameRating,
-  deleteUserByHash
+  retrieveUserByHash,
+  deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserById
 } from '../models/userModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId } from '../models/imageModel';
@@ -145,11 +146,16 @@ router.post('/reportFalseAccount', async(request: Request, response: Response) =
 router.post('/terminate/:hash', async(request: Request, response:Response) => {
 
   // const user = await deleteUser(request.params.hash)
-  const user = await deleteUserByHash(request.params.hash);
+  const user = await retrieveUserByHash(request.params.hash);
+
+  await deleteUsersImagesById(user.id)
+  await deleteUsersMatchesById(user.id)
+  await deleteUsersNotificationsById(user.id)
+  await deleteUserById(user.id)
   if (user)
-    response.send({ text: 'User has successfully been verified.', success: true });
+    response.send({ text: 'User has been deleted.', success: true });
   else
-    response.send({ text: 'User has not been verified.', success: false });
+    response.send({ text: 'User has not been deleted.', success: false });
 });
 
 export default router;
