@@ -149,13 +149,34 @@ exports.seed = function (knex, Promise) {
           firstname: 'sdfgsdf',
           lastname: 'sdfgsdfg',
           email: 'sdfg@mailinator.com',
-          gender: 'female',
-          interest: 'male',
+          gender: 'other',
+          interest: 'any',
           age: '21',
           countryName: 'sdfgsdfg',
           city: 'sdfgsdfg',
           fame: 110,
           hash: await (await hash('sdfgsdfg')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'rtyurtyu',
+          password: await hash('rtyurtyu'),
+          firstname: 'rtyurtyu',
+          lastname: 'rtyurtyu',
+          email: 'rtyu@mailinator.com',
+          gender: 'other',
+          interest: 'any',
+          age: '21',
+          countryName: 'rtyurtyu',
+          city: 'rtyurtyu',
+          fame: 110,
+          hash: await (await hash('rtyurtyu')).replace(/\//g, ''),
           longitude: 17.0401,
           latitude: -32.1827,
           matchable: 1,

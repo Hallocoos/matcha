@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 
-export function sendNewUserEmail(data) {
-  var transporter = nodemailer.createTransport({
+export async function sendNewUserEmail(data) {
+  var transporter = await nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
@@ -17,7 +17,7 @@ export function sendNewUserEmail(data) {
     text: 'Your account has been created!\n' +
       'Please visit localhost:3000/matcha?verify=' + data.hash + ' to verify your account.'
   };
-  transporter.sendMail(mailOptions, function (error, info) {
+  await transporter.sendMail(mailOptions, function (error, info) {
     if (error)
       return (error);
     console.log('Mail sent: ' + info.response);

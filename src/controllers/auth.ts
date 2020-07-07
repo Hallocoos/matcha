@@ -15,9 +15,9 @@ router.post('/createUser', async (request: Request, response: Response) => {
   if (!errors) {
     request.body.password = await hashing(request.body.password);
     request.body.hash = await (await hashing(request.body.username)).replace('/', '');
-    var user = new User(await addUser(request.body));
+    var user = await addUser(request.body);
     await sendNewUserEmail(user);
-    await locateUser(user).catch(e => response.send({ text: e, success: false }));
+    // await locateUser(user).catch(e => response.send({ text: e, success: false }));
     response.send({ text: 'User has succesfully been created.', success: true });
   } else
     response.send({ text: errors, success: false });
@@ -50,7 +50,7 @@ router.post('/logout', async (request: Request, response: Response) => {
 });
 
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6
-router.get('/verify/:hash', async (request: Request, response: Response) => {
+router.get('/matcha?verify=:hash', async (request: Request, response: Response) => {
   const user = await verifyUserByHash(request.params.hash);
   if (user)
     response.send({ text: 'User has successfully been verified.', success: true });

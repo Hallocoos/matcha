@@ -214,8 +214,11 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   else
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
   // Filter out users by distance
+  let distanceMin = request.body.filters.distanceMin;
+  let distanceMax = request.body.filters.distanceMax || 10000;
+  console.log(distanceMin, distanceMax);
   matchableUsers = matchableUsers.filter(obj => (
-    obj.distance >= request.body.filters.distanceMin && obj.distance <= request.body.filters.distanceMax));
+    obj.distance >= distanceMin && obj.distance <= distanceMax));
   console.log(matchableUsers);
   // Count similar tags
   // Filter out by amount of correlation tags

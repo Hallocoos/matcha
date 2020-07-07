@@ -52,23 +52,29 @@
     <h1>This will be chat view.</h1>
   </div>
 
-  <div data-bind="if: selectedView() == 'profile'">
-    <!-- 
-      wip   images can display, implement set as profile pic
-      username no edit
-      firstname
-      lastname
-      age
-      gender
-      biography
-      interest
-      tags
-      famerating not editable
-      gps implement editing
-    -->
-    <div data-bind="foreach: {data: ownImageSources, as: 'imageSource'}">
-      <img width="15%" height="auto" data-bind="attr: {src: imageSource}">
+  <div data-bind="if: selectedView() == 'profile'" id="profile">
+    <!-- <button>Add new picture</button> -->
+    <div data-bind="if: ownImageSources().length < 5">
+      <div>Add another picture</div>
+      <input type="file" id="myfile" name="myfile" accept=".png" data-bind="event: {change: $root.fileSelect}"><br><br>
+      <div data-bind="if: imageWorkspace.source()">
+        <button data-bind="click: uploadNewImage">Upload New Image</button>
+        <button data-bind="click: uploadProfileImage">Upload As Profile Image</button>
+      </div>
     </div>
+
+    <div data-bind="foreach: {data: ownImageSources, as: 'image'}" id="profileImage">
+      <span data-bind="if: profilePicture == 1">
+        <div>Profile Image:</div>
+        <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
+      </span>
+    </div>
+
+    <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
+      <span data-bind="if: profilePicture == 0">
+        <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
+      </span>
+    </span>
     <br>
 
     <div>
@@ -346,10 +352,10 @@
       console.log(data)
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
-        viewModel.ownImageSources([])
-        data.images.forEach(image => {
-          viewModel.ownImageSources().push("data:image/png;base64, " + image.image)
-        });
+        viewModel.ownImageSources(data.images)
+        // data.images.forEach(image => {
+        //   viewModel.ownImageSources().push(image.image)
+        // });
       } else {
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
       }
@@ -367,25 +373,69 @@
   }
 
   var viewModel = {
-    email: ko.observable(''),
+    email: ko.observable(""),
+    imageWorkspace: {
+      source: ko.observable(""),
+      profilePicture: ko.observable(0),
+    },
     loggedInUser: null,
     newRegistration: {
-      age: ko.observable(''),
-      email: ko.observable(''),
-      firstname: ko.observable(''),
-      gender: ko.observable(''),
-      lastname: ko.observable(''),
-      password: ko.observable(''),
-      username: ko.observable(''),
+      age: ko.observable(""),
+      email: ko.observable(""),
+      firstname: ko.observable(""),
+      gender: ko.observable(""),
+      lastname: ko.observable(""),
+      password: ko.observable(""),
+      username: ko.observable(""),
     },
     ownImageSources: ko.observable([]),
-    password: ko.observable(''),
+    password: ko.observable(""),
     reset: ko.observable(),
-    selectedView: ko.observable(''),
-    settingEditing: ko.observable(''),
-    settingEditingWorkspace: ko.observable(''),
+    selectedView: ko.observable(""),
+    settingEditing: ko.observable(""),
+    settingEditingWorkspace: ko.observable(""),
     token: ko.observable(),
-    username: ko.observable(''),
+    username: ko.observable(""),
+
+    async deleteImage(id, data) {
+      if (!confirm("Delete image?")) return
+      var body = JSON.stringify({ id: String(id) })
+      // console.log(body)
+      await fetch("http://localhost:3000/deletePicture", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        if (data.success) {
+          putUserInViewModel()
+        }
+        alert(data.text)
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+      })
+    },
+    
+    fileSelect(element, event) { // limit size 1000000
+      // console.log(event.target.files)
+      var file = event.target.files[0]
+      if (file.size > 1000000) {
+        alert("Must be smaller than 1MB.")
+        return
+      }
+      var reader = new FileReader();
+      reader.onload = (function (theFile) {
+        return function (e) {
+          viewModel.imageWorkspace.source(e.target.result)
+          // console.log(viewModel.loggedInUser)
+        };
+      })(file);
+      reader.readAsDataURL(file);
+    },
 
     logOut() {
       window.location.replace("http://localhost:3000/matcha")
@@ -578,6 +628,38 @@
         document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
       })
     },
+
+    async uploadNewImage() {
+      var body = JSON.stringify({
+        userId: viewModel.loggedInUser.id(),
+        image: viewModel.imageWorkspace.source(),
+        profilePicture: viewModel.imageWorkspace.profilePicture(),
+      })
+      await fetch("http://localhost:3000/uploadPicture", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        if (data.success) {
+          putUserInViewModel()
+        }
+        alert(data.text)
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+      })
+      viewModel.imageWorkspace.source("")
+      viewModel.imageWorkspace.profilePicture(0)
+    },
+
+    uploadProfileImage() {
+      viewModel.imageWorkspace.profilePicture(1)
+      viewModel.uploadNewImage()
+    }
 
   };
 
