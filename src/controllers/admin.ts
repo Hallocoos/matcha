@@ -38,22 +38,17 @@ router.post('/profile', async (request: Request, response: Response) => {
     response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
 });
 
-// {"send": "Hallocoos", "receive": "asdfasdf"}
+// {"sendId": "1", "receiveId": "2"}
 router.post('/getChat', async (request: Request, response: Response) => {
-  const send = await retrieveUserByUsername(request.body.send);
-  const receive = await retrieveUserByUsername(request.body.receive);
-  if (send && receive)
-    var notifications = await retrieveNotificationsBySendIdAndReceiveId(send.id, receive.id);
-  response.send({ notifications: notifications, success: false });
+  var notifications = await retrieveNotificationsBySendIdAndReceiveId(request.body.sendId, request.body.receiveId);
+  response.send({ notifications: notifications, success: true });
 });
 
-// {"username": "Hallocoos"}
+// {"id": "1"}
 router.post('/getNotifications', async (request: Request, response: Response) => {
-  const user = await retrieveUserByUsername(request.body.username);
-  if (user)
-    var notifications = await retrieveNotificationsByReceiveId(user.id);
+  var notifications = await retrieveNotificationsByReceiveId(request.body.id);
   response.send({ notifications: notifications, success: false });
-  await setNotificationsAsSeenByReceiveId(user.id);
+  await setNotificationsAsSeenByReceiveId(request.body.id);
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
