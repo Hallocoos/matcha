@@ -59,18 +59,47 @@ export async function verifyUserByHash(hash: string): Promise<User> {
     });
 };
 
+
 export async function deleteUserByHash(hash: string): Promise<User> {
-  return knex('users')
-      .where('hash', hash)
-      .del().then(function() {
-        console.log("it worked");
-        // it worked
-      })
+  return knex('notifications')
+      .where('notifications', hash)
+      .del()
+      .returning("hash: "+hash)
+      .then(deleteUsersImagesByHash(hash))
       .catch(function(error) {
         console.log(error);
-        // it failed
+      });
+};
+
+export async function deleteUsersImagesByHash(hash: String): Promise<User> {
+  return knex('images')
+      .where('hash', hash)
+      .del().then(deleteUsersMatchesByHash(hash))
+      .catch(function (error) {
+        console.log(error);
       });
 }
+
+export async function deleteUsersMatchesByHash(hash: String): Promise<User> {
+  return knex('matches')
+      .where('hash', hash)
+      .del().then(deleteUsersNotificationsByHash(hash))
+      .catch(function (error) {
+        console.log(error);
+      });
+}
+
+export async function deleteUsersNotificationsByHash(hash: String): Promise<User> {
+  return knex('users')
+      .where('hash', hash)
+      .del().then(function () {
+        console.log("it worked [images]")
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+}
+
 
 // function to handle get user by username
 // /login

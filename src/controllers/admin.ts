@@ -136,20 +136,20 @@ router.post('/reportFalseAccount', async(request: Request, response: Response) =
 
   if (user) {
     await reportUser(user);
-    console.log("test");
-    response.send({text: user.email+" has been reported.", success: true});
+    response.send({text: "The user has been reported.", success: true});
   } else response.send({text: "The user doesn't exist.", success: false})
 });
 
 // post -> localhost:3000/terminate/$2b$04$p6XyPrVk.Fa.3FynMArTWeRMhpGtzljhyN70kOJ8uxQJFT.ttJl2K
 // should delete 'asdf'
 router.post('/terminate/:hash', async(request: Request, response:Response) => {
-  console.log(request.params.hash+ "\ntest")
 
-    const user = await deleteUserByHash(request.params.hash);
+  // const user = await deleteUser(request.params.hash)
+  const user = await deleteUserByHash(request.params.hash);
   if (user)
     response.send({ text: 'User has successfully been verified.', success: true });
   else
     response.send({ text: 'User has not been verified.', success: false });
 });
+
 export default router;
