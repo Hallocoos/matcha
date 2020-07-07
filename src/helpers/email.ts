@@ -6,15 +6,15 @@ export function sendNewUserEmail(data) {
     port: 465,
     secure: true,
     auth: {
-      user: process.env["EMAILUSER "],
-      pass: process.env["EMAILPASS "]
+      user: process.env["EMAILUSER"],
+      pass: process.env["EMAILPASS"]
     },
     tls: {
       rejectUnauthorized: false
     }
   });
   var mailOptions = {
-    from: process.env["EMAILUSER "],
+    from: process.env["EMAILUSER"],
     to: data.email,
     subject: 'Welcome to Matcha!',
     text: 'Your account has been created!\n' +
@@ -33,16 +33,17 @@ export function resetUserPassword(email, hash) {
     port: 465,
     secure: true,
     auth: {
-      user: process.env["EMAILUSER "],
-      pass: process.env["EMAILPASS "]
+      user: process.env["EMAILUSER"],
+      pass: process.env["EMAILPASS"]
     },
     tls: {
       rejectUnauthorized: false
     }
   });
   var mailOptions = {
-    from: process.env["EMAILUSER "],
-    to: email,
+    from: process.env["EMAILUSER"],
+    // to: email,
+    to: "jordanrheeder@gmail.com",
     subject: 'Password Reset Request',
     text: 'A password reset has been requested on this account!\n' +
       'Please visit localhost:3000/matcha?reset=' + hash + ' to reset your password.'
@@ -60,8 +61,8 @@ export function reportUser(data) {
     port: 465,
     secure: true,
     auth: {
-      user: process.env["EMAILUSER "],
-      pass: process.env["EMAILPASS "]
+      user: process.env["EMAILUSER"],
+      pass: process.env["EMAILPASS"]
     }, logger: true,
     debug: true,
     tls: {
@@ -69,8 +70,8 @@ export function reportUser(data) {
     }
   });
   var mailOptions = {
-    from: process.env["EMAILUSER "],
-    to: "jordanrheeder@gmail.com",
+    from: process.env["EMAILUSER"],
+    to: data.email,
     subject: 'Report user ' + data.email,
     text: 'Terminate this account\n' +
         'Please visit http://localhost:3000/terminate/' + data.hash + ' to kill the account.'
