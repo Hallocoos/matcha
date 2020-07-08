@@ -235,7 +235,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     }
   }
   // remove blocked users and remove users that have already been matched with
-  // Sort by category is specified direction
+  // Sort by category in specified direction
   if (request.body.sorting.direction == 'ascending')
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
   else
@@ -245,5 +245,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   else
     response.send({ matches: matchableUsers, text: 'Sorry, no new matches at this time', success: false });
 });
+
+// Need block route
 
 export default router;
