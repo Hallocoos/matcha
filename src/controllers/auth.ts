@@ -5,6 +5,7 @@ import { createUserValidator, resetPasswordValidator, userLoginValidator } from 
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { sendNewUserEmail, resetUserPassword } from '../helpers/email';
+import { knexDeleteById } from '../services/dbService';
 import { locateUser } from "../helpers/locator";
 
 const router = express.Router();
@@ -15,10 +16,14 @@ router.post('/createUser', async (request: Request, response: Response) => {
   if (!errors) {
     request.body.password = await hashing(request.body.password);
     request.body.hash = await (await hashing(request.body.username)).replace('/', '');
-    var user = new User(await addUser(request.body));
-    await sendNewUserEmail(user);
-    await locateUser(user).catch(e => response.send({ text: e, success: false }));
-    response.send({ text: 'User has succesfully been created.', success: true });
+    var user = await addUser(request.body);
+    if (await sendNewUserEmail(user)) {
+      await locateUser(user).catch(e => response.send({ text: e, success: false }));
+      response.send({ text: 'User has succesfully been created.', success: true });
+    } else {
+      await knexDeleteById(user.id, 'users');
+      response.send({ text: 'User has not been created.', success: false });
+    }
   } else
     response.send({ text: errors, success: false });
 });

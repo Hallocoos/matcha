@@ -52,7 +52,8 @@ export async function retrieveUsersByGender(filters, id, interest, gender) {
   var sex = [gender, 'any'];
   if (gender == 'other')
     sex = ['any'];
-  return knex.select()
+  console.log(preference, sex);
+  return knex.select('id', 'username', 'firstname', 'lastname', 'age', 'gender', 'biography', 'interest', 'tags', 'countryName', 'city', 'fame', 'online' ,'lastSeen', 'longitude', 'latitude')
     .from('users')
     .whereIn('gender', preference)
     .whereIn('interest', sex)
