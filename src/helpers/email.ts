@@ -3,12 +3,14 @@ var nodemailer = require('nodemailer');
 export async function sendNewUserEmail(data) {
   var transporter = await nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    port: 465,
+    secure: true,
     auth: {
       user: process.env["EMAILUSER"],
       pass: process.env["EMAILPASS"]
     },
+    logger: true,
+    debug: true,
     tls: {
       rejectUnauthorized: false
     }
@@ -38,12 +40,14 @@ export async function resetUserPassword(email, hash) {
       pass: process.env["EMAILPASS"]
     },
     logger: true,
-    debug: true
+    debug: true,
+    tls: {
+      rejectUnauthorized: false
+    }
   });
   var mailOptions = {
     from: process.env["EMAILUSER"],
-    // to: email,
-    to: "jordanrheeder@gmail.com",
+    to: email,
     subject: 'Password Reset Request',
     text: 'A password reset has been requested on this account!\n' +
       'Please visit localhost:3000/matcha?reset=' + hash + ' to reset your password.'
@@ -64,7 +68,8 @@ export function reportUser(data) {
     auth: {
       user: process.env["EMAILUSER"],
       pass: process.env["EMAILPASS"]
-    }, logger: true,
+    },
+    logger: true,
     debug: true,
     tls: {
       rejectUnauthorized: false
