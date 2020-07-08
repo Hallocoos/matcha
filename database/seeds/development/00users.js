@@ -128,7 +128,7 @@ exports.seed = function (knex, Promise) {
           firstname: 'uiop',
           lastname: 'uiop',
           email: 'uiop@mailinator.com',
-          gender: 'female',
+          gender: 'male',
           interest: 'female',
           age: '20',
           countryName: 'uiop',
