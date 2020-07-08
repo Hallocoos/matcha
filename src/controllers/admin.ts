@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
+import { addMatch, retrieveMatchByIds, retrieveMatchesById, blockMatch } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
@@ -243,5 +243,28 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   else
     response.send({ text: 'No matches have been found.', success: false });
 });
+
+/*
+  Routes find the match between 2 id's and set's the match as blocked.
+  request.body = {
+    "acceptId": 1,
+    "requestId": 2
+  }
+*/
+router.post('/blockMatch', async (request: Request, response: Response) => {
+  const sender = await retrieveUserById(request.body.requestId);
+  const receiver = await retrieveUserById(request.body.acceptId);;
+  await blockMatch(request.body.acceptId, request.body.requestId);
+  let body = {
+    sender: sender.username,
+    receiver: receiver.username,
+    sendId: sender.id,
+    receiveId: receiver.id,
+    message: sender.username + ' has blocked you'
+  }
+  await addNotification(body);
+  response.send({ text: 'User has been blocked.', success: true });
+});
+
 
 export default router;
