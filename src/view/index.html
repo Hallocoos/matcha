@@ -1,10 +1,12 @@
 <html lang="en">
 
 <head>
+  <h1>Matcha</h1>
   <meta charset="UTF-8">
 </head>
 
-<body>
+<body style="height:100%; margin:0;">
+  <div id="main" style="min-height:100%; margin-bottom:-50px;">
   <p data-bind="if: token(), style: {padding: 14}">
     <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
     <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
@@ -56,7 +58,7 @@
     <!-- <button>Add new picture</button> -->
     <div data-bind="if: ownImageSources().length < 5">
       <div>Add another picture</div>
-      <input type="file" id="myfile" name="myfile" accept=".png,.jpg" data-bind="event: {change: $root.fileSelect}"><br><br>
+      <input type="file" id="myfile" name="myfile" accept=".png,.jpg,.jpeg" data-bind="event: {change: $root.fileSelect}"><br><br>
       <div data-bind="if: imageWorkspace.source()">
         <button data-bind="click: uploadNewImage">Upload New Image</button>
         <button data-bind="click: uploadProfileImage">Upload As Profile Image</button>
@@ -293,7 +295,7 @@
 
   <div data-bind="if: selectedView() == 'resetrequest'">
     <h3>Please provide your email address:</h3>
-    <input  type="email" data-bind="value: email">
+    <input type="email" data-bind="value: email">
     <button data-bind="click: sendResetPasswordRequest">Send Request</button>
     <div><button data-bind="click: logOut">Return to Log In</button></div>
   </div>
@@ -307,7 +309,7 @@
     <div>Lastname:</div>
     <input data-bind="value: newRegistration.lastname">
     <div>Age:</div>
-    <input type="number" data-bind="value: newRegistration.age">
+    <input onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" data-bind="value: newRegistration.age">
     <div>Gender:</div>
     <select id="genderList" data-bind="value: newRegistration.gender" list="genderList">
       <option value="other">other</option>
@@ -326,8 +328,11 @@
   </div>
 
   <div id="errordiv"></div>
-
-</body>
+  </div>
+  <footer style="text-align:center; padding:30px; height:50px;">
+    <p>Authors: hde-vos jrheeder clongmor rvan-wey</p>
+  </footer>
+</body> 
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script type='text/javascript' src='knockout.mapping.js'></script>

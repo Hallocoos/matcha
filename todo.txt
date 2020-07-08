@@ -21,15 +21,32 @@ Create Notifications Route
 ??:
 match information
 
-chloe's note on queries:
-import { fileURLToPath } from "url"
-
-user sends request(app.ts) -> a route gets chosen (guest/auth/admin)
-calls function out of model file(user/image/match)
-calls query(dbservice.ts)
 
 NB tags on front end to be multiple
 NB fame rating is cheated by refreshing the page once logged in.
-no empty password allowed in settings change. do we need to check if old password= new password when changing pass?\
-age in register
+no empty password allowed in settings change. do we need to check if old password = new password when changing pass?\
 email in resetpass
+need to be mobile friendly
+need to be able to "edit uploaded pictures" buttons cannot dissappear
+need to be able to see who viewed and liked their profile
+fame rating is on public profile page
+matches must be sortable and filterable by age, location, fame rating and common tags
+difference between these????
+advanced research: one or multiple criteria
+A age gap.
+•A “fame rating” gap.
+•A location.
+•One or multiple interests tags.
+As per the suggestion list, the resulting list must be sortable and filterable by age,location, “fame rating” and tags.
+
+need to be able to view other profiles - search bar needed?
+all info except amil and password on profile - incl currently online/offline and date and time of last connection, also if liked/connected, and can unlike person.
+need to have view history
+need to be able to like profiles, only if at least one picture. both like eachother == can chat.
+
+report fake account.
+blocked users do not generate notifications.
+
+chat upon connection - new chat messages notification viewed from any page - real time (up to 10 seconds delay)
+
+notifs: liked, viewed, new message, liked back, unliked - unread notifs visible from any page
