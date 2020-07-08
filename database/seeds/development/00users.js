@@ -60,12 +60,33 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('users')
         .insert({
+          username: 'tyuityui',
+          password: await hash('tyuityui'),
+          firstname: 'tyuityui',
+          lastname: 'tyuityui',
+          email: 'tyui@mailinator.com',
+          gender: 'female',
+          interest: 'male',
+          age: '21',
+          countryName: 'tyuityui',
+          city: 'tyuityui',
+          fame: 1000,
+          hash: await (await hash('tyuityui')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
           username: 'qwerqwer',
           password: await hash('qwerqwer'),
           firstname: 'qwerqwer',
           lastname: 'qwerqwer',
           email: 'qwer@mailinator.com',
-          gender: 'male',
+          gender: 'female',
           interest: 'male',
           age: '22',
           countryName: 'wevfqevf',
@@ -86,7 +107,7 @@ exports.seed = function (knex, Promise) {
           firstname: 'wertwert',
           lastname: 'wertwert',
           email: 'wert@mailinator.com',
-          gender: 'male',
+          gender: 'female',
           interest: 'male',
           age: '22',
           countryName: 'wevfqevf',
@@ -107,8 +128,8 @@ exports.seed = function (knex, Promise) {
           firstname: 'zxcvzxcv',
           lastname: 'zxcvzxcv',
           email: 'zxcv@mailinator.com',
-          gender: 'female',
-          interest: 'female',
+          gender: 'male',
+          interest: 'male',
           age: '20',
           countryName: 'wevfqwevf',
           city: 'wevfqwevfq',
@@ -128,7 +149,7 @@ exports.seed = function (knex, Promise) {
           firstname: 'uiop',
           lastname: 'uiop',
           email: 'uiop@mailinator.com',
-          gender: 'female',
+          gender: 'male',
           interest: 'female',
           age: '20',
           countryName: 'uiop',

@@ -52,7 +52,6 @@ export async function retrieveUsersByGender(filters, id, interest, gender) {
   var sex = [gender, 'any'];
   if (gender == 'other')
     sex = ['any'];
-  console.log(preference, sex);
   return knex.select('id', 'username', 'firstname', 'lastname', 'age', 'gender', 'biography', 'interest', 'tags', 'countryName', 'city', 'fame', 'online' ,'lastSeen', 'longitude', 'latitude')
     .from('users')
     .whereIn('gender', preference)
@@ -84,6 +83,52 @@ export async function verifyUserByHash(hash: string): Promise<User> {
     });
 };
 
+export async function deleteUserByHash(hash) {
+  return knex('users')
+      .where('hash', hash)
+      .del()
+      .then(function (result) {
+        return (result);
+    });
+};
+
+export async function deleteUsersImagesById(userId) {
+  return knex('images')
+      .where('userId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
+      });
+};
+
+export async function deleteUsersMatchesById(userId) {
+  return knex('matches')
+      .where('requestId', userId)
+      .orWhere('acceptId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
+      });
+};
+
+export async function deleteUsersNotificationsById(userId) {
+  return knex('notifications')
+      .where('sendId', userId)
+      .orWhere('receiveId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
+      });
+}
+
+export async function deleteUsersTagsById(userId) {
+  return knex('tags')
+      .where('userId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
+      });
+}
 // function to handle get user by username
 export async function retrieveUserByUsername(username: string) {
   const result = await knexSelectByColumn('username', username, 'users');
