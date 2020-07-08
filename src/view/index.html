@@ -5,7 +5,7 @@
 </head>
 
 <body>
-  <p data-bind="if: token(), style: {padding: 14}">
+  <p data-bind="if: token(), style: {padding: 14}" id="navbar">
     <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
     <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
     <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
@@ -15,7 +15,7 @@
     <hr>
   </p>
 
-  <div data-bind="if: selectedView() == 'login'">
+  <div data-bind="if: selectedView() == 'login'" id="login">
     <h3>Enter credentials to log in</h3>
     <table>
       <tr>
@@ -44,11 +44,11 @@
     <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.</h3>
   </div>
 
-  <div data-bind="if: selectedView() == 'match'">
+  <div data-bind="if: selectedView() == 'match'" id="match">
     <h1>This will be match view.</h1>
   </div>
 
-  <div data-bind="if: selectedView() == 'chat'">
+  <div data-bind="if: selectedView() == 'chat'" id="chat">
     <h1>This will be chat view.</h1>
   </div>
 
@@ -225,7 +225,7 @@
 
   </div>
 
-  <div data-bind="if: selectedView() == 'settings'">
+  <div data-bind="if: selectedView() == 'settings'" id="settings">
     <!-- username -->
     <!-- password -->
     <!-- email -->
@@ -280,26 +280,26 @@
 
   </div>
 
-  <div data-bind="if: selectedView() == 'notifications'">
+  <div data-bind="if: selectedView() == 'notifications'" id="notifications">
     <h1>This will be notifications view.</h1>
     <!-- <h6>test</h6> -->
   </div>
 
-  <div data-bind="if: selectedView() == 'reset'">
+  <div data-bind="if: selectedView() == 'reset'" id="reset">
     <h3>Please enter your new password:</h3>
     <input data-bind="value: password">
     <button data-bind="click: sendNewPassword">Reset Password</button>
     <div><button data-bind="click: logOut">Return to Log In</button></div>
   </div>
 
-  <div data-bind="if: selectedView() == 'resetrequest'">
+  <div data-bind="if: selectedView() == 'resetrequest'" id="resetrequest">
     <h3>Please provide your email address:</h3>
     <input data-bind="value: email">
     <button data-bind="click: sendResetPasswordRequest">Send Request</button>
     <div><button data-bind="click: logOut">Return to Log In</button></div>
   </div>
 
-  <div data-bind="if: selectedView() == 'register'">
+  <div data-bind="if: selectedView() == 'register'" id="register">
     <h3>Please provide the following information to register:</h3>
     <div>Username:</div>
     <input data-bind="value: newRegistration.username">
@@ -446,7 +446,7 @@
         headers: {
           'Content-Type': 'application/json',
         },
-      }).then(response => 
+      }).then(response =>
         // console.log(response)
         response.json()
       ).then(data => {
