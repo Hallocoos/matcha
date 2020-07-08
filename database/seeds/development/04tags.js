@@ -112,4 +112,56 @@ exports.seed = function(knex, Promise) {
       tag: 'food'
     });
   })
+      .then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'dancing'
+        });
+      })
+      .then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'dancing'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'cucumber'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'cucumber'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'food'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'food'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'walks'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'walks'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'smokes'
+        });
+      }).then(async function () {
+        return knex('tags').insert({
+          userId: 0,
+          tag: 'smokes'
+        });
+      })
 };
