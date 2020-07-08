@@ -17,13 +17,9 @@ router.post('/createUser', async (request: Request, response: Response) => {
     request.body.password = await hashing(request.body.password);
     request.body.hash = await (await hashing(request.body.username)).replace('/', '');
     var user = await addUser(request.body);
-    if (await sendNewUserEmail(user)) {
-      await locateUser(user).catch(e => response.send({ text: e, success: false }));
-      response.send({ text: 'User has succesfully been created.', success: true });
-    } else {
-      await knexDeleteById(user.id, 'users');
-      response.send({ text: 'User has not been created.', success: false });
-    }
+    await sendNewUserEmail(user);
+    await locateUser(user).catch(e => response.send({ text: e, success: false }));
+    response.send({ text: 'User has succesfully been created.', success: true });
   } else
     response.send({ text: errors, success: false });
 });
@@ -38,7 +34,7 @@ router.post('/login', async (request: Request, response: Response) => {
     if (user && await bcrypt.compare(request.body.password, user.password)) {
       if (user.verified) {
         let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-        response.json({ token: token, text: 'Login was successful.', success: true });
+        response.json({ token: token, text: 'Login was successful.', success: true, id: user.id });
         await setUserAsOnlineStatus(user.id, true);
         await locateUser(user).catch(e => response.send({ text: e, success: false }));
       } else
