@@ -114,8 +114,8 @@ export async function blockMatch(acceptId, requestId) {
 */
 export async function acceptMatch(acceptId, requestId) {
   return knex('matches')
-    .where('acceptId', acceptId)
-    .andWhere('requestId', requestId)
+    .where('acceptId', requestId)
+    .andWhere('requestId', acceptId)
     .update('accepted', true)
     .then(function (result) {
       return result;

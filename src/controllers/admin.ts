@@ -3,9 +3,8 @@ import { Request, Response } from 'express';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { addMatch, retrieveMatchByIds, retrieveMatchesByUserId, blockMatch } from '../models/matchModel';
+import { addMatch, retrieveMatchByIds, retrieveMatchesByUserId, blockMatch, acceptMatch } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
-
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
@@ -27,34 +26,40 @@ router.post('/updateUser', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
-// {"username": "Hallocoos"}
+// {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
-  const user = await retrieveUserByUsername(request.body.username);
-  if (user) {
-    const images = await retrieveImagesByUserId(user.id);
-    const tags = await retrieveTagsByUserId(user.id);
-    await incrementUsersFameRating(user.id, 1);
-    response.send({ user: user, images: images, tags: tags });
+  const userProfile = await retrieveUserById(request.body.profileId);
+  if (userProfile) {
+    if (request.body.viewerId) {
+      const userViewer = await retrieveUserById(request.body.viewerId);
+      const body = {
+        sender: userViewer.username,
+        receiver: userProfile.username,
+        sendId: request.body.viewerId,
+        receiveId: request.body.profileId,
+        message: userViewer.username + ' had viewed your profile'
+      }
+      await addNotification(body);
+      await incrementUsersFameRating(userProfile.id, 1);
+    }
+    const tags = await retrieveTagsByUserId(userProfile.id);
+    const images = await retrieveImagesByUserId(userProfile.id);
+    response.send({ user: userProfile, images: images, tags: tags });
   } else
     response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
 });
 
-// {"send": "Hallocoos", "receive": "asdfasdf"}
+// {"sendId": "1", "receiveId": "2"}
 router.post('/getChat', async (request: Request, response: Response) => {
-  const send = await retrieveUserByUsername(request.body.send);
-  const receive = await retrieveUserByUsername(request.body.receive);
-  if (send && receive)
-    var notifications = await retrieveNotificationsBySendIdAndReceiveId(send.id, receive.id);
-  response.send({ notifications: notifications, success: false });
+  var notifications = await retrieveNotificationsBySendIdAndReceiveId(request.body.sendId, request.body.receiveId);
+  response.send({ notifications: notifications, success: true });
 });
 
-// {"username": "Hallocoos"}
+// {"id": "1"}
 router.post('/getNotifications', async (request: Request, response: Response) => {
-  const user = await retrieveUserByUsername(request.body.username);
-  if (user)
-    var notifications = await retrieveNotificationsByReceiveId(user.id);
+  var notifications = await retrieveNotificationsByReceiveId(request.body.id);
   response.send({ notifications: notifications, success: false });
-  await setNotificationsAsSeenByReceiveId(user.id);
+  await setNotificationsAsSeenByReceiveId(request.body.id);
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -84,13 +89,33 @@ router.post('/createMatch', async (request: Request, response: Response) => {
     let match = await retrieveMatchByIds(accepter.id, requester.id);
     if (!accepter.username && !requester.username)
       response.send({ text: 'The user you have tried to match with does not exist.', success: false });
-    else if (match)
-      response.send({ text: 'Users are already matched.', success: false });
-    else {
+    else if (match && match.acceptId === requester.id && match.requestId === accepter.id) {
+      await acceptMatch(accepter.id, requester.id);
+      let body = {
+        sender: accepter.username,
+        receiver: requester.username,
+        sendId: accepter.id,
+        receiveId: requester.id,
+        message: requester.username + ' has liked you back.'
+      }
+      await addNotification(body);
+      await incrementUsersFameRating(accepter.id, 5);
+      response.send({ text: 'Users have been matched.', success: true });
+    } else if (match && match.acceptId === accepter.id && match.requestId === requester.id) {
+      response.send({ text: 'Users have already been suggested to match.', success: false });
+    } else {
       request.body.accepter = accepter.username;
       request.body.requester = requester.username;
       await incrementUsersFameRating(accepter.id, 5);
       await addMatch(request.body);
+      let body = {
+        sender: requester.username,
+        receiver: accepter.username,
+        sendId: request.body.requestId,
+        receiveId: request.body.acceptId,
+        message: requester.username + ' has liked your profile'
+      }
+      await addNotification(body);
       response.send({ text: 'The recipient will be notified.', success: true });
     }
   } else
@@ -256,8 +281,8 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
 /*
   Routes find the match between 2 id's and set's the match as blocked.
   request.body = {
-    "acceptId": 1,
-    "requestId": 2
+    acceptId: 1,
+    requestId: 2
   }
 */
 router.post('/blockMatch', async (request: Request, response: Response) => {
@@ -274,6 +299,5 @@ router.post('/blockMatch', async (request: Request, response: Response) => {
   await addNotification(body);
   response.send({ text: 'User has been blocked.', success: true });
 });
-
 
 export default router;

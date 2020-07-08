@@ -53,7 +53,7 @@ router.post('/logout', async (request: Request, response: Response) => {
   await setUserAsOnlineStatus(request.body.id, false);
   response.send({ text: 'User has been logged out.', success: true });
 });
-
+ 
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6
 router.get('/verify/:hash', async (request: Request, response: Response) => {
   const user = await verifyUserByHash(request.params.hash);
@@ -67,7 +67,7 @@ router.get('/verify/:hash', async (request: Request, response: Response) => {
 router.post('/forgotPassword', async (request: Request, response: Response) => {
   const user = await retrieveUserByEmail(request.body.email);
   if (user)
-    resetUserPassword(user.email, user.hash);
+    await resetUserPassword(user.email, user.hash);
   response.send({ text: 'Check your email inbox to see how to reset your password.', success: true });
 });
 
