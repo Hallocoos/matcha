@@ -72,6 +72,12 @@ exports.seed = function (knex, Promise) {
     })
     .then(async function () {
       return knex('tags').insert({
+        userId: 3,
+        tag: 'lkhj'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
         userId: 4,
         tag: 'meat'
       });
@@ -110,6 +116,12 @@ exports.seed = function (knex, Promise) {
       return knex('tags').insert({
         userId: 5,
         tag: 'food'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 5,
+        tag: 'qwer'
       });
     })
 };
