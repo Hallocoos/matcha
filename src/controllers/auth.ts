@@ -34,7 +34,7 @@ router.post('/login', async (request: Request, response: Response) => {
     if (user && await bcrypt.compare(request.body.password, user.password)) {
       if (user.verified) {
         let token = await jwt.sign(JSON.stringify(user), process.env.SECRETKEY);
-        response.json({ token: token, text: 'Login was successful.', success: true });
+        response.json({ token: token, text: 'Login was successful.', success: true, id: user.id });
         await setUserAsOnlineStatus(user.id, true);
         await locateUser(user).catch(e => response.send({ text: e, success: false }));
       } else
