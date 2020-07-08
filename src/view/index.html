@@ -335,9 +335,9 @@
 <script type='text/javascript' src='knockout.mapping.js'></script>
 <script>
 
-  async function putUserInViewModel() {
+  async function putUserInViewModel(id) {
     var body = JSON.stringify({
-      username: viewModel.username(),
+      profileId: id,
     })
     await fetch("http://localhost:3000/profile", {
       method: "POST",
@@ -349,7 +349,7 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      console.log(data)
+      // console.log(data)
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
         viewModel.ownImageSources(data.images)
@@ -412,7 +412,7 @@
         response.json()
       ).then(data => {
         if (data.success) {
-          putUserInViewModel()
+          putUserInViewModel(viewModel.loggedInUser.id())
         }
         alert(data.text)
       }).catch(er => {
@@ -640,7 +640,7 @@
         if (data.token) {
           viewModel.token(data.token)
           viewModel.selectedView('notifications')
-          putUserInViewModel();
+          putUserInViewModel(data.id);
         } else {
           alert(data.text)
         }
@@ -667,7 +667,7 @@
         response.json()
       ).then(data => {
         if (data.success) {
-          putUserInViewModel()
+          putUserInViewModel(viewModel.loggedInUser.id())
         }
         alert(data.text)
       }).catch(er => {
