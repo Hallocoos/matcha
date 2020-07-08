@@ -50,15 +50,17 @@ router.post('/getChat', async (request: Request, response: Response) => {
 // {"id": "1"}
 router.post('/getNotifications', async (request: Request, response: Response) => {
   const user = await retrieveUserById(request.body.id);
-  if (user)
+  if (user) {
     var notifications = await retrieveNotificationsByReceiveId(user.id);
-  response.send({ notifications: notifications, success: false });
+    response.send({ notifications: notifications, success: true });
+  } else
+    response.send({ success: false });
 });
 
 // {"id": "1"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
   await setNotificationsAsSeenByReceiveId(request.body.id);
-  response.send({ success: false });
+  response.send({ success: true });
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
