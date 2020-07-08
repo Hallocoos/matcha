@@ -3,13 +3,8 @@ import { Request, Response } from 'express';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-<<<<<<< HEAD
 import { addMatch, retrieveMatchByIds, retrieveMatchesById, acceptMatch, blockMatch } from '../models/matchModel';
-=======
-import { addMatch, retrieveMatchByIds, retrieveMatchesById, blockMatch } from '../models/matchModel';
->>>>>>> 887d4a33b5fcce9f12840d717490b7ce3ae82e90
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
-
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
