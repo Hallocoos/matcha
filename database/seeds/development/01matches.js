@@ -11,7 +11,18 @@ exports.seed = function (knex, Promise) {
           requestId: 1,
           accepter: 'qwerqwer',
           requester: 'Hallocoos',
-          accepted: true,
+          accepted: false,
+          blocked: false,
+        });
+    })
+    .then(async function () {
+      return knex('matches')
+        .insert({
+          acceptId: 1,
+          requestId: 2,
+          accepter: 'Hallocoos',
+          requester: 'asdfasdf',
+          accepted: false,
           blocked: false,
         });
     })
