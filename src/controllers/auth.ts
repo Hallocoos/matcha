@@ -18,7 +18,7 @@ router.post('/createUser', async (request: Request, response: Response) => {
     request.body.hash = await (await hashing(request.body.username)).replace('/', '');
     var user = await addUser(request.body);
     await sendNewUserEmail(user);
-    // await locateUser(user).catch(e => response.send({ text: e, success: false }));
+    await locateUser(user).catch(e => response.send({ text: e, success: false }));
     response.send({ text: 'User has succesfully been created.', success: true });
   } else
     response.send({ text: errors, success: false });
