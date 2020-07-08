@@ -6,10 +6,10 @@ import { updateUserValidator, newNotificationValidator, newMatchValidator, idVal
 import { addMatch, retrieveMatchByIds, retrieveMatchesById } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 
-import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
-import * as _ from 'underscore'; 
+import * as _ from 'underscore';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 router.post('/profile', async (request: Request, response: Response) => {
   const user = await retrieveUserByUsername(request.body.username);
   if (user) {
-    var images = await retrieveImagesByUserId(user.id);
+    const images = await retrieveImagesByUserId(user.id);
     await incrementUsersFameRating(user.id, 1);
     response.send({ user: user, images: images });
   } else
@@ -151,19 +151,17 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
       ageMax: integer,
       ageMin: integer,
       fameMin: integer,
-      fameMax: integer
-      // ===================== Not Implemented =====================
-      // , distanceMin: integer,
-      // distanceMax: integer,
-      // tags: [ cat, dog, food, apple]
-      // ===================== Not Implemented =====================
+      fameMax: integer,
+      distanceMin: integer,
+      distanceMax: integer,
+      ===================== Not Implemented =====================
+      tags: [ cat, dog, food, apple]
+      ===================== Not Implemented =====================
     },
     sorting: {
       category: string <"age"/"fame"/"distance"/"tags">,
-      direction: string <"ascending"/"descending">
-      // ===================== Not Implemented =====================
-      // , // tagsInCommon: integer,
-      // ===================== Not Implemented =====================
+      direction: string <"ascending"/"descending">,
+      tagsInCommon: integer,
     }
   }
 
@@ -195,6 +193,20 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       }
     }
   }
+  var k, count;
+  count = 0;
+  var adminTags = await retrieveTagsByUserId(request.body.id)
+  for (i = 0; matchableUsers[i]; i++) {
+    matchableUsers[i].tagCount = new Array;
+    for (j = 0; matchableUsers[i].tags[j]; j++) {
+      for (k = 0; adminTags[k]; k++) {
+        if (adminTags[k].tag.toLowerCase() == matchableUsers[i].tags[j].toLowerCase())
+          count += 1;
+      }
+    }
+    matchableUsers[i].tagCount.push(count);
+    count = 0;
+  }
   // Append Images to users
   for (i = 0; matchableUsers[i]; i++) {
     userIds.push(matchableUsers[i].id);
@@ -210,13 +222,26 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   }
   // Sort by category is specified direction
   if (request.body.sorting.direction == 'ascending')
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category );
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
   else
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category ).reverse();
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
+  // Filter out users by distance
+  let distanceMin = request.body.filters.distanceMin || 0;
+  let distanceMax = request.body.filters.distanceMax || 10000;
+  console.log(distanceMin, distanceMax);
+  matchableUsers = matchableUsers.filter(obj => (
+    obj.distance >= distanceMin && obj.distance <= distanceMax));
+  console.log(matchableUsers);
+  // Count similar tags
+  var tagsInCommon = request.body.sorting.tagsInCommon || 0; 
+  // Filter out by amount of correlation tags
+  matchableUsers = matchableUsers.filter(obj => (
+    obj.tagCount[0] >= tagsInCommon));
+  // Determine reponse based on whether any users still exist after filtering
   if (matchableUsers[0])
     response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
   else
-    response.send({ matches: matchableUsers, text: 'Sorry, no new matches at this time', success: false });
+    response.send({ text: 'No matches have been found.', success: false });
 });
 
 export default router;
