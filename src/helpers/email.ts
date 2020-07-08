@@ -1,37 +1,44 @@
 var nodemailer = require('nodemailer');
 
-export function sendNewUserEmail(data) {
-  var transporter = nodemailer.createTransport({
+export async function sendNewUserEmail(data) {
+  var transporter = await nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.emailUser,
       pass: process.env.emailPass
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
-  var mailOptions = {
+  var mailOptions = await {
     from: process.env.emailUser,
     to: data.email,
     subject: 'Welcome to Matcha!',
     text: 'Your account has been created!\n' +
       'Please visit localhost:3000/matcha?verify=' + data.hash + ' to verify your account.'
   };
-  transporter.sendMail(mailOptions, function (error, info) {
+  return await transporter.sendMail(mailOptions, async function (error, info) {
     if (error)
-      return (error);
-    console.log('Mail sent: ' + info.response);
+      return (false);
+    await console.log('Mail sent: ' + info.response);
+    return (true);
   });
 }
 
-export function resetUserPassword(email, hash) {
-  var transporter = nodemailer.createTransport({
+export async function resetUserPassword(email, hash) {
+  var transporter = await nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
       user: process.env.emailUser,
       pass: process.env.emailPass
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
   var mailOptions = {
@@ -41,9 +48,10 @@ export function resetUserPassword(email, hash) {
     text: 'A password reset has been requested on this account!\n' +
       'Please visit localhost:3000/matcha?reset=' + hash + ' to reset your password.'
   };
-  transporter.sendMail(mailOptions, function (error, info) {
+  return await transporter.sendMail(mailOptions, async function (error, info) {
     if (error)
-      return (error);
-    console.log('Mail sent: ' + info.response);
+      return (false);
+    await console.log('Mail sent: ' + info.response);
+    return (true);
   });
 }
