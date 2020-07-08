@@ -6,13 +6,14 @@ import {
   retrieveUsersByGender,
   retrieveUserByUsername,
   retrieveUserById,
-  retrieveUsers,
   incrementUsersFameRating,
   retrieveUserByHash,
   deleteUsersImagesById,
   deleteUsersMatchesById,
   deleteUsersNotificationsById,
-  deleteUserByHash } from '../models/userModel';
+  deleteUserByHash,
+  deleteUsersTagsById
+} from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { addMatch, retrieveMatchByIds, retrieveMatchesById, blockMatch } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
@@ -268,16 +269,16 @@ router.post('/reportFalseAccount', async(request: Request, response: Response) =
 // post -> localhost:3000/terminate/$2b$04$p6XyPrVk.Fa.3FynMArTWeRMhpGtzljhyN70kOJ8uxQJFT.ttJl2K
 // should delete 'asdf'
 router.post('/terminate/:hash', async(request: Request, response:Response) => {
-
-  // const user = await deleteUser(request.params.hash)
   const user = await retrieveUserByHash(request.params.hash);
 
-  await deleteUsersImagesById(user.id)
-  await deleteUsersMatchesById(user.id)
-  await deleteUsersNotificationsById(user.id)
-  await deleteUserByHash(request.params.hash)
-  if (user)
-    response.send({ text: 'User has been deleted.', success: true });
+  if (user) {
+    await deleteUsersImagesById(user.id)
+    await deleteUsersMatchesById(user.id)
+    await deleteUsersNotificationsById(user.id)
+    await deleteUsersTagsById(user.id)
+    await deleteUserByHash(user.hash)
+    response.send({text: 'User has been deleted.', success: true});
+  }
   else
     response.send({ text: 'User has not been deleted.', success: false });
 });

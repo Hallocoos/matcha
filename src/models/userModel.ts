@@ -122,7 +122,14 @@ export async function deleteUsersNotificationsById(userId) {
       });
 }
 
-
+export async function deleteUsersTagsById(userId) {
+  return knex('tags')
+      .where('userId', userId)
+      .del()
+      .then(function (result) {
+        return (result);
+      });
+}
 // function to handle get user by username
 export async function retrieveUserByUsername(username: string) {
   const result = await knexSelectByColumn('username', username, 'users');
