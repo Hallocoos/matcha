@@ -26,13 +26,58 @@ exports.seed = function (knex, Promise) {
           gender: 'male',
           interest: 'female',
           age: '20',
+          biography: 'I like to play POE.',
+          countryName: 'South Africa',
+          city: 'Cape Town',
+          fame: 100,
+          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
+          longitude: 2.2126,
+          latitude: -1.2341,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'nwevfqnss',
+          password: await hash('12345678'),
+          firstname: 'John',
+          lastname: 'the Monster',
+          email: 'nwevfqnss@mailinator.com',
+          gender: 'male',
+          interest: 'female',
+          age: '21',
+          biography: 'I don\'t like to play POE.',
           countryName: 'South Africa',
           city: 'Cape Town',
           fame: 0,
-          hash: await (await hash('Hallocoos')).replace(/\//g, ''),
-          longitude: 31.2836,
-          latitude: -32.2541,
-          matchable: 1,
+          hash: await (await hash('nwevfqnss')).replace(/\//g, ''),
+          longitude: 2.2856,
+          latitude: -1.7841,
+          matchable: 0,
+          verified: 0
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'vqfwevfqwevfq',
+          password: await hash('12345678'),
+          firstname: 'vqfwevfqwevfq',
+          lastname: 'the Monster',
+          email: 'wdv@mailinator.com',
+          gender: 'male',
+          interest: 'female',
+          age: '25',
+          biography: 'I am vqfwevfqwevfq the Monster.',
+          countryName: 'South Africa',
+          city: 'Cape Town',
+          fame: 0,
+          hash: await (await hash('vqfwevfqwevfq')).replace(/\//g, ''),
+          longitude: 1.2815,
+          latitude: -2.5941,
+          matchable: 0,
           verified: 1
         });
     })
@@ -65,7 +110,7 @@ exports.seed = function (knex, Promise) {
           firstname: 'qwerqwer',
           lastname: 'qwerqwer',
           email: 'qwer@mailinator.com',
-          gender: 'female',
+          gender: 'male',
           interest: 'male',
           age: '22',
           countryName: 'wevfqevf',
@@ -86,7 +131,7 @@ exports.seed = function (knex, Promise) {
           firstname: 'wertwert',
           lastname: 'wertwert',
           email: 'wert@mailinator.com',
-          gender: 'female',
+          gender: 'male',
           interest: 'male',
           age: '22',
           countryName: 'wevfqevf',
@@ -107,8 +152,8 @@ exports.seed = function (knex, Promise) {
           firstname: 'zxcvzxcv',
           lastname: 'zxcvzxcv',
           email: 'zxcv@mailinator.com',
-          gender: 'male',
-          interest: 'male',
+          gender: 'female',
+          interest: 'female',
           age: '20',
           countryName: 'wevfqwevf',
           city: 'wevfqwevfq',
@@ -128,7 +173,7 @@ exports.seed = function (knex, Promise) {
           firstname: 'uiop',
           lastname: 'uiop',
           email: 'uiop@mailinator.com',
-          gender: 'male',
+          gender: 'female',
           interest: 'female',
           age: '20',
           countryName: 'uiop',

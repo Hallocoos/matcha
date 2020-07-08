@@ -19,22 +19,22 @@ exports.seed = function (knex, Promise) {
       return knex('matches')
         .insert({
           acceptId: 4,
-          requestId: 2,
+          requestId: 1,
           accepter: 'zxcvzxcv',
-          requester: 'asdfasdf',
-          accepted: false,
-          blocked: false,
+          requester: 'Hallocoos',
+          accepted: true,
+          blocked: true,
         });
     })
     .then(async function () {
       return knex('matches')
         .insert({
           acceptId: 4,
-          requestId: 1,
+          requestId: 2,
           accepter: 'zxcvzxcv',
-          requester: 'Hallocoos',
-          accepted: true,
-          blocked: true,
+          requester: 'asdfasdf',
+          accepted: false,
+          blocked: false,
         });
     })
     .then(async function () {
