@@ -382,4 +382,34 @@ exports.seed = function (knex, Promise) {
         tag: 'asdf'
       });
     })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 15,
+        tag: 'asdf'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 15,
+        tag: 'qwer'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 15,
+        tag: 'zxcv'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 15,
+        tag: 'food'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 15,
+        tag: 'dota'
+      });
+    })
 };
