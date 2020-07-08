@@ -335,6 +335,38 @@
 <script type='text/javascript' src='knockout.mapping.js'></script>
 <script>
 
+  async function putMatchesInViewModel() {
+    // { "id": 1 }
+    var body = JSON.stringify({
+      id: viewModel.loggedInUser.id(),
+    })
+    await fetch("http://localhost:3000/getMatches", {
+      method: "POST",
+      body: body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + viewModel.token(),
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      console.log(data)
+      // if (data.user && data.images) {
+      //   viewModel.loggedInUser = ko.mapping.fromJS(data.user)
+      //   viewModel.ownImageSources(data.images)
+      //   // data.images.forEach(image => {
+      //   //   viewModel.ownImageSources().push(image.image)
+      //   // });
+      // } else {
+      //   if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
+      // }
+    }).catch(er => {
+      document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
+    })
+    // console.log(ko.toJS(viewModel.loggedInUser))
+    // console.log(viewModel.ownImageSources())
+  }
+
   async function putUserInViewModel() {
     var body = JSON.stringify({
       username: viewModel.username(),
@@ -490,6 +522,11 @@
       viewModel.selectedView(view)
       resetSettingEditing()
       // console.log(viewModel.selectedView())
+      switch (view) {
+        case "match":
+          putMatchesInViewModel()
+          break
+      }
     },
 
     async saveChangesToLoggedInUser() {
