@@ -60,13 +60,20 @@ router.post('/getChat', async (request: Request, response: Response) => {
   response.send({ notifications: notifications, success: false });
 });
 
-// {"username": "Hallocoos"}
+// {"id": "1"}
 router.post('/getNotifications', async (request: Request, response: Response) => {
-  const user = await retrieveUserByUsername(request.body.username);
-  if (user)
+  const user = await retrieveUserById(request.body.id);
+  if (user) {
     var notifications = await retrieveNotificationsByReceiveId(user.id);
-  response.send({ notifications: notifications, success: false });
-  await setNotificationsAsSeenByReceiveId(user.id);
+    response.send({ notifications: notifications, success: true });
+  } else
+    response.send({ success: false });
+});
+
+// {"id": "1"}
+router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
+  await setNotificationsAsSeenByReceiveId(request.body.id);
+  response.send({ success: true });
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
