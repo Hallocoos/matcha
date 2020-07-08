@@ -93,12 +93,14 @@ export async function addMatch(body) {
 */
 export async function blockMatch(acceptId, requestId) {
   return knex('matches')
-    .where('acceptId', acceptId)
+    .where('blocked', false)
+    .andWhere('acceptId', acceptId)
     .andWhere('requestId', requestId)
     .orWhere('acceptId', requestId)
     .andWhere('requestId', acceptId)
     .update('blocked', true)
     .then(function (result) {
+      console.log(result);
       return result;
     });
 };
