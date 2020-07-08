@@ -335,9 +335,9 @@
 <script type='text/javascript' src='knockout.mapping.js'></script>
 <script>
 
-  async function putUserInViewModel() {
+  async function putUserInViewModel(id) {
     var body = JSON.stringify({
-      username: viewModel.username(),
+      profileId: id,
     })
     await fetch("http://localhost:3000/profile", {
       method: "POST",
@@ -349,7 +349,7 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      console.log(data)
+      // console.log(data)
       if (data.user && data.images) {
         viewModel.loggedInUser = ko.mapping.fromJS(data.user)
         viewModel.ownImageSources(data.images)
@@ -412,7 +412,7 @@
         response.json()
       ).then(data => {
         if (data.success) {
-          putUserInViewModel()
+          putUserInViewModel(viewModel.loggedInUser.id())
         }
         alert(data.text)
       }).catch(er => {
@@ -499,6 +499,10 @@
         var gps = viewModel.settingEditingWorkspace().replace(" ", "").split(",")
         data["latitude"] = gps[0]
         data["longitude"] = gps[1]
+      } else if (viewModel.settingEditing() == "password" && !(viewModel.settingEditingWorkspace().length > 7) ) {
+        alert("Password should have at least 8 characters.")
+        resetSettingEditing()
+        return
       } else {
         data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
       }
@@ -640,7 +644,7 @@
         if (data.token) {
           viewModel.token(data.token)
           viewModel.selectedView('notifications')
-          putUserInViewModel();
+          putUserInViewModel(data.id);
         } else {
           alert(data.text)
         }
@@ -667,7 +671,7 @@
         response.json()
       ).then(data => {
         if (data.success) {
-          putUserInViewModel()
+          putUserInViewModel(viewModel.loggedInUser.id())
         }
         alert(data.text)
       }).catch(er => {
