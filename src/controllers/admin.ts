@@ -151,19 +151,17 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
       ageMax: integer,
       ageMin: integer,
       fameMin: integer,
-      fameMax: integer
-      // ===================== Not Implemented =====================
-      // , distanceMin: integer,
-      // distanceMax: integer,
-      // tags: [ cat, dog, food, apple]
-      // ===================== Not Implemented =====================
+      fameMax: integer,
+      distanceMin: integer,
+      distanceMax: integer,
+      ===================== Not Implemented =====================
+      tags: [ cat, dog, food, apple]
+      ===================== Not Implemented =====================
     },
     sorting: {
       category: string <"age"/"fame"/"distance"/"tags">,
-      direction: string <"ascending"/"descending">
-      ===================== Not Implemented =====================
-      , // tagsInCommon: integer,
-      ===================== Not Implemented =====================
+      direction: string <"ascending"/"descending">,
+      tagsInCommon: integer,
     }
   }
 
