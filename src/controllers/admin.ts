@@ -177,19 +177,17 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
       ageMax: integer,
       ageMin: integer,
       fameMin: integer,
-      fameMax: integer
-      // ===================== Not Implemented =====================
-      // , distanceMin: integer,
-      // distanceMax: integer,
-      // tags: [ cat, dog, food, apple]
-      // ===================== Not Implemented =====================
+      fameMax: integer,
+      distanceMin: integer,
+      distanceMax: integer,
+      ===================== Not Implemented =====================
+      tags: [ cat, dog, food, apple]
+      ===================== Not Implemented =====================
     },
     sorting: {
       category: string <"age"/"fame"/"distance"/"tags">,
-      direction: string <"ascending"/"descending">
-      // ===================== Not Implemented =====================
-      // , // tagsInCommon: integer,
-      // ===================== Not Implemented =====================
+      direction: string <"ascending"/"descending">,
+      tagsInCommon: integer,
     }
   }
 
@@ -255,14 +253,17 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   else
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
   // Filter out users by distance
-  let distanceMin = request.body.filters.distanceMin;
+  let distanceMin = request.body.filters.distanceMin || 0;
   let distanceMax = request.body.filters.distanceMax || 10000;
   console.log(distanceMin, distanceMax);
   matchableUsers = matchableUsers.filter(obj => (
     obj.distance >= distanceMin && obj.distance <= distanceMax));
   console.log(matchableUsers);
   // Count similar tags
+  var tagsInCommon = request.body.sorting.tagsInCommon || 0; 
   // Filter out by amount of correlation tags
+  matchableUsers = matchableUsers.filter(obj => (
+    obj.tagCount[0] >= tagsInCommon));
   // Determine reponse based on whether any users still exist after filtering
   if (matchableUsers[0])
     response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
