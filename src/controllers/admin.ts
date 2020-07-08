@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { addMatch, retrieveMatchByIds, retrieveMatchesById, blockMatch } from '../models/matchModel';
+import { addMatch, retrieveMatchByIds, retrieveMatchesByUserId, blockMatch } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
@@ -100,7 +100,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
 router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
-    let matches = await retrieveMatchesById(request.body.id);
+    let matches = await retrieveMatchesByUserId(request.body.id);
     response.send({ matches: matches });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
@@ -220,6 +220,16 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       }
     }
   }
+  // Find all matches related to loggin in user
+  let matches = await retrieveMatchesByUserId(user.id);
+  // Filters out all matches where blocked and accepted !== 1
+  matches = matches.filter(obj => (
+    obj.accepted == 1 || obj.blocked == 1));
+  // Removes all users that have been blocked or have already accepted a match with the logged in user.
+  for (j = 0; matches[j]; j++) {
+    matchableUsers = matchableUsers.filter(obj => (
+      obj.id !== matches[j].acceptId && obj.id !== matches[j].requestId));
+  }
   // Sort by category is specified direction
   if (request.body.sorting.direction == 'ascending')
     matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
@@ -228,12 +238,10 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   // Filter out users by distance
   let distanceMin = request.body.filters.distanceMin || 0;
   let distanceMax = request.body.filters.distanceMax || 10000;
-  console.log(distanceMin, distanceMax);
   matchableUsers = matchableUsers.filter(obj => (
     obj.distance >= distanceMin && obj.distance <= distanceMax));
-  console.log(matchableUsers);
   // Count similar tags
-  var tagsInCommon = request.body.sorting.tagsInCommon || 0; 
+  var tagsInCommon = request.body.sorting.tagsInCommon || 0;
   // Filter out by amount of correlation tags
   matchableUsers = matchableUsers.filter(obj => (
     obj.tagCount[0] >= tagsInCommon));

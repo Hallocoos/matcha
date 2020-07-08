@@ -147,7 +147,7 @@ export async function retrieveMatchByIds(acceptId, requestId) {
  *    userId = <string>
  *  }
 */
-export async function retrieveMatchesById(userId) {
+export async function retrieveMatchesByUserId(userId) {
   return knex.select()
     .from('matches')
     .where('acceptId', userId)
