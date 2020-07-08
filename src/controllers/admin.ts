@@ -1,12 +1,13 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { modifyUserById, retrieveUserByUsername, retrieveUserById, incrementUsersFameRating, retrieveUsersByGender, retrieveUsers } from '../models/userModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
-import { addMatch, retrieveMatchByIds, retrieveMatchesByUserId, blockMatch, acceptMatch } from '../models/matchModel';
+import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
+import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
+import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
+import { reportUser } from "../helpers/email";
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 import * as _ from 'underscore';
 
@@ -57,9 +58,18 @@ router.post('/getChat', async (request: Request, response: Response) => {
 
 // {"id": "1"}
 router.post('/getNotifications', async (request: Request, response: Response) => {
-  var notifications = await retrieveNotificationsByReceiveId(request.body.id);
-  response.send({ notifications: notifications, success: false });
+  const user = await retrieveUserById(request.body.id);
+  if (user) {
+    var notifications = await retrieveNotificationsByReceiveId(user.id);
+    response.send({ notifications: notifications, success: true });
+  } else
+    response.send({ success: false });
+});
+
+// {"id": "1"}
+router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
   await setNotificationsAsSeenByReceiveId(request.body.id);
+  response.send({ success: true });
 });
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
@@ -276,6 +286,32 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
   else
     response.send({ text: 'No matches have been found.', success: false });
+});
+// {"id":2} -reports 'asdf'
+router.post('/reportFalseAccount', async (request: Request, response: Response) => {
+  let user = await retrieveUserById(request.body.id);
+
+  if (user) {
+    await reportUser(user);
+    response.send({ text: "The user has been reported.", success: true });
+  } else response.send({ text: "The user doesn't exist.", success: false })
+});
+
+// post -> localhost:3000/terminate/$2b$04$p6XyPrVk.Fa.3FynMArTWeRMhpGtzljhyN70kOJ8uxQJFT.ttJl2K
+// should delete 'asdf'
+router.post('/terminate/:hash', async (request: Request, response: Response) => {
+  const user = await retrieveUserByHash(request.params.hash);
+
+  if (user) {
+    await deleteUsersImagesById(user.id)
+    await deleteUsersMatchesById(user.id)
+    await deleteUsersNotificationsById(user.id)
+    await deleteUsersTagsById(user.id)
+    await deleteUserByHash(user.hash)
+    response.send({ text: 'User has been deleted.', success: true });
+  }
+  else
+    response.send({ text: 'User has not been deleted.', success: false });
 });
 
 /*
