@@ -3,11 +3,11 @@ var nodemailer = require('nodemailer');
 export async function sendNewUserEmail(data) {
   var transporter = await nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    port: 465,
+    secure: true,
     auth: {
-      user: process.env.emailUser,
-      pass: process.env.emailPass
+      user: process.env["EMAILUSER"],
+      pass: process.env["EMAILPASS"]
     },
     tls: {
       rejectUnauthorized: false
@@ -34,8 +34,8 @@ export async function resetUserPassword(email, hash) {
     port: 465,
     secure: true,
     auth: {
-      user: process.env.emailUser,
-      pass: process.env.emailPass
+      user: process.env["EMAILUSER"],
+      pass: process.env["EMAILPASS"]
     },
     tls: {
       rejectUnauthorized: false
