@@ -162,4 +162,25 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+    .then(async function () {
+      return knex('users')
+        .insert({
+          username: 'Lucky',
+          password: await hash('tester123'),
+          firstname: 'sdfgsdf',
+          lastname: 'sdfgsdfg',
+          email: 'clongmor@mailinator.com',
+          gender: 'female',
+          interest: 'male',
+          age: '21',
+          countryName: 'Africa',
+          city: 'sdfgsdfg',
+          fame: 0,
+          hash: await (await hash('Lucky')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
+        });
+    })
 };

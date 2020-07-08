@@ -27,3 +27,9 @@ import { fileURLToPath } from "url"
 user sends request(app.ts) -> a route gets chosen (guest/auth/admin)
 calls function out of model file(user/image/match)
 calls query(dbservice.ts)
+
+NB tags on front end to be multiple
+NB fame rating is cheated by refreshing the page once logged in.
+no empty password allowed in settings change. do we need to check if old password= new password when changing pass?\
+age in register
+email in resetpass

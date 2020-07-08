@@ -6,12 +6,12 @@ export function sendNewUserEmail(data) {
     port: 465,
     secure: true,
     auth: {
-      user: process.env.emailUser,
-      pass: process.env.emailPass
+      user: process.env["EMAILUSER"],
+      pass: process.env["EMAILPASS"]
     }
   });
   var mailOptions = {
-    from: process.env.emailUser,
+    from: process.env["EMAILUSER"],
     to: data.email,
     subject: 'Welcome to Matcha!',
     text: 'Your account has been created!\n' +
