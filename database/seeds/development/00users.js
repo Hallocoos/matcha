@@ -277,6 +277,27 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('users')
         .insert({
+          username: 'tyuityui',
+          password: await hash('tyuityui'),
+          firstname: 'tyuityui',
+          lastname: 'tyuityui',
+          email: 'tyui@mailinator.com',
+          gender: 'female',
+          interest: 'male',
+          age: '21',
+          countryName: 'tyuityui',
+          city: 'tyuityui',
+          fame: 1000,
+          hash: await (await hash('tyuityui')).replace(/\//g, ''),
+          longitude: 17.0401,
+          latitude: -32.1827,
+          matchable: 1,
+          verified: 1
+        });
+    })
+    .then(async function () {
+      return knex('users')
+        .insert({
           username: 'qwerqwer',
           password: await hash('qwerqwer'),
           firstname: 'qwerqwer',
