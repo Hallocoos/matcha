@@ -6,7 +6,7 @@ import { updateUserValidator, newNotificationValidator, newMatchValidator, idVal
 import { addMatch, retrieveMatchByIds, retrieveMatchesById, acceptMatch } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 
-import { createTag, deleteTagById, retrieveTagsByMultipleUserIds } from '../models/tagModel';
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 import * as _ from 'underscore';
@@ -220,6 +220,20 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
         matchableUsers[i].tags.push(userTags[j].tag);
       }
     }
+  }
+  var k, count;
+  count = 0;
+  var adminTags = await retrieveTagsByUserId(request.body.id)
+  for (i = 0; matchableUsers[i]; i++) {
+    matchableUsers[i].tagCount = new Array;
+    for (j = 0; matchableUsers[i].tags[j]; j++) {
+      for (k = 0; adminTags[k]; k++) {
+        if (adminTags[k].tag.toLowerCase() == matchableUsers[i].tags[j].toLowerCase())
+          count += 1;
+      }
+    }
+    matchableUsers[i].tagCount.push(count);
+    count = 0;
   }
   // Append Images to users
   for (i = 0; matchableUsers[i]; i++) {
