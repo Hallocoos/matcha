@@ -93,12 +93,14 @@ export async function addMatch(body) {
 */
 export async function blockMatch(acceptId, requestId) {
   return knex('matches')
-    .where('acceptId', acceptId)
+    .where('blocked', false)
+    .andWhere('acceptId', acceptId)
     .andWhere('requestId', requestId)
     .orWhere('acceptId', requestId)
     .andWhere('requestId', acceptId)
     .update('blocked', true)
     .then(function (result) {
+      console.log(result);
       return result;
     });
 };
@@ -112,8 +114,8 @@ export async function blockMatch(acceptId, requestId) {
 */
 export async function acceptMatch(acceptId, requestId) {
   return knex('matches')
-    .where('acceptId', acceptId)
-    .andWhere('requestId', requestId)
+    .where('acceptId', requestId)
+    .andWhere('requestId', acceptId)
     .update('accepted', true)
     .then(function (result) {
       return result;
@@ -145,7 +147,7 @@ export async function retrieveMatchByIds(acceptId, requestId) {
  *    userId = <string>
  *  }
 */
-export async function retrieveMatchesById(userId) {
+export async function retrieveMatchesByUserId(userId) {
   return knex.select()
     .from('matches')
     .where('acceptId', userId)
