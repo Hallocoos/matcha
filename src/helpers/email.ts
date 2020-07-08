@@ -37,9 +37,8 @@ export async function resetUserPassword(email, hash) {
       user: process.env["EMAILUSER"],
       pass: process.env["EMAILPASS"]
     },
-    tls: {
-      rejectUnauthorized: false
-    }
+    logger: true,
+    debug: true
   });
   var mailOptions = {
     from: process.env["EMAILUSER"],
