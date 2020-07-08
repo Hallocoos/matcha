@@ -9,8 +9,6 @@ export async function sendNewUserEmail(data) {
       user: process.env.emailUser,
       pass: process.env.emailPass
     },
-    logger: true,
-    debug: true,
     tls: {
       rejectUnauthorized: false
     }
@@ -39,8 +37,9 @@ export async function resetUserPassword(email, hash) {
       user: process.env.emailUser,
       pass: process.env.emailPass
     },
-    logger: true,
-    debug: true
+    tls: {
+      rejectUnauthorized: false
+    }
   });
   var mailOptions = {
     from: process.env.emailUser,
