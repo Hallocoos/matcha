@@ -66,7 +66,7 @@ export async function retrieveUsersByGender(filters, id, interest, gender) {
 };
 
 // function to handle get user by id
-export async function retrieveUserById(id: string): Promise<User> {
+export async function retrieveUserById(id: string) {
   const result = await knexSelectByColumn('id', id, 'users');
   if (result[0])
     return (result[0]);
