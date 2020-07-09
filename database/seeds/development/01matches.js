@@ -7,9 +7,9 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('matches')
         .insert({
-          acceptId: 3,
+          acceptId: 8,
           requestId: 1,
-          accepter: 'qwerqwer',
+          accepter: 'asdfasdf',
           requester: 'Hallocoos',
           accepted: false,
           blocked: false,
@@ -19,9 +19,9 @@ exports.seed = function (knex, Promise) {
       return knex('matches')
         .insert({
           acceptId: 1,
-          requestId: 2,
+          requestId: 9,
           accepter: 'Hallocoos',
-          requester: 'asdfasdf',
+          requester: 'oiuqvgmhoiuqh',
           accepted: false,
           blocked: false,
         });
@@ -29,10 +29,10 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('matches')
         .insert({
-          acceptId: 4,
-          requestId: 2,
-          accepter: 'zxcvzxcv',
-          requester: 'asdfasdf',
+          acceptId: 1,
+          requestId: 10,
+          accepter: 'Hallocoos',
+          requester: 'oiuqnhnuvh',
           accepted: false,
           blocked: false,
         });
@@ -40,34 +40,12 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('matches')
         .insert({
-          acceptId: 4,
+          acceptId: 11,
           requestId: 1,
-          accepter: 'zxcvzxcv',
+          accepter: 'oiuwnhvfiuh',
           requester: 'Hallocoos',
           accepted: true,
           blocked: true,
-        });
-    })
-    .then(async function () {
-      return knex('matches')
-        .insert({
-          acceptId: 2,
-          requestId: 3,
-          accepter: 'asdfasdf',
-          requester: 'qwerqwer',
-          accepted: true,
-          blocked: false,
-        });
-    })
-    .then(async function () {
-      return knex('matches')
-        .insert({
-          acceptId: 4,
-          requestId: 3,
-          accepter: 'zxcvzxcv',
-          requester: 'qwerqwer',
-          accepted: true,
-          blocked: false,
         });
     })
 };
