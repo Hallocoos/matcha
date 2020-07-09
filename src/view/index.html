@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
 </head>
 
-<body>
-  <p data-bind="if: token(), style: {padding: 14}" id="navbar">
+<body style="height:100%; margin:0;">
+  <div id="main" style="min-height:100%; margin-bottom:-50px;">
+  <p style="display:inline-block;"><img src="Matcha_logo.png" width="80" height="70" title="Matcha"></p>
+  <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
+    <!-- need to make match logo and insert here so its always present -->
     <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
     <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
     <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
@@ -27,7 +30,7 @@
           <input data-bind="value: username">
         </td>
         <td>
-          <input data-bind="value: password">
+          <input type="password" data-bind="value: password">
         </td>
         <td>
           <button data-bind="click: submitCreds">Log In</button>
@@ -56,7 +59,7 @@
     <!-- <button>Add new picture</button> -->
     <div data-bind="if: ownImageSources().length < 5">
       <div>Add another picture</div>
-      <input type="file" id="myfile" name="myfile" accept=".png" data-bind="event: {change: $root.fileSelect}"><br><br>
+      <input type="file" id="myfile" name="myfile" accept=".png,.jpg,.jpeg" data-bind="event: {change: $root.fileSelect}"><br><br>
       <div data-bind="if: imageWorkspace.source()">
         <button data-bind="click: uploadNewImage">Upload New Image</button>
         <button data-bind="click: uploadProfileImage">Upload As Profile Image</button>
@@ -82,7 +85,7 @@
       <div data-bind="text: loggedInUser.username"></div>
       <br>
 
-      <b>firstname</b>
+      <b>First Name</b>
       <!-- ko if: settingEditing() != 'firstname'-->
       <button data-bind="click: selectSettingEditing.bind($data, 'firstname')">Edit</button>
       <div data-bind="text: loggedInUser.firstname"></div>
@@ -95,7 +98,7 @@
       <!-- /ko -->
       <br>
 
-      <b>lastname</b>
+      <b>Last Name</b>
       <!-- ko if: settingEditing() != 'lastname'-->
       <button data-bind="click: selectSettingEditing.bind($data, 'lastname')">Edit</button>
       <div data-bind="text: loggedInUser.lastname"></div>
@@ -108,10 +111,10 @@
       <!-- /ko -->
       <br>
 
-      <b>age</b>
+      <b>Age</b>
       <!-- ko if: settingEditing() != 'age'-->
       <button data-bind="click: selectSettingEditing.bind($data, 'age')">Edit</button>
-      <div data-bind="text: loggedInUser.age"></div>
+      <div type="number" data-bind="text: loggedInUser.age"></div>
       <!-- /ko -->
       <!-- ko if: settingEditing() == 'age'-->
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
@@ -121,7 +124,7 @@
       <!-- /ko -->
       <br>
 
-      <b>gender</b>
+      <b>Gender</b>
       <!-- ko if: settingEditing() != 'gender'-->
       <button data-bind="click: selectSettingEditing.bind($data, 'gender')">Edit</button>
       <div data-bind="text: loggedInUser.gender"></div>
@@ -129,17 +132,16 @@
       <!-- ko if: settingEditing() == 'gender'-->
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
-        <input data-bind="value: settingEditingWorkspace" list="genderList">
-        <datalist id="genderList">
-          <option value="other">
-          <option value="female">
-          <option value="male">
-        </datalist>
+        <select id="genderList" data-bind="value: settingEditingWorkspace" list="genderList">
+          <option value="other">other</option>
+          <option value="female">female</option>
+          <option value="male">male</option>
+        </select>
       </div>
       <!-- /ko -->
       <br>
 
-      <b>biography</b>
+      <b>Biography</b>
       <!-- ko if: settingEditing() != 'biography'-->
       <button data-bind="click: selectSettingEditing.bind($data, 'biography')">Edit</button>
       <div data-bind="text: loggedInUser.biography() ? loggedInUser.biography : 'Not yet completed.'"></div>
@@ -160,16 +162,16 @@
       <!-- ko if: settingEditing() == 'interest'-->
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
-        <input data-bind="value: settingEditingWorkspace" list="genderList">
-        <datalist id="genderList">
-          <option value="other">
-          <option value="female">
-          <option value="male">
-        </datalist>
+        <select id="genderList" data-bind="value: settingEditingWorkspace" list="genderList">
+          <option value="other">other</option>
+          <option value="female">female</option>
+          <option value="male">male</option>
+        </select>
       </div>
       <!-- /ko -->
       <br>
 
+      <!-- need to allow for multiple tags adding/deleting, not just editing a single field -->
       <b>tags</b>
       <!-- ko if: settingEditing() != 'tags'-->
       <button data-bind="click: selectSettingEditing.bind($data, 'tags')">Edit</button>
@@ -255,7 +257,7 @@
     <!-- ko if: settingEditing() == 'password' -->
     <button data-bind="click: saveChangesToLoggedInUser">Save</button>
     <div>
-      <input data-bind="value: settingEditingWorkspace">
+      <input type="password" data-bind="value: settingEditingWorkspace">
     </div>
     <!-- /ko -->
     <br>
@@ -268,7 +270,7 @@
     <!-- ko if: settingEditing() == 'email' -->
     <button data-bind="click: saveChangesToLoggedInUser">Save</button>
     <div>
-      <input data-bind="value: settingEditingWorkspace">
+      <input type="email" data-bind="value: settingEditingWorkspace">
     </div>
     <!-- /ko -->
     <br>
@@ -287,7 +289,7 @@
 
   <div data-bind="if: selectedView() == 'reset'" id="reset">
     <h3>Please enter your new password:</h3>
-    <input data-bind="value: password">
+    <input type="password" data-bind="value: password">
     <button data-bind="click: sendNewPassword">Reset Password</button>
     <div><button data-bind="click: logOut">Return to Log In</button></div>
   </div>
@@ -308,28 +310,30 @@
     <div>Lastname:</div>
     <input data-bind="value: newRegistration.lastname">
     <div>Age:</div>
-    <input data-bind="value: newRegistration.age">
+    <input onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" data-bind="value: newRegistration.age">
     <div>Gender:</div>
-    <input data-bind="value: newRegistration.gender" list="genderList">
-    <datalist id="genderList">
-      <option value="other">
-      <option value="female">
-      <option value="male">
-    </datalist>
+    <select id="genderList" data-bind="value: newRegistration.gender" list="genderList">
+      <option value="other">other</option>
+      <option value="female">female</option>
+      <option value="male">male</option>
+    </select>
     <div>Email:</div>
-    <input data-bind="value: newRegistration.email">
+    <input type="email" data-bind="value: newRegistration.email">
     <div>Password:</div>
-    <input data-bind="value: newRegistration.password">
-    <button data-bind="click: sendNewRegistrationToDb">Register</button>
+    <input type="password" data-bind="value: newRegistration.password">
     <p> </p>
     <div>
+      <button data-bind="click: sendNewRegistrationToDb">Register</button>
       <button data-bind="click: logOut">Return to Log In</button>
     </div>
   </div>
 
   <div id="errordiv"></div>
-
-</body>
+  </div>
+  <footer style="text-align:center; padding:30px; height:50px;">
+    <p>Authors: hde-vos jrheeder clongmor rvan-wey</p>
+  </footer>
+</body> 
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script type='text/javascript' src='knockout.mapping.js'></script>
