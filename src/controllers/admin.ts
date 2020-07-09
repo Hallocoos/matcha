@@ -258,7 +258,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   }
   // Find all matches related to loggin in user
   let matches = await retrieveMatchesByUserId(user.id);
-  // Filters out all matches where blocked and accepted !== 1
+  // Filters out all matches where blocked and accepted == 0
   matches = matches.filter(obj => (
     obj.accepted == 1 || obj.blocked == 1));
   // Removes all users that have been blocked or have already accepted a match with the logged in user.
@@ -266,11 +266,22 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     matchableUsers = matchableUsers.filter(obj => (
       obj.id !== matches[j].acceptId && obj.id !== matches[j].requestId));
   }
-  // Sort by category is specified direction
-  if (request.body.sorting.direction == 'ascending')
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
-  else
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
+  // Find all matches related to loggin in user
+  matches = await retrieveMatchesByUserId(user.id);
+  // Filters out all matches where blocked and accepted == 1
+  matches = matches.filter(obj => (
+    !obj.accepted && !obj.blocked));
+  // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; matches[j]; j++) {
+      if (matchableUsers[i].id == matches[j].acceptId) {
+        matchableUsers[i].blockable = 1;
+      } else if (matchableUsers[i].id == matches[j].requestId) {
+        matchableUsers[i].matchable = 1;
+        matchableUsers[i].blockable = 1;
+      }
+    }
+  }
   // Filter out users by distance
   let distanceMin = request.body.filters.distanceMin || 0;
   let distanceMax = request.body.filters.distanceMax || 10000;
@@ -281,6 +292,11 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   // Filter out by amount of correlation tags
   matchableUsers = matchableUsers.filter(obj => (
     obj.tagCount[0] >= tagsInCommon));
+  // Sort by category is specified direction
+  if (request.body.sorting.direction == 'ascending')
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
+  else
+    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
   // Determine reponse based on whether any users still exist after filtering
   if (matchableUsers[0])
     response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
