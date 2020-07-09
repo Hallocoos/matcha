@@ -33,15 +33,16 @@ router.post('/profile', async (request: Request, response: Response) => {
   console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
-      // Find all matches related to profile user and viewing User
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
-      console.log(match);
-      // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
-      console.log(userProfile.id, match.acceptId, match.requestId);
-      if (userProfile.id == match.acceptId) {
-        userProfile.blockable = 1;
-      } else if (userProfile.id == match.requestId) {
-        userProfile.createMatch = 1;
+      if (match) {
+        if (userProfile.id == match.acceptId) {
+          userProfile.blockable = 1;
+        } else if (userProfile.id == match.requestId) {
+          userProfile.createMatch = 1;
+          userProfile.blockable = 1;
+        }
+      } else {
+        userProfile.swipeable = 1;
         userProfile.blockable = 1;
       }
       const userViewer = await retrieveUserById(request.body.viewerId);
