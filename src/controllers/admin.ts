@@ -244,18 +244,18 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     count = 0;
   }
   // Append Images to users
-  // for (i = 0; matchableUsers[i]; i++) {
-  //   userIds.push(matchableUsers[i].id);
-  //   matchableUsers[i].images = new Array;
-  // }
-  // let userImages = await retrieveImagesByMultipleUserIds(userIds);
-  // for (i = 0; matchableUsers[i]; i++) {
-  //   for (j = 0; userImages[j]; j++) {
-  //     if (matchableUsers[i].id == userImages[j].userId) {
-  //       matchableUsers[i].images.push(userImages[j].image);
-  //     }
-  //   }
-  // }
+  for (i = 0; matchableUsers[i]; i++) {
+    userIds.push(matchableUsers[i].id);
+    matchableUsers[i].images = new Array;
+  }
+  let userImages = await retrieveImagesByMultipleUserIds(userIds);
+  for (i = 0; matchableUsers[i]; i++) {
+    for (j = 0; userImages[j]; j++) {
+      if (matchableUsers[i].id == userImages[j].userId) {
+        matchableUsers[i].images.push(userImages[j].image);
+      }
+    }
+  }
   // Find all matches related to loggin in user
   let matches = await retrieveMatchesByUserId(user.id);
   // Filters out all matches where blocked and accepted == 0
