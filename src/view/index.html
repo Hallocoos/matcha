@@ -282,10 +282,6 @@
 
   <div data-bind="if: selectedView() == 'notifications'" id="notifications">
     <h1>This will be notifications view.</h1>
-    <div data-bind="foreach: {data: notifications, as: 'notification'}" id="notification">
-      <div data-bind="text: notifications.sender"></div>
-      <div data-bind="text: notifications.message"></div>
-    </div>
     <!-- <h6>test</h6> -->
   </div>
 
@@ -370,28 +366,6 @@
     // console.log(viewModel.ownImageSources())
   }
 
-  async function putNotificationsInViewModel(id) {
-    var body = JSON.stringify({
-      id: id,
-    })
-    await fetch("http://localhost:3000/getNotifications", {
-      method: "POST",
-      body: body,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + viewModel.token(),
-      },
-    }).then(response =>
-      response.json()
-    ).then(data => {
-      console.log(data)
-      viewModel.notifications = data;
-    })
-    // .catch(er => {
-    //   document.getElementById("errordiv").innerHTML = "Error setting notification data. Reason: " + er.message + "."
-    // })
-  }
-
   function resetSettingEditing() {
     // console.log("reset setting editing called")
     viewModel.settingEditing('')
@@ -415,7 +389,6 @@
       username: ko.observable(""),
     },
     ownImageSources: ko.observable([]),
-    notifications: ko.observable([]),
     password: ko.observable(""),
     reset: ko.observable(),
     selectedView: ko.observable(""),
@@ -672,7 +645,6 @@
           viewModel.token(data.token)
           viewModel.selectedView('notifications')
           putUserInViewModel(data.id);
-          putNotificationsInViewModel(data.id);
         } else {
           alert(data.text)
         }
