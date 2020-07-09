@@ -271,7 +271,6 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
   // Filters out all matches where blocked and accepted == 1
   matches = matches.filter(obj => (
     !obj.accepted && !obj.blocked));
-  console.log(matches);
   // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
   for (i = 0; matchableUsers[i]; i++) {
     for (j = 0; matches[j]; j++) {
