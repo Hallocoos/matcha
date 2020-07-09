@@ -1,13 +1,14 @@
 <html lang="en">
 
 <head>
-  <h1>Matcha</h1>
   <meta charset="UTF-8">
 </head>
 
 <body style="height:100%; margin:0;">
   <div id="main" style="min-height:100%; margin-bottom:-50px;">
-  <p data-bind="if: token(), style: {padding: 14}" id="navbar">
+  <p style="display:inline-block;"><img src="Matcha_logo.png" width="80" height="70" title="Matcha"></p>
+  <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
+    <!-- need to make match logo and insert here so its always present -->
     <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
     <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
     <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
