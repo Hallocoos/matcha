@@ -5,7 +5,7 @@
 </head>
 
 <body>
-  
+
   <div id="errordiv"></div>
 
   <p data-bind="if: token(), style: {padding: 14}" id="navbar">
@@ -84,9 +84,12 @@
 
           </td>
           <td id="buttons">
-            <button style="display: block; width: 100%;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">View Profile</button>
-            <!-- ko if: true  --> <!-- which property can be used here to hide button -->
-            <button style="display: block; width: 100%;" data-bind="click: $root.swipeRight.bind($data)">Swipe Right</button>
+            <button style="display: block; width: 100%;"
+              data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">View Profile</button>
+            <!-- ko if: true  -->
+            <!-- which property can be used here to hide button -->
+            <button style="display: block; width: 100%;" data-bind="click: $root.swipeRight.bind($data)">Swipe
+              Right</button>
             <!-- /ko -->
             <button style="display: block; width: 100%;" data-bind="click: ">Cancel Profile</button>
           </td>
@@ -96,6 +99,16 @@
     </div>
 
     <div data-bind="if: focussedProfileIsSet" id="focussedProfile">
+
+      <div id="buttons">
+        <!-- ko if: focussedProfile.swipeable  -->
+        <!-- which property can be used here to hide button -->
+        <button data-bind="click: $root.swipeRight.bind($data, ko.toJS(focussedProfile))">Swipe Right</button>
+        <!-- /ko -->
+        <!-- ko if: focussedProfile.blockable -->
+        <button data-bind="click: cancelProfile.bind($data, ko.toJS(focussedProfile))">Cancel Profile</button>
+        <!-- /ko -->
+      </div>
 
       <div data-bind="foreach: {data: focussedProfileImageSources, as: 'image'}" id="profileImage">
         <span data-bind="if: profilePicture == 1">
@@ -537,6 +550,35 @@
     token: ko.observable(),
     username: ko.observable(""),
 
+    async cancelProfile(targetProfile, data) {
+      // console.log(data.id || targetProfile.id)
+      // { "acceptId": 5, "requestId": 3 }
+      var body = JSON.stringify({
+        acceptId: data.id || targetProfile.id,
+        requestId: viewModel.loggedInUser.id(),
+      })
+      await fetch("http://localhost:3000/blockMatch", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        console.log(data)
+        alert(data.text)
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error blocking match. Reason: " + er.message + "."
+      })
+      if (viewModel.focussedProfileIsSet()) {
+        viewModel.putFocusedProfileInViewModel(targetProfile)
+      } else {
+        putRecommendationsInViewModel()
+      }
+    },
+
     async deleteImage(id, data) {
       if (!confirm("Delete image?")) return
       var body = JSON.stringify({ id: String(id) })
@@ -831,10 +873,35 @@
       })
     },
 
-    async swipeRight(data) {
-      console.log(data)
+    async swipeRight(targetProfile, data) {
+      console.log(data.id || targetProfile.id)
+      // { "acceptId": 5, "requestId": 3 }
+      var body = JSON.stringify({
+        acceptId: data.id || targetProfile.id,
+        requestId: viewModel.loggedInUser.id(),
+      })
+      await fetch("http://localhost:3000/createMatch", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        // console.log(data)
+        alert(data.text)
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error creating match. Reason: " + er.message + "."
+      })
+      if (viewModel.focussedProfileIsSet()) {
+        viewModel.putFocusedProfileInViewModel(targetProfile)
+      } else {
+        putRecommendationsInViewModel()
+      }
     },
-    
+
     async uploadNewImage() {
       var body = JSON.stringify({
         userId: viewModel.loggedInUser.id(),

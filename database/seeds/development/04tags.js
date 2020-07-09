@@ -382,4 +382,22 @@ exports.seed = function (knex, Promise) {
         tag: 'asdf'
       });
     })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 21,
+        tag: 'bored'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 21,
+        tag: 'qwer'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 21,
+        tag: 'asdf'
+      });
+    })
 };
