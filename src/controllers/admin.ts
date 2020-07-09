@@ -2,8 +2,21 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
-import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
+import {
+  retrieveNotificationsByReceiveId,
+  retrieveNotificationsBySendIdAndReceiveId,
+  addNotification,
+  setNotificationsAsSeenByReceiveId,
+  retrieveNotifications
+} from '../models/notificationModel';
+import {
+  addMatch,
+  retrieveMatchByIds,
+  blockMatch,
+  acceptMatch,
+  retrieveMatchesByUserId,
+  retrieveMatchByAcceptId, retrieveMatches
+} from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
@@ -90,12 +103,17 @@ router.post('/createNotifications', async (request: Request, response: Response)
   if (!errors) {
     let sender: any = await retrieveUserById(request.body.sendId);
     let receiver: any = await retrieveUserById(request.body.receiveId);
-    if (!sender.username && !receiver.username)
-      response.send({ text: 'The user you have tried to match with does not exist.', success: false });
-    else {
+    if (!sender.username && !receiver.username) {
+      response.send({text: 'The user you have tried to match with does not exist.', success: false});
+    } else {
       request.body.sender = sender.username;
       request.body.receiver = receiver.username;
-      await addNotification(request.body);
+      let matches = await retrieveMatchByIds(request.body.receiveId, request.body.sendId);
+      console.log(matches);
+        if (matches.blocked == '1') {
+          response.send({text: 'The user you have tried to match with does not exist.', success: false});
+          return ;
+        } await addNotification(request.body)
       response.send({ text: 'The recipient will be notified.', success: true });
     }
   } else
