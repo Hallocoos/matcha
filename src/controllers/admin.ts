@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator, profilePictureExists } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
@@ -30,6 +30,7 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
+  console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
       // Find all matches related to profile user and viewing User
@@ -266,7 +267,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     for (i = 0; matchableUsers[i]; i++) {
       for (j = 0; userImages[j]; j++) {
         if (matchableUsers[i].id == userImages[j].userId) {
-          matchableUsers[i].images.push(userImages[j].image);
+          matchableUsers[i].images.push(userImages[j]);
         }
       }
     }
