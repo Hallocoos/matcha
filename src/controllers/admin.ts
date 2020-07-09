@@ -100,7 +100,7 @@ router.post('/createNotifications', async (request: Request, response: Response)
       for(let i = 0; matches[i]; i++) {
         if(matches[i].blocked == '1') {
           let notifications = await retrieveNotifications();
-          let test = notifications.filter(obj => ((obj.receiveId == matches[i].acceptId && obj.sendId == matches[i].requestId) && matches[i].blocked == '1'))
+          let test = notifications.filter(obj => ((obj.receiveId !== matches[i].acceptId && obj.sendId !== matches[i].requestId) && matches[i].blocked == '1'))
           console.log(test);
         }
       }
