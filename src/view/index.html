@@ -499,7 +499,7 @@
         var gps = viewModel.settingEditingWorkspace().replace(" ", "").split(",")
         data["latitude"] = gps[0]
         data["longitude"] = gps[1]
-      } else if (viewModel.settingEditing() == "password" && !(viewModel.settingEditingWorkspace().length > 7) ) {
+      } else if (viewModel.settingEditing() == "password" && !(viewModel.settingEditingWorkspace().length > 7)) {
         alert("Password should have at least 8 characters.")
         resetSettingEditing()
         return
