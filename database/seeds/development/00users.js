@@ -15,6 +15,7 @@ exports.seed = function (knex, Promise) {
   // Deletes ALL existing entries
   return knex('users').del()
     // Inserts seed entries
+  // 1
     .then(async function () {
       return knex('users')
         .insert({
@@ -37,7 +38,8 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
-    .then(async function () {
+      // 2
+      .then(async function () {
       return knex('users')
         .insert({
           username: 'Fulk',
@@ -59,7 +61,8 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
-    .then(async function () {
+      // 3
+      .then(async function () {
       return knex('users')
         .insert({
           username: 'Samo',
@@ -81,6 +84,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 4
     .then(async function () {
       return knex('users')
         .insert({
@@ -103,6 +107,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 5
     .then(async function () {
       return knex('users')
         .insert({
@@ -125,6 +130,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 6
     .then(async function () {
       return knex('users')
         .insert({
@@ -147,6 +153,7 @@ exports.seed = function (knex, Promise) {
           verified: 0
         });
     })
+      // 7
     .then(async function () {
         return knex('users')
             .insert({
@@ -169,6 +176,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 8
     .then(async function () {
         return knex('users')
             .insert({
@@ -191,6 +199,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 9
     .then(async function () {
         return knex('users')
             .insert({
@@ -213,6 +222,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 10
     .then(async function () {
         return knex('users')
             .insert({
@@ -235,6 +245,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 11
     .then(async function () {
         return knex('users')
             .insert({
@@ -257,6 +268,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 12
     .then(async function () {
         return knex('users')
             .insert({
@@ -279,6 +291,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 13
     .then(async function () {
         return knex('users')
             .insert({
@@ -301,6 +314,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 14
     .then(async function () {
         return knex('users')
             .insert({
@@ -323,6 +337,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 15
     .then(async function () {
         return knex('users')
             .insert({
@@ -345,6 +360,7 @@ exports.seed = function (knex, Promise) {
                 verified: 0
             });
     })
+      // 16
     .then(async function () {
         return knex('users')
             .insert({
@@ -367,6 +383,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 17
     .then(async function () {
         return knex('users')
             .insert({
@@ -389,6 +406,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 18
     .then(async function () {
         return knex('users')
             .insert({
@@ -411,6 +429,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 19
     .then(async function () {
         return knex('users')
             .insert({
@@ -433,6 +452,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 20
     .then(async function () {
         return knex('users')
             .insert({
@@ -455,6 +475,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 21
     .then(async function () {
         return knex('users')
             .insert({
@@ -477,6 +498,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 22
     .then(async function () {
         return knex('users')
             .insert({
@@ -499,6 +521,7 @@ exports.seed = function (knex, Promise) {
                 verified: 0
             });
     })
+      // 23
     .then(async function () {
         return knex('users')
             .insert({
@@ -521,6 +544,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 24
     .then(async function () {
         return knex('users')
             .insert({
@@ -543,6 +567,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 25
     .then(async function () {
         return knex('users')
             .insert({
@@ -565,6 +590,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 26
     .then(async function () {
         return knex('users')
             .insert({
@@ -587,6 +613,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 28
     .then(async function () {
         return knex('users')
             .insert({
@@ -609,6 +636,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 29
     .then(async function () {
         return knex('users')
             .insert({
@@ -631,6 +659,7 @@ exports.seed = function (knex, Promise) {
                 verified: 1
             });
     })
+      // 30
     .then(async function () {
         return knex('users')
             .insert({
@@ -653,6 +682,7 @@ exports.seed = function (knex, Promise) {
                 verified: 0
             });
     })
+      // 31
     .then(async function () {
       return knex('users')
         .insert({
@@ -675,6 +705,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 32
     .then(async function () {
       return knex('users')
         .insert({
@@ -697,6 +728,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 33
     .then(async function () {
       return knex('users')
         .insert({
@@ -719,6 +751,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 34
     .then(async function () {
       return knex('users')
         .insert({
@@ -741,6 +774,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 35
     .then(async function () {
       return knex('users')
         .insert({
@@ -763,6 +797,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 36
     .then(async function () {
       return knex('users')
         .insert({
@@ -785,6 +820,7 @@ exports.seed = function (knex, Promise) {
           verified: 1
         });
     })
+      // 37
     .then(async function () {
       return knex('users')
         .insert({
