@@ -45,6 +45,17 @@ router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
   if (userProfile) {
     if (request.body.viewerId) {
+      // Find all matches related to profile user and viewing User
+      let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
+      console.log(match);
+      // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
+      console.log(userProfile.id, match.acceptId, match.requestId);
+      if (userProfile.id == match.acceptId) {
+        userProfile.blockable = 1;
+      } else if (userProfile.id == match.requestId) {
+        userProfile.createMatch = 1;
+        userProfile.blockable = 1;
+      }
       const userViewer = await retrieveUserById(request.body.viewerId);
       const body = {
         sender: userViewer.username,
@@ -231,82 +242,102 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 */
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
-  let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
-  // Distance Calculations
-  matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
-  // Adding tags to user Objects
-  var userIds = new Array;
-  var j, i;
-  for (i = 0; matchableUsers[i]; i++) {
-    userIds.push(matchableUsers[i].id);
-    matchableUsers[i].tags = new Array;
-  }
-  // Append Tags to users
-  let userTags = await retrieveTagsByMultipleUserIds(userIds);
-  for (i = 0; matchableUsers[i]; i++) {
-    for (j = 0; userTags[j]; j++) {
-      if (matchableUsers[i].id == userTags[j].userId) {
-        matchableUsers[i].tags.push(userTags[j].tag);
+  if (!user.matchable)
+    response.send({ text: "Please make sure that all information in your profile is filled out, in order for you to match with other users.", success: false });
+  else {
+    let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
+    // Distance Calculations
+    matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
+    // Adding tags to user Objects
+    var userIds = new Array;
+    var j, i;
+    for (i = 0; matchableUsers[i]; i++) {
+      userIds.push(matchableUsers[i].id);
+      matchableUsers[i].tags = new Array;
+    }
+    // Append Tags to users
+    let userTags = await retrieveTagsByMultipleUserIds(userIds);
+    for (i = 0; matchableUsers[i]; i++) {
+      for (j = 0; userTags[j]; j++) {
+        if (matchableUsers[i].id == userTags[j].userId) {
+          matchableUsers[i].tags.push(userTags[j].tag);
+        }
       }
     }
-  }
-  var k, count;
-  count = 0;
-  var adminTags = await retrieveTagsByUserId(request.body.id)
-  for (i = 0; matchableUsers[i]; i++) {
-    matchableUsers[i].tagCount = new Array;
-    for (j = 0; matchableUsers[i].tags[j]; j++) {
-      for (k = 0; adminTags[k]; k++) {
-        if (adminTags[k].tag.toLowerCase() == matchableUsers[i].tags[j].toLowerCase())
-          count += 1;
-      }
-    }
-    matchableUsers[i].tagCount.push(count);
+    var k, count;
     count = 0;
-  }
-  // Append Images to users
-  for (i = 0; matchableUsers[i]; i++) {
-    userIds.push(matchableUsers[i].id);
-    matchableUsers[i].images = new Array;
-  }
-  let userImages = await retrieveImagesByMultipleUserIds(userIds);
-  for (i = 0; matchableUsers[i]; i++) {
-    for (j = 0; userImages[j]; j++) {
-      if (matchableUsers[i].id == userImages[j].userId) {
-        matchableUsers[i].images.push(userImages[j].image);
+    var adminTags = await retrieveTagsByUserId(request.body.id)
+    for (i = 0; matchableUsers[i]; i++) {
+      matchableUsers[i].tagCount = new Array;
+      for (j = 0; matchableUsers[i].tags[j]; j++) {
+        for (k = 0; adminTags[k]; k++) {
+          if (adminTags[k].tag.toLowerCase() == matchableUsers[i].tags[j].toLowerCase())
+            count += 1;
+        }
+      }
+      matchableUsers[i].tagCount.push(count);
+      count = 0;
+    }
+    // Append Images to users
+    for (i = 0; matchableUsers[i]; i++) {
+      userIds.push(matchableUsers[i].id);
+      matchableUsers[i].images = new Array;
+    }
+    let userImages = await retrieveImagesByMultipleUserIds(userIds);
+    for (i = 0; matchableUsers[i]; i++) {
+      for (j = 0; userImages[j]; j++) {
+        if (matchableUsers[i].id == userImages[j].userId) {
+          matchableUsers[i].images.push(userImages[j].image);
+        }
       }
     }
-  }
-  // Find all matches related to loggin in user
-  let matches = await retrieveMatchesByUserId(user.id);
-  // Filters out all matches where blocked and accepted !== 1
-  matches = matches.filter(obj => (
-    obj.accepted == 1 || obj.blocked == 1));
-  // Removes all users that have been blocked or have already accepted a match with the logged in user.
-  for (j = 0; matches[j]; j++) {
+    // Find all matches related to loggin in user
+    let matches = await retrieveMatchesByUserId(user.id);
+    // Filters out all matches where blocked and accepted == 0
+    matches = matches.filter(obj => (
+      obj.accepted == 1 || obj.blocked == 1));
+    // Removes all users that have been blocked or have already accepted a match with the logged in user.
+    for (j = 0; matches[j]; j++) {
+      matchableUsers = matchableUsers.filter(obj => (
+        obj.id !== matches[j].acceptId && obj.id !== matches[j].requestId));
+    }
+    // Find all matches related to loggin in user
+    matches = await retrieveMatchesByUserId(user.id);
+    // Filters out all matches where blocked and accepted == 1
+    matches = matches.filter(obj => (
+      !obj.accepted && !obj.blocked));
+    // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
+    for (i = 0; matchableUsers[i]; i++) {
+      for (j = 0; matches[j]; j++) {
+        if (matchableUsers[i].id == matches[j].acceptId) {
+          matchableUsers[i].blockable = 1;
+        } else if (matchableUsers[i].id == matches[j].requestId) {
+          matchableUsers[i].createMatch = 1;
+          matchableUsers[i].blockable = 1;
+        }
+      }
+    }
+    // Filter out users by distance
+    let distanceMin = request.body.filters.distanceMin || 0;
+    let distanceMax = request.body.filters.distanceMax || 10000;
     matchableUsers = matchableUsers.filter(obj => (
-      obj.id !== matches[j].acceptId && obj.id !== matches[j].requestId));
+      obj.distance >= distanceMin && obj.distance <= distanceMax));
+    // Count similar tags
+    var tagsInCommon = request.body.sorting.tagsInCommon || 0;
+    // Filter out by amount of correlation tags
+    matchableUsers = matchableUsers.filter(obj => (
+      obj.tagCount[0] >= tagsInCommon));
+    // Sort by category is specified direction
+    if (request.body.sorting.direction == 'ascending')
+      matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
+    else
+      matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
+    // Determine reponse based on whether any users still exist after filtering
+    if (matchableUsers[0])
+      response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
+    else
+      response.send({ text: 'No matches have been found.', success: false });
   }
-  // Sort by category is specified direction
-  if (request.body.sorting.direction == 'ascending')
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
-  else
-    matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category).reverse();
-  // Filter out users by distance
-  let distanceMin = request.body.filters.distanceMin || 0;
-  let distanceMax = request.body.filters.distanceMax || 10000;
-  matchableUsers = matchableUsers.filter(obj => (
-    obj.distance >= distanceMin && obj.distance <= distanceMax));
-  // Count similar tags
-  var tagsInCommon = request.body.sorting.tagsInCommon || 0;
-  // Filter out by amount of correlation tags
-  matchableUsers = matchableUsers.filter(obj => (
-    obj.tagCount[0] >= tagsInCommon));
-  // Determine reponse based on whether any users still exist after filtering
-  if (matchableUsers[0])
-    response.send({ matches: matchableUsers, text: 'Matches have been found.', success: true });
-  else
-    response.send({ text: 'No matches have been found.', success: false });
 });
 // {"id":2} -reports 'asdf'
 router.post('/reportFalseAccount', async (request: Request, response: Response) => {
