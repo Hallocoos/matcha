@@ -2,8 +2,21 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
-import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
+import {
+  retrieveNotificationsByReceiveId,
+  retrieveNotificationsBySendIdAndReceiveId,
+  addNotification,
+  setNotificationsAsSeenByReceiveId,
+  retrieveNotifications
+} from '../models/notificationModel';
+import {
+  addMatch,
+  retrieveMatchByIds,
+  blockMatch,
+  acceptMatch,
+  retrieveMatchesByUserId,
+  retrieveMatchByAcceptId, retrieveMatches
+} from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
@@ -83,6 +96,14 @@ router.post('/createNotifications', async (request: Request, response: Response)
     else {
       request.body.sender = sender.username;
       request.body.receiver = receiver.username;
+      let matches = await retrieveMatches();
+      for(let i = 0; matches[i]; i++) {
+        if(matches[i].blocked == '1') {
+          let notifications = await retrieveNotifications();
+          let test = notifications.filter(obj => ((obj.receiveId == matches[i].acceptId && obj.sendId == matches[i].requestId) && matches[i].blocked == '1'))
+          console.log(test);
+        }
+      }
       await addNotification(request.body);
       response.send({ text: 'The recipient will be notified.', success: true });
     }
