@@ -4,207 +4,363 @@
   <meta charset="UTF-8">
 </head>
 
-<body>
+<body style="height:100%; margin:0;">
+  <div id="main" style="min-height:100%; margin-bottom:-50px;">
+    <p style="display:inline-block;"><img src="Matcha_logo.png" width="80" height="70" title="Matcha"></p>
+    
+    <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
+      <!-- need to make match logo and insert here so its always present -->
+      <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
+      <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
+      <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
+      <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
+      <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
+      <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
+      <hr>
+    </p>
 
-  <div id="errordiv"></div>
-
-  <p data-bind="if: token(), style: {padding: 14}" id="navbar">
-    <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
-    <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
-    <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
-    <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
-    <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
-    <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
-    <hr>
-  </p>
-
-  <div data-bind="if: selectedView() == 'login'" id="login">
-    <h3>Enter credentials to log in</h3>
-    <table>
-      <tr>
-        <td>Username:</td>
-        <td>Password:</td>
-      </tr>
-      <tr>
-        <td>
-          <input data-bind="value: username">
-        </td>
-        <td>
-          <input data-bind="value: password">
-        </td>
-        <td>
-          <button data-bind="click: submitCreds">Log In</button>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td>
-          <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my
-              password</a>.</h6>
-        </td>
-      </tr>
-    </table>
-    <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.</h3>
-  </div>
-
-  <div data-bind="if: selectedView() == 'match'" id="match">
-
-    <div data-bind="ifnot: focussedProfileIsSet" id="recommendationsView">
-      <div data-bind="foreach: recommendations" id="recommendationsCanvas">
-        <table>
-          <td id="profileImage">
-
-            <span data-bind="foreach: images">
-              <span data-bind="if: profilePicture == 1">
-                <img width="auto" height="auto"
-                  data-bind="attr: {src: image}, click: $root.putFocusedProfileInViewModel.bind($data)"
-                  style="float: left;">
-              </span>
-            </span>
+    <div data-bind="if: selectedView() == 'login'" id="login">
+      <h3>Enter credentials to log in</h3>
+      <table>
+        <tr>
+          <td>Username:</td>
+          <td>Password:</td>
+        </tr>
+        <tr>
+          <td>
+            <input data-bind="value: username">
           </td>
-          <td id="profileSummary">
-            <p style="display: inline;">
-              <b>Username</b>
-            <div data-bind="text: username"></div>
-            <b>Age</b>
-            <div data-bind="text: age"></div>
-            <b>Distance</b>
-            <div data-bind="text: Math.ceil(distance) + ' km'"> </div>
-            <b>Fame</b>
-            <div data-bind="text: fame"></div>
-            <b>Gender</b>
-            <div data-bind="text: gender"></div>
-            <b>Online</b>
-            <div data-bind="text: ($data.online ? online : 'Last seen at ' + lastSeen)"></div>
-            <b>Tags</b>
-            <ul data-bind="foreach: tags">
-              <li data-bind="text: $data"></li>
-            </ul>
-            </p>
-
+          <td>
+            <input type="password" data-bind="value: password">
           </td>
-          <td id="buttons">
-            <button style="display: block; width: 100%;"
-              data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">View Profile</button>
-            <!-- ko if: true  -->
-            <!-- which property can be used here to hide button -->
-            <button style="display: block; width: 100%;" data-bind="click: $root.swipeRight.bind($data)">Swipe
-              Right</button>
-            <!-- /ko -->
-            <button style="display: block; width: 100%;" data-bind="click: ">Cancel Profile</button>
+          <td>
+            <button data-bind="click: submitCreds">Log In</button>
           </td>
-        </table>
-        <br>
-      </div>
+        </tr>
+        <tr>
+          <td></td>
+          <td>
+            <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my
+                password</a>.</h6>
+          </td>
+        </tr>
+      </table>
+      <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.
+      </h3>
     </div>
 
-    <div data-bind="if: focussedProfileIsSet" id="focussedProfile">
+    <div data-bind="if: selectedView() == 'match'" id="match">
 
-      <div id="buttons">
-        <!-- ko if: focussedProfile.swipeable  -->
-        <!-- which property can be used here to hide button -->
-        <button data-bind="click: $root.swipeRight.bind($data, ko.toJS(focussedProfile))">Swipe Right</button>
-        <!-- /ko -->
-        <!-- ko if: focussedProfile.blockable -->
-        <button data-bind="click: cancelProfile.bind($data, ko.toJS(focussedProfile))">Cancel Profile</button>
-        <!-- /ko -->
+      <div data-bind="ifnot: focussedProfileIsSet" id="recommendationsView">
+        <div data-bind="foreach: recommendations" id="recommendationsCanvas">
+          <table>
+            <td id="profileImage">
+
+              <span data-bind="foreach: images">
+                <span data-bind="if: profilePicture == 1">
+                  <img width="auto" height="auto"
+                    data-bind="attr: {src: image}, click: $root.putFocusedProfileInViewModel.bind($data)"
+                    style="float: left;">
+                </span>
+              </span>
+            </td>
+            <td id="profileSummary">
+              <p style="display: inline;">
+                <b>Username</b>
+              <div data-bind="text: username"></div>
+              <b>Age</b>
+              <div data-bind="text: age"></div>
+              <b>Distance</b>
+              <div data-bind="text: Math.ceil(distance) + ' km'"> </div>
+              <b>Fame</b>
+              <div data-bind="text: fame"></div>
+              <b>Gender</b>
+              <div data-bind="text: gender"></div>
+              <b>Online</b>
+              <div data-bind="text: ($data.online ? online : 'Last seen at ' + lastSeen)"></div>
+              <b>Tags</b>
+              <ul data-bind="foreach: tags">
+                <li data-bind="text: $data"></li>
+              </ul>
+              </p>
+
+            </td>
+            <td id="buttons">
+              <button style="display: block; width: 100%;"
+                data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">View
+                Profile</button>
+              <!-- ko if: true  -->
+              <!-- which property can be used here to hide button -->
+              <button style="display: block; width: 100%;" data-bind="click: $root.swipeRight.bind($data)">Swipe
+                Right</button>
+              <!-- /ko -->
+              <button style="display: block; width: 100%;" data-bind="click: ">Cancel Profile</button>
+            </td>
+          </table>
+          <br>
+        </div>
       </div>
 
-      <div data-bind="foreach: {data: focussedProfileImageSources, as: 'image'}" id="profileImage">
+      <div data-bind="if: focussedProfileIsSet" id="focussedProfile">
+
+        <div id="buttons">
+          <!-- ko if: focussedProfile.swipeable  -->
+          <!-- which property can be used here to hide button -->
+          <button data-bind="click: $root.swipeRight.bind($data, ko.toJS(focussedProfile))">Swipe Right</button>
+          <!-- /ko -->
+          <!-- ko if: focussedProfile.blockable -->
+          <button data-bind="click: cancelProfile.bind($data, ko.toJS(focussedProfile))">Cancel Profile</button>
+          <!-- /ko -->
+        </div>
+
+        <div data-bind="foreach: {data: focussedProfileImageSources, as: 'image'}" id="profileImage">
+          <span data-bind="if: profilePicture == 1">
+            <div>Profile Image:</div>
+            <img width="18%" height="auto" data-bind="attr: {src: image}">
+          </span>
+        </div>
+
+        <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
+          <span data-bind="if: profilePicture == 0">
+            <img width="18%" height="auto" data-bind="attr: {src: image}">
+          </span>
+        </span>
+        <br>
+
+        <div>
+          <b>Username</b>
+          <div data-bind="text: focussedProfile.username"></div>
+          <br>
+
+          <b>Firstname</b>
+          <div data-bind="text: focussedProfile.firstname"></div>
+          <br>
+
+          <b>Lastname</b>
+          <div data-bind="text: focussedProfile.lastname"></div>
+          <br>
+
+          <b>Age</b>
+          <div data-bind="text: focussedProfile.age"></div>
+          <br>
+
+          <b>Gender</b>
+          <div data-bind="text: focussedProfile.gender"></div>
+          <br>
+
+          <b>Biography</b>
+          <div data-bind="text: focussedProfile.biography() ? focussedProfile.biography : 'Not yet completed.'"></div>
+          <br>
+
+          <b>Tags</b>
+          <ul data-bind="foreach: focussedProfile.tags">
+            <li data-bind="text: tag"></li>
+          </ul>
+          <br>
+
+          <b>Fame</b>
+          <div data-bind="text: focussedProfile.fame() ? focussedProfile.fame : 'No fame rating yet.'">
+          </div>
+          <br>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div data-bind="if: selectedView() == 'chat'" id="chat">
+      <h1>This will be chat view.</h1>
+    </div>
+
+    <div data-bind="if: selectedView() == 'profile'" id="profile">
+      <!-- <button>Add new picture</button> -->
+      <div data-bind="if: ownImageSources().length < 5">
+        <div>Add another picture</div>
+        <input type="file" id="myfile" name="myfile" accept=".png,.jpg,.jpeg"
+          data-bind="event: {change: $root.fileSelect}"><br><br>
+        <div data-bind="if: imageWorkspace.source()">
+          <button data-bind="click: uploadNewImage">Upload New Image</button>
+          <button data-bind="click: uploadProfileImage">Upload As Profile Image</button>
+        </div>
+      </div>
+
+      <div data-bind="foreach: {data: ownImageSources, as: 'image'}" id="profileImage">
         <span data-bind="if: profilePicture == 1">
           <div>Profile Image:</div>
-          <img width="18%" height="auto" data-bind="attr: {src: image}">
+          <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
         </span>
       </div>
 
       <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
         <span data-bind="if: profilePicture == 0">
-          <img width="18%" height="auto" data-bind="attr: {src: image}">
+          <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
         </span>
       </span>
       <br>
 
       <div>
-        <b>Username</b>
-        <div data-bind="text: focussedProfile.username"></div>
+        <b>Username</b> <!-- no edit -->
+        <div data-bind="text: loggedInUser.username"></div>
         <br>
 
-        <b>Firstname</b>
-        <div data-bind="text: focussedProfile.firstname"></div>
+        <b>First Name</b>
+        <!-- ko if: settingEditing() != 'firstname'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'firstname')">Edit</button>
+        <div data-bind="text: loggedInUser.firstname"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'firstname'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <input data-bind="value: settingEditingWorkspace">
+        </div>
+        <!-- /ko -->
         <br>
 
-        <b>Lastname</b>
-        <div data-bind="text: focussedProfile.lastname"></div>
+        <b>Last Name</b>
+        <!-- ko if: settingEditing() != 'lastname'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'lastname')">Edit</button>
+        <div data-bind="text: loggedInUser.lastname"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'lastname'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <input data-bind="value: settingEditingWorkspace">
+        </div>
+        <!-- /ko -->
         <br>
 
         <b>Age</b>
-        <div data-bind="text: focussedProfile.age"></div>
+        <!-- ko if: settingEditing() != 'age'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'age')">Edit</button>
+        <div type="number" data-bind="text: loggedInUser.age"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'age'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <input data-bind="value: settingEditingWorkspace">
+        </div>
+        <!-- /ko -->
         <br>
 
         <b>Gender</b>
-        <div data-bind="text: focussedProfile.gender"></div>
+        <!-- ko if: settingEditing() != 'gender'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'gender')">Edit</button>
+        <div data-bind="text: loggedInUser.gender"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'gender'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <select id="genderList" data-bind="value: settingEditingWorkspace" list="genderList">
+            <option value="other">other</option>
+            <option value="female">female</option>
+            <option value="male">male</option>
+          </select>
+        </div>
+        <!-- /ko -->
         <br>
 
         <b>Biography</b>
-        <div data-bind="text: focussedProfile.biography() ? focussedProfile.biography : 'Not yet completed.'"></div>
+        <!-- ko if: settingEditing() != 'biography'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'biography')">Edit</button>
+        <div data-bind="text: loggedInUser.biography() ? loggedInUser.biography : 'Not yet completed.'"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'biography'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <input data-bind="value: settingEditingWorkspace">
+        </div>
+        <!-- /ko -->
         <br>
 
-        <b>Tags</b>
-        <ul data-bind="foreach: focussedProfile.tags">
-          <li data-bind="text: tag"></li>
-        </ul>
+        <b>interest</b>
+        <!-- ko if: settingEditing() != 'interest'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'interest')">Edit</button>
+        <div data-bind="text: loggedInUser.interest"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'interest'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <select id="genderList" data-bind="value: settingEditingWorkspace" list="genderList">
+            <option value="other">other</option>
+            <option value="female">female</option>
+            <option value="male">male</option>
+          </select>
+        </div>
+        <!-- /ko -->
         <br>
 
-        <b>Fame</b>
-        <div data-bind="text: focussedProfile.fame() ? focussedProfile.fame : 'No fame rating yet.'">
+        <!-- need to allow for multiple tags adding/deleting, not just editing a single field -->
+        <b>tags</b>
+        <!-- ko if: settingEditing() != 'tags'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'tags')">Edit</button>
+        <div data-bind="text: loggedInUser.tags"></div>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'tags'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <input data-bind="value: settingEditingWorkspace">
+        </div>
+        <!-- /ko -->
+        <br>
+
+        <b>fame not editable</b> <!-- no edit -->
+        <div
+          data-bind="text: loggedInUser.fame() ? loggedInUser.fame : 'No fame rating yet. Interact with other users to increase.'">
         </div>
         <br>
 
+        <!-- ko if: loggedInUser.locationTracking -->
+        <b>gps implement editing</b>
+        <!-- ko if: settingEditing() != 'gps'-->
+        <button data-bind="click: selectSettingEditing.bind($data, 'gps')">Edit</button>
+        <table>
+          <tr>
+            <td>
+              <div data-bind="text: 'Latitude:'"></div>
+            </td>
+            <td>
+              <div data-bind="text: loggedInUser.latitude"></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div data-bind="text: 'Longitude:'"></div>
+            </td>
+            <td>
+              <div data-bind="text: loggedInUser.longitude"></div>
+            </td>
+          </tr>
+        </table>
+        <!-- /ko -->
+        <!-- ko if: settingEditing() == 'gps'-->
+        <button data-bind="click: saveChangesToLoggedInUser">Save</button>
+        <div>
+          <input data-bind="value: settingEditingWorkspace">
+        </div>
+        <!-- /ko -->
+        <br>
+        <!-- /ko -->
+
       </div>
+
     </div>
 
-  </div>
+    <div data-bind="if: selectedView() == 'settings'" id="settings">
+      <!-- username -->
+      <!-- password -->
+      <!-- email -->
+      <!-- dis/enable gps-->
+      <h3>Pick a setting to change.</h3>
 
-  <div data-bind="if: selectedView() == 'chat'" id="chat">
-    <h1>This will be chat view.</h1>
-  </div>
 
-  <div data-bind="if: selectedView() == 'profile'" id="profile">
-    <!-- <button>Add new picture</button> -->
-    <div data-bind="if: ownImageSources().length < 5">
-      <div>Add another picture</div>
-      <input type="file" id="myfile" name="myfile" accept=".png" data-bind="event: {change: $root.fileSelect}"><br><br>
-      <div data-bind="if: imageWorkspace.source()">
-        <button data-bind="click: uploadNewImage">Upload New Image</button>
-        <button data-bind="click: uploadProfileImage">Upload As Profile Image</button>
-      </div>
-    </div>
 
-    <div data-bind="foreach: {data: ownImageSources, as: 'image'}" id="profileImage">
-      <span data-bind="if: profilePicture == 1">
-        <div>Profile Image:</div>
-        <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
-      </span>
-    </div>
 
-    <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
-      <span data-bind="if: profilePicture == 0">
-        <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
-      </span>
-    </span>
-    <br>
-
-    <div>
-      <b>Username</b> <!-- no edit -->
+      <b>Username</b>
+      <!-- ko if: settingEditing() != 'username'-->
+      <button data-bind="click: selectSettingEditing.bind($data, 'username')">Edit</button>
       <div data-bind="text: loggedInUser.username"></div>
-      <br>
-
-      <b>firstname</b>
-      <!-- ko if: settingEditing() != 'firstname'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'firstname')">Edit</button>
-      <div data-bind="text: loggedInUser.firstname"></div>
       <!-- /ko -->
-      <!-- ko if: settingEditing() == 'firstname'-->
+      <!-- ko if: settingEditing() == 'username'-->
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
         <input data-bind="value: settingEditingWorkspace">
@@ -212,238 +368,91 @@
       <!-- /ko -->
       <br>
 
-      <b>lastname</b>
-      <!-- ko if: settingEditing() != 'lastname'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'lastname')">Edit</button>
-      <div data-bind="text: loggedInUser.lastname"></div>
+      <b>Password</b>
+      <!-- ko if: settingEditing() != 'password' -->
+      <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
       <!-- /ko -->
-      <!-- ko if: settingEditing() == 'lastname'-->
+      <!-- ko if: settingEditing() == 'password' -->
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
-        <input data-bind="value: settingEditingWorkspace">
+        <input type="password" data-bind="value: settingEditingWorkspace">
       </div>
       <!-- /ko -->
       <br>
 
-      <b>age</b>
-      <!-- ko if: settingEditing() != 'age'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'age')">Edit</button>
-      <div data-bind="text: loggedInUser.age"></div>
+      <b>Email</b>
+      <!-- ko if: settingEditing() != 'email' -->
+      <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
+      <div data-bind="text: loggedInUser.email"></div>
       <!-- /ko -->
-      <!-- ko if: settingEditing() == 'age'-->
+      <!-- ko if: settingEditing() == 'email' -->
       <button data-bind="click: saveChangesToLoggedInUser">Save</button>
       <div>
-        <input data-bind="value: settingEditingWorkspace">
+        <input type="email" data-bind="value: settingEditingWorkspace">
       </div>
       <!-- /ko -->
       <br>
 
-      <b>gender</b>
-      <!-- ko if: settingEditing() != 'gender'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'gender')">Edit</button>
-      <div data-bind="text: loggedInUser.gender"></div>
-      <!-- /ko -->
-      <!-- ko if: settingEditing() == 'gender'-->
-      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-      <div>
-        <input data-bind="value: settingEditingWorkspace" list="genderList">
-        <datalist id="genderList">
-          <option value="other">
-          <option value="female">
-          <option value="male">
-        </datalist>
-      </div>
-      <!-- /ko -->
+      <b>Location Tracking</b>
+      <button data-bind="click: selectSettingEditing.bind($data, 'locationTracking')">Toggle</button>
+      <div data-bind="text: loggedInUser.locationTracking() == 1 ? 'Enabled' : 'Disabled'"></div>
       <br>
-
-      <b>biography</b>
-      <!-- ko if: settingEditing() != 'biography'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'biography')">Edit</button>
-      <div data-bind="text: loggedInUser.biography() ? loggedInUser.biography : 'Not yet completed.'"></div>
-      <!-- /ko -->
-      <!-- ko if: settingEditing() == 'biography'-->
-      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-      <div>
-        <input data-bind="value: settingEditingWorkspace">
-      </div>
-      <!-- /ko -->
-      <br>
-
-      <b>interest</b>
-      <!-- ko if: settingEditing() != 'interest'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'interest')">Edit</button>
-      <div data-bind="text: loggedInUser.interest"></div>
-      <!-- /ko -->
-      <!-- ko if: settingEditing() == 'interest'-->
-      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-      <div>
-        <input data-bind="value: settingEditingWorkspace" list="genderList">
-        <datalist id="genderList">
-          <option value="other">
-          <option value="female">
-          <option value="male">
-        </datalist>
-      </div>
-      <!-- /ko -->
-      <br>
-
-      <b>tags</b>
-      <!-- ko if: settingEditing() != 'tags'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'tags')">Edit</button>
-      <div data-bind="text: loggedInUser.tags"></div>
-      <!-- /ko -->
-      <!-- ko if: settingEditing() == 'tags'-->
-      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-      <div>
-        <input data-bind="value: settingEditingWorkspace">
-      </div>
-      <!-- /ko -->
-      <br>
-
-      <b>fame not editable</b> <!-- no edit -->
-      <div
-        data-bind="text: loggedInUser.fame() ? loggedInUser.fame : 'No fame rating yet. Interact with other users to increase.'">
-      </div>
-      <br>
-
-      <!-- ko if: loggedInUser.locationTracking -->
-      <b>gps implement editing</b>
-      <!-- ko if: settingEditing() != 'gps'-->
-      <button data-bind="click: selectSettingEditing.bind($data, 'gps')">Edit</button>
-      <table>
-        <tr>
-          <td>
-            <div data-bind="text: 'Latitude:'"></div>
-          </td>
-          <td>
-            <div data-bind="text: loggedInUser.latitude"></div>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <div data-bind="text: 'Longitude:'"></div>
-          </td>
-          <td>
-            <div data-bind="text: loggedInUser.longitude"></div>
-          </td>
-        </tr>
-      </table>
-      <!-- /ko -->
-      <!-- ko if: settingEditing() == 'gps'-->
-      <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-      <div>
-        <input data-bind="value: settingEditingWorkspace">
-      </div>
-      <!-- /ko -->
-      <br>
-      <!-- /ko -->
 
     </div>
 
-  </div>
-
-  <div data-bind="if: selectedView() == 'settings'" id="settings">
-    <!-- username -->
-    <!-- password -->
-    <!-- email -->
-    <!-- dis/enable gps-->
-    <h3>Pick a setting to change.</h3>
-
-
-
-
-    <b>Username</b>
-    <!-- ko if: settingEditing() != 'username'-->
-    <button data-bind="click: selectSettingEditing.bind($data, 'username')">Edit</button>
-    <div data-bind="text: loggedInUser.username"></div>
-    <!-- /ko -->
-    <!-- ko if: settingEditing() == 'username'-->
-    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-    <div>
-      <input data-bind="value: settingEditingWorkspace">
+    <div data-bind="if: selectedView() == 'notifications'" id="notifications">
+      <h1>This will be notifications view.</h1>
+      <!-- <h6>test</h6> -->
     </div>
-    <!-- /ko -->
-    <br>
 
-    <b>Password</b>
-    <!-- ko if: settingEditing() != 'password' -->
-    <button data-bind="click: selectSettingEditing.bind($data, 'password')">Edit</button>
-    <!-- /ko -->
-    <!-- ko if: settingEditing() == 'password' -->
-    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-    <div>
-      <input data-bind="value: settingEditingWorkspace">
+    <div data-bind="if: selectedView() == 'reset'" id="reset">
+      <h3>Please enter your new password:</h3>
+      <input type="password" data-bind="value: password">
+      <button data-bind="click: sendNewPassword">Reset Password</button>
+      <div><button data-bind="click: logOut">Return to Log In</button></div>
     </div>
-    <!-- /ko -->
-    <br>
 
-    <b>Email</b>
-    <!-- ko if: settingEditing() != 'email' -->
-    <button data-bind="click: selectSettingEditing.bind($data, 'email')">Edit</button>
-    <div data-bind="text: loggedInUser.email"></div>
-    <!-- /ko -->
-    <!-- ko if: settingEditing() == 'email' -->
-    <button data-bind="click: saveChangesToLoggedInUser">Save</button>
-    <div>
-      <input data-bind="value: settingEditingWorkspace">
+    <div data-bind="if: selectedView() == 'resetrequest'" id="resetrequest">
+      <h3>Please provide your email address:</h3>
+      <input data-bind="value: email">
+      <button data-bind="click: sendResetPasswordRequest">Send Request</button>
+      <div><button data-bind="click: logOut">Return to Log In</button></div>
     </div>
-    <!-- /ko -->
-    <br>
 
-    <b>Location Tracking</b>
-    <button data-bind="click: selectSettingEditing.bind($data, 'locationTracking')">Toggle</button>
-    <div data-bind="text: loggedInUser.locationTracking() == 1 ? 'Enabled' : 'Disabled'"></div>
-    <br>
-
-  </div>
-
-  <div data-bind="if: selectedView() == 'notifications'" id="notifications">
-    <h1>This will be notifications view.</h1>
-    <!-- <h6>test</h6> -->
-  </div>
-
-  <div data-bind="if: selectedView() == 'reset'" id="reset">
-    <h3>Please enter your new password:</h3>
-    <input data-bind="value: password">
-    <button data-bind="click: sendNewPassword">Reset Password</button>
-    <div><button data-bind="click: logOut">Return to Log In</button></div>
-  </div>
-
-  <div data-bind="if: selectedView() == 'resetrequest'" id="resetrequest">
-    <h3>Please provide your email address:</h3>
-    <input data-bind="value: email">
-    <button data-bind="click: sendResetPasswordRequest">Send Request</button>
-    <div><button data-bind="click: logOut">Return to Log In</button></div>
-  </div>
-
-  <div data-bind="if: selectedView() == 'register'" id="register">
-    <h3>Please provide the following information to register:</h3>
-    <div>Username:</div>
-    <input data-bind="value: newRegistration.username">
-    <div>Firstname:</div>
-    <input data-bind="value: newRegistration.firstname">
-    <div>Lastname:</div>
-    <input data-bind="value: newRegistration.lastname">
-    <div>Age:</div>
-    <input data-bind="value: newRegistration.age">
-    <div>Gender:</div>
-    <input data-bind="value: newRegistration.gender" list="genderList">
-    <datalist id="genderList">
-      <option value="other">
-      <option value="female">
-      <option value="male">
-    </datalist>
-    <div>Email:</div>
-    <input data-bind="value: newRegistration.email">
-    <div>Password:</div>
-    <input data-bind="value: newRegistration.password">
-    <button data-bind="click: sendNewRegistrationToDb">Register</button>
-    <p> </p>
-    <div>
-      <button data-bind="click: logOut">Return to Log In</button>
+    <div data-bind="if: selectedView() == 'register'" id="register">
+      <h3>Please provide the following information to register:</h3>
+      <div>Username:</div>
+      <input data-bind="value: newRegistration.username">
+      <div>Firstname:</div>
+      <input data-bind="value: newRegistration.firstname">
+      <div>Lastname:</div>
+      <input data-bind="value: newRegistration.lastname">
+      <div>Age:</div>
+      <input
+        onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))"
+        data-bind="value: newRegistration.age">
+      <div>Gender:</div>
+      <select id="genderList" data-bind="value: newRegistration.gender" list="genderList">
+        <option value="other">other</option>
+        <option value="female">female</option>
+        <option value="male">male</option>
+      </select>
+      <div>Email:</div>
+      <input type="email" data-bind="value: newRegistration.email">
+      <div>Password:</div>
+      <input type="password" data-bind="value: newRegistration.password">
+      <p> </p>
+      <div>
+        <button data-bind="click: sendNewRegistrationToDb">Register</button>
+        <button data-bind="click: logOut">Return to Log In</button>
+      </div>
     </div>
-  </div>
 
+    <div id="errordiv"></div>
+
+    <footer style="text-align:center; padding:30px; height:50px;">
+      <p>Authors: hde-vos jrheeder clongmor rvan-wey</p>
+    </footer>
 </body>
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
