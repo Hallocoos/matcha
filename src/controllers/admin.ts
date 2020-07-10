@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator, profilePictureExists } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
 import {
   retrieveNotificationsByReceiveId,
@@ -43,6 +43,7 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
+  console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
@@ -285,7 +286,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     for (i = 0; matchableUsers[i]; i++) {
       for (j = 0; userImages[j]; j++) {
         if (matchableUsers[i].id == userImages[j].userId) {
-          matchableUsers[i].images.push(userImages[j].image);
+          matchableUsers[i].images.push(userImages[j]);
         }
       }
     }
