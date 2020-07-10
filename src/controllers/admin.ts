@@ -1,9 +1,23 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator, profilePictureExists } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId, retrieveAllNotificationsByUserId } from '../models/notificationModel';
-import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
+import {
+  retrieveNotificationsByReceiveId,
+  retrieveNotificationsBySendIdAndReceiveId,
+  addNotification,
+  setNotificationsAsSeenByReceiveId,
+  retrieveNotifications,
+  retrieveAllNotificationsByUserId
+} from '../models/notificationModel';
+import {
+  addMatch,
+  retrieveMatchByIds,
+  blockMatch,
+  acceptMatch,
+  retrieveMatchesByUserId,
+  retrieveMatchByAcceptId, retrieveMatches
+} from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
@@ -30,17 +44,19 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
+  console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
-      // Find all matches related to profile user and viewing User
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
-      console.log(match);
-      // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
-      console.log(userProfile.id, match.acceptId, match.requestId);
-      if (userProfile.id == match.acceptId) {
-        userProfile.blockable = 1;
-      } else if (userProfile.id == match.requestId) {
-        userProfile.createMatch = 1;
+      if (match) {
+        if (userProfile.id == match.acceptId) {
+          userProfile.blockable = 1;
+        } else if (userProfile.id == match.requestId) {
+          userProfile.createMatch = 1;
+          userProfile.blockable = 1;
+        }
+      } else {
+        userProfile.swipeable = 1;
         userProfile.blockable = 1;
       }
       const userViewer = await retrieveUserById(request.body.viewerId);
@@ -89,12 +105,17 @@ router.post('/createNotifications', async (request: Request, response: Response)
   if (!errors) {
     let sender: any = await retrieveUserById(request.body.sendId);
     let receiver: any = await retrieveUserById(request.body.receiveId);
-    if (!sender.username && !receiver.username)
-      response.send({ text: 'The user you have tried to match with does not exist.', success: false });
-    else {
+    if (!sender.username && !receiver.username) {
+      response.send({text: 'The user you have tried to match with does not exist.', success: false});
+    } else {
       request.body.sender = sender.username;
       request.body.receiver = receiver.username;
-      await addNotification(request.body);
+      let matches = await retrieveMatchByIds(request.body.receiveId, request.body.sendId);
+      console.log(matches);
+        if (matches.blocked == '1') {
+          response.send({text: 'The user you have tried to match with does not exist.', success: false});
+          return ;
+        } await addNotification(request.body)
       response.send({ text: 'The recipient will be notified.', success: true });
     }
   } else
@@ -266,7 +287,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     for (i = 0; matchableUsers[i]; i++) {
       for (j = 0; userImages[j]; j++) {
         if (matchableUsers[i].id == userImages[j].userId) {
-          matchableUsers[i].images.push(userImages[j].image);
+          matchableUsers[i].images.push(userImages[j]);
         }
       }
     }

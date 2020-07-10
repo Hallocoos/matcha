@@ -156,25 +156,25 @@ exports.seed = function (knex, Promise) {
     })
     .then(async function () {
       return knex('tags').insert({
-        userId: 7,
+        userId: 20,
         tag: 'qwer'
       });
     })
     .then(async function () {
       return knex('tags').insert({
-        userId: 7,
+        userId: 20,
         tag: 'vegan'
       });
     })
     .then(async function () {
       return knex('tags').insert({
-        userId: 7,
+        userId: 20,
         tag: 'zxcv'
       });
     })
     .then(async function () {
       return knex('tags').insert({
-        userId: 7,
+        userId: 20,
         tag: 'icicles'
       });
     })
@@ -379,6 +379,24 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
       return knex('tags').insert({
         userId: 14,
+        tag: 'asdf'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 21,
+        tag: 'bored'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 21,
+        tag: 'qwer'
+      });
+    })
+    .then(async function () {
+      return knex('tags').insert({
+        userId: 21,
         tag: 'asdf'
       });
     })
