@@ -5,11 +5,12 @@ import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsers
 import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
 import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
-import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId, retrieveTagsByMultipleTagValues } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { reportUser } from "../helpers/email";
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 import * as _ from 'underscore';
+import { filter } from 'lodash';
 
 const router = express.Router();
 
@@ -173,6 +174,7 @@ router.post('/deletePicture', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
+// { "userId": 1, "tag": "food"}
 router.post('/createTag', async (request: Request, response: Response) => {
   let errors = await newTagValidator(request.body);
   if (!errors) {
@@ -182,6 +184,7 @@ router.post('/createTag', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
+// { "id": 1}
 router.post('/deleteTag', async (request: Request, response: Response) => {
   let errors = await deleteTagValidator(request.body);
   if (!errors) {
@@ -204,7 +207,7 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
       tags: [ cat, dog, food, apple]
     },
     sorting: {
-      category: string <"age"/"fame"/"distance"/"tags">,
+      category: string <"age"/"fame"/"distance"/"tagsInCommon">,
       direction: string <"ascending"/"descending">,
       tagsInCommon: integer,
     }
@@ -219,15 +222,28 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 */
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
+  var j, i;
   if (!user.matchable)
     response.send({ text: "Please make sure that all information in your profile is filled out, in order for you to match with other users.", success: false });
   else {
-    let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
+    if (request.body.filters.tags && request.body.filters.tags[0]) {
+      var tags = await retrieveTagsByMultipleTagValues(request.body.filters.tags);
+      var matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
+      let recommendedUsers = [];
+      for (i = 0; matchableUsers[i]; i++) {
+        for (j = 0; tags[j]; j++) {
+          if (matchableUsers[i].id == tags[j].userId)
+            recommendedUsers.push(matchableUsers[i]);
+        }
+      }
+      matchableUsers = recommendedUsers;
+      console.log('matchableUsers: ', matchableUsers);
+    } else
+      var matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
     // Distance Calculations
     matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
     // Adding tags to user Objects
     var userIds = new Array;
-    var j, i;
     for (i = 0; matchableUsers[i]; i++) {
       userIds.push(matchableUsers[i].id);
       matchableUsers[i].tags = new Array;
@@ -245,29 +261,29 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     count = 0;
     var adminTags = await retrieveTagsByUserId(request.body.id)
     for (i = 0; matchableUsers[i]; i++) {
-      matchableUsers[i].tagCount = new Array;
+      matchableUsers[i].tagsInCommon = new Array;
       for (j = 0; matchableUsers[i].tags[j]; j++) {
         for (k = 0; adminTags[k]; k++) {
           if (adminTags[k].tag.toLowerCase() == matchableUsers[i].tags[j].toLowerCase())
             count += 1;
         }
       }
-      matchableUsers[i].tagCount.push(count);
+      matchableUsers[i].tagsInCommon.push(count);
       count = 0;
     }
     // Append Images to users
-    for (i = 0; matchableUsers[i]; i++) {
-      userIds.push(matchableUsers[i].id);
-      matchableUsers[i].images = new Array;
-    }
-    let userImages = await retrieveImagesByMultipleUserIds(userIds);
-    for (i = 0; matchableUsers[i]; i++) {
-      for (j = 0; userImages[j]; j++) {
-        if (matchableUsers[i].id == userImages[j].userId) {
-          matchableUsers[i].images.push(userImages[j].image);
-        }
-      }
-    }
+    // for (i = 0; matchableUsers[i]; i++) {
+    //   userIds.push(matchableUsers[i].id);
+    //   matchableUsers[i].images = new Array;
+    // }
+    // let userImages = await retrieveImagesByMultipleUserIds(userIds);
+    // for (i = 0; matchableUsers[i]; i++) {
+    //   for (j = 0; userImages[j]; j++) {
+    //     if (matchableUsers[i].id == userImages[j].userId) {
+    //       matchableUsers[i].images.push(userImages[j].image);
+    //     }
+    //   }
+    // }
     // Find all matches related to loggin in user
     let matches = await retrieveMatchesByUserId(user.id);
     // Filters out all matches where blocked and accepted == 0
@@ -293,6 +309,10 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
           matchableUsers[i].blockable = 1;
         }
       }
+      if (!matchableUsers[i].createMatch && !matchableUsers[i].blockable){
+        matchableUsers[i].swipeable = 1;
+        matchableUsers[i].blockable = 1;
+      }
     }
     // Filter out users by distance
     let distanceMin = request.body.filters.distanceMin || 0;
@@ -303,7 +323,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     var tagsInCommon = request.body.sorting.tagsInCommon || 0;
     // Filter out by amount of correlation tags
     matchableUsers = matchableUsers.filter(obj => (
-      obj.tagCount[0] >= tagsInCommon));
+      obj.tagsInCommon[0] >= tagsInCommon));
     // Sort by category is specified direction
     if (request.body.sorting.direction == 'ascending')
       matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);

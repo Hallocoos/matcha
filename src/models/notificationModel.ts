@@ -75,6 +75,23 @@ export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveI
 };
 
 /*
+ *  Function to handle blocking a match
+ *  @Incoming Params: body = {
+ *    receiveId = <string>,
+ *    sendId = <string>
+ *  }
+*/
+export async function retrieveNotificationsByUserId(userId):Promise<Notification[]> {
+  return knex.select()
+    .from('notifications')
+    .where('sendId', userId)
+    .orWhere('receiveId', userId)
+    .then(function (result) {
+      return (result);
+    });
+};
+
+/*
  *  Function to handle adding notifications
  *  @Incoming Params: body = {
  *    receiveId  = <string>,
