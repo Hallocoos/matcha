@@ -5,8 +5,13 @@
 </head>
 
 <body style="height:100%; margin:0;">
+  
+  <div id="errordiv"></div>
+
   <div id="main" style="min-height:100%; margin-bottom:-50px;">
-    <p style="display:inline-block;"><img src="Matcha_logo.png" width="80" height="70" title="Matcha"></p>
+    <p style="display:inline-block;" id="logo">
+      <img src="Matcha_logo.png" width="80" height="70" title="Matcha">
+    </p>
     
     <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
       <!-- need to make match logo and insert here so its always present -->
@@ -447,8 +452,6 @@
         <button data-bind="click: logOut">Return to Log In</button>
       </div>
     </div>
-
-    <div id="errordiv"></div>
 
     <footer style="text-align:center; padding:30px; height:50px;">
       <p>Authors: hde-vos jrheeder clongmor rvan-wey</p>
