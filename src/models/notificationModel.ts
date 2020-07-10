@@ -75,6 +75,22 @@ export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveI
 };
 
 /*
+ *  Function to handle finding all users notification
+ *  @Incoming Params: body = {
+ *    userId= <string>
+ *  }
+*/
+export async function retrieveAllNotificationsByUserId(userId):Promise<Notification[]> {
+  return knex.select()
+    .from('notifications')
+    .where('receiveId', userId)
+    .orWhere('sendId', userId)
+    .then(function (result) {
+      return (result);
+    });
+};
+
+/*
  *  Function to handle adding notifications
  *  @Incoming Params: body = {
  *    receiveId  = <string>,

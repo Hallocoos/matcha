@@ -7,7 +7,8 @@ import {
   retrieveNotificationsBySendIdAndReceiveId,
   addNotification,
   setNotificationsAsSeenByReceiveId,
-  retrieveNotifications
+  retrieveNotifications,
+  retrieveAllNotificationsByUserId
 } from '../models/notificationModel';
 import {
   addMatch,
@@ -86,7 +87,7 @@ router.post('/getChat', async (request: Request, response: Response) => {
 router.post('/getNotifications', async (request: Request, response: Response) => {
   const user = await retrieveUserById(request.body.id);
   if (user) {
-    var notifications = await retrieveNotificationsByReceiveId(user.id);
+    var notifications = await retrieveAllNotificationsByUserId(user.id);
     response.send({ notifications: notifications, success: true });
   } else
     response.send({ success: false });
