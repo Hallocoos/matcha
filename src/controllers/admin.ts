@@ -201,9 +201,7 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
       fameMax: integer,
       distanceMin: integer,
       distanceMax: integer,
-      ===================== Not Implemented =====================
       tags: [ cat, dog, food, apple]
-      ===================== Not Implemented =====================
     },
     sorting: {
       category: string <"age"/"fame"/"distance"/"tags">,
