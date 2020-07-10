@@ -992,7 +992,11 @@
     },
 
     async swipeRight(targetProfile, data) {
-      console.log(data.id || targetProfile.id)
+      // console.log(data.id || targetProfile.id)
+      if (!viewModel.ownImageSources().length) {
+        alert("You need at least one image in your own profile to complete this action.")
+        return
+      }
       // { "acceptId": 5, "requestId": 3 }
       var body = JSON.stringify({
         acceptId: data.id || targetProfile.id,
