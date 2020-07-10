@@ -5,10 +5,9 @@
 </head>
 
 <body style="height:100%; margin:0;">
-  <div id="main" style="min-height:100%; margin-bottom:-50px;">
+  <div id="main" style="min-height:90%; margin-bottom:-50px;">
   <p style="display:inline-block;"><img src="Matcha_logo.png" width="80" height="70" title="Matcha"></p>
   <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
-    <!-- need to make match logo and insert here so its always present -->
     <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
     <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
     <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
@@ -400,6 +399,7 @@
     settingEditingWorkspace: ko.observable(""),
     token: ko.observable(),
     username: ko.observable(""),
+    // tag: ko.observableArray(),
 
     async deleteImage(id, data) {
       if (!confirm("Delete image?")) return
@@ -466,6 +466,7 @@
       })
     },
 
+    //check setting editing
     async selectSettingEditing(setting, data) {
       viewModel.settingEditing(setting)
       var existingData
@@ -688,7 +689,54 @@
     uploadProfileImage() {
       viewModel.imageWorkspace.profilePicture(1)
       viewModel.uploadNewImage()
-    }
+    },
+
+    // async uploadNewTag() {
+    //   var body = JSON.stringify({
+    //     userId: viewModel.loggedInUser.id(),
+    //     tag: viewModel.tag(),
+    //   })
+    //   await fetch("http://localhost:3000/createTag", {
+    //     method: "POST",
+    //     body: body,
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': 'Bearer ' + viewModel.token(),
+    //     },
+    //   }).then(response =>
+    //     response.json()
+    //   ).then(data => {
+    //     if (data.success) {
+    //       putUserInViewModel(viewModel.loggedInUser.id())
+    //     }
+    //     alert(data.text)
+    //   }).catch(er => {
+    //     document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+    //   })
+    // },
+
+    // async deleteTag(id) {
+    //   if (!confirm("Delete tag?")) return
+    //   var body = JSON.stringify({ id: String(id) })
+    //   // console.log(body)
+    //   await fetch("http://localhost:3000/deleteTag", {
+    //     method: "POST",
+    //     body: body,
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //       'Authorization': 'Bearer ' + viewModel.token(),
+    //     },
+    //   }).then(response =>
+    //     response.json()
+    //   ).then(data => {
+    //     if (data.success) {
+    //       putUserInViewModel(viewModel.loggedInUser.id())
+    //     }
+    //     alert(data.text)
+    //   }).catch(er => {
+    //     document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+    //   })
+    // },
 
   };
 
