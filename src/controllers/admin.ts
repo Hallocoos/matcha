@@ -2,7 +2,7 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
-import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId } from '../models/notificationModel';
+import { retrieveNotificationsByReceiveId, retrieveNotificationsBySendIdAndReceiveId, addNotification, setNotificationsAsSeenByReceiveId, retrieveAllNotificationsByUserId } from '../models/notificationModel';
 import { addMatch, retrieveMatchByIds, blockMatch, acceptMatch, retrieveMatchesByUserId } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
@@ -71,7 +71,7 @@ router.post('/getChat', async (request: Request, response: Response) => {
 router.post('/getNotifications', async (request: Request, response: Response) => {
   const user = await retrieveUserById(request.body.id);
   if (user) {
-    var notifications = await retrieveNotificationsByReceiveId(user.id);
+    var notifications = await retrieveAllNotificationsByUserId(user.id);
     response.send({ notifications: notifications, success: true });
   } else
     response.send({ success: false });

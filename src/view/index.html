@@ -282,8 +282,30 @@
   </div>
 
   <div data-bind="if: selectedView() == 'notifications'" id="notifications">
-    <h1>This will be notifications view.</h1>
-    <!-- <h6>test</h6> -->
+    <!-- <h1>This will be notifications view.</h1> -->
+    <!-- need to implement a loop to refresh notifications without a button and to fix time display -->
+    <button data-bind="click: displayNotifications">Fetch New Notifications</button>
+    <table style="width:100%" data-bind="visible: notifications().length > 0">
+      <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
+        <tr data-bind="if: receiver == $root.loggedInUser.username()">
+          <td style="padding:20px; border-bottom:1px solid black;">
+          <span data-bind="text: sender"></span>
+          <span data-bind="text: message"></span>
+          <span>your profile at:</span>
+          <span data-bind="text: createdAt"></span>
+          </td>
+        </tr>
+        <tr data-bind="if: sender == $root.loggedInUser.username()">
+          <td style="padding:20px; border-bottom:1px solid black;">
+          <span>You</span>
+          <span data-bind="text: message"></span>
+          <span data-bind="text: receiver"></span>
+          <span>at:</span>
+          <span data-bind="text: createdAt"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div data-bind="if: selectedView() == 'reset'" id="reset">
@@ -399,7 +421,7 @@
     settingEditingWorkspace: ko.observable(""),
     token: ko.observable(),
     username: ko.observable(""),
-    // tag: ko.observableArray(),
+    notifications: ko.observable([]),
 
     async deleteImage(id, data) {
       if (!confirm("Delete image?")) return
@@ -691,52 +713,28 @@
       viewModel.uploadNewImage()
     },
 
-    // async uploadNewTag() {
-    //   var body = JSON.stringify({
-    //     userId: viewModel.loggedInUser.id(),
-    //     tag: viewModel.tag(),
-    //   })
-    //   await fetch("http://localhost:3000/createTag", {
-    //     method: "POST",
-    //     body: body,
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': 'Bearer ' + viewModel.token(),
-    //     },
-    //   }).then(response =>
-    //     response.json()
-    //   ).then(data => {
-    //     if (data.success) {
-    //       putUserInViewModel(viewModel.loggedInUser.id())
-    //     }
-    //     alert(data.text)
-    //   }).catch(er => {
-    //     document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
-    //   })
-    // },
-
-    // async deleteTag(id) {
-    //   if (!confirm("Delete tag?")) return
-    //   var body = JSON.stringify({ id: String(id) })
-    //   // console.log(body)
-    //   await fetch("http://localhost:3000/deleteTag", {
-    //     method: "POST",
-    //     body: body,
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': 'Bearer ' + viewModel.token(),
-    //     },
-    //   }).then(response =>
-    //     response.json()
-    //   ).then(data => {
-    //     if (data.success) {
-    //       putUserInViewModel(viewModel.loggedInUser.id())
-    //     }
-    //     alert(data.text)
-    //   }).catch(er => {
-    //     document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
-    //   })
-    // },
+    async displayNotifications() {
+      var body = JSON.stringify({
+        id: viewModel.loggedInUser.id(),
+      })
+      await fetch("http://localhost:3000/getNotifications", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        if (data.success && data.notifications) {
+          viewModel.notifications(data.notifications)
+          putUserInViewModel(viewModel.loggedInUser.id())
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
+      })
+    },
 
   };
 
