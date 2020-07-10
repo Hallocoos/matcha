@@ -75,7 +75,7 @@ export async function newTagValidator(tag) {
 }
 
 export async function deleteTagValidator(tag) {
-  if (!tag.id || !isString(tag.id))
+  if (!tag.id || typeof (tag.id) != "number")
     return ('Invalid tag.');
   var hashtag = await retrieveTagById(tag.id);
   if (!hashtag)
