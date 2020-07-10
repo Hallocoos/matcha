@@ -160,11 +160,11 @@ export function setUserAsMatchableValidator(user, images, tags) {
   } else
     return ('User does not exist.');
   if (images) {
-    if (!profilePictureExists(images))
+    if (!images[0])
       return ('User has not set a profile picture.');
   } else
     return ('User has no images.');
-  if (!tags)
+  if (!tags[0])
     return ('User has no tags.');
   return undefined;
 }
