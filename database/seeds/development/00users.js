@@ -479,8 +479,8 @@ exports.seed = function (knex, Promise) {
     .then(async function () {
         return knex('users')
             .insert({
-                username: 'Palacia',
-                password: await hash('Palacia'),
+                username: 'uiop',
+                password: await hash('uiop'),
                 firstname: 'Palacia',
                 lastname: 'Syllis',
                 email: 'uiop@mailinator.com',

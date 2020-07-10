@@ -5,14 +5,14 @@
 </head>
 
 <body style="height:100%; margin:0;">
-  
+
   <div id="errordiv"></div>
 
   <div id="main" style="min-height:100%; margin-bottom:-50px;">
     <p style="display:inline-block;" id="logo">
       <img src="Matcha_logo.png" width="80" height="70" title="Matcha">
     </p>
-    
+
     <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
       <!-- need to make match logo and insert here so its always present -->
       <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
@@ -57,10 +57,79 @@
     <div data-bind="if: selectedView() == 'match'" id="match">
 
       <div data-bind="ifnot: focussedProfileIsSet" id="recommendationsView">
+        <div id="sortFilterConsole">
+          <table>
+            <td id="sortBox">
+              <b>Sorting options:</b>
+              <div>
+                <label for="category">Category:</label>
+                <select data-bind="options: ['age', 'fame', 'distance', 'tags'],
+                                    optionsCaption: 'none',
+                                    value: sortCategory,
+                                    valueAllowUnset: true">
+                </select>
+              </div>
+              <div>
+                <label for="direction">Direction:</label>
+                <select data-bind="options: ['ascending', 'descending'],
+                                    optionsCaption: 'none',
+                                    value: sortDirection,
+                                    valueAllowUnset: true">
+                </select>
+              </div>
+              <div>Tags</div>
+            </td>
+            <td id="filterBox">
+              <b>Filter options:</b>
+              <table>
+                <tr>
+                  <td>
+                    <div>Age range</div>
+                  </td>
+                  <td>
+                    <input style="width: 80;" data-bind="value: filters.ageMin">
+                    <input style="width: 80;" data-bind="value: filters.ageMax">
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div>Fame range</div>
+                  </td>
+                  <td>
+                    <input style="width: 80;" data-bind="value: filters.fameMin">
+                    <input style="width: 80;" data-bind="value: filters.fameMax">
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div>Distance range</div>
+                  </td>
+                  <td>
+                    <input style="width: 80;" data-bind="value: filters.distanceMin">
+                    <input style="width: 80;" data-bind="value: filters.distanceMax">
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div>tags</div>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </table>
+          <button data-bind="click: putRecommendationsInViewModel">Search</button>
+          <button data-bind="click: clearSearchSettings">Clear search settings</button>
+        </div>
+
+        <h3>Recommendations</h3>
+
+        <div data-bind="ifnot: recommendations">No recommendations matching parameters found.</div>
+
         <div data-bind="foreach: recommendations" id="recommendationsCanvas">
           <table>
             <td id="profileImage">
-
               <span data-bind="foreach: images">
                 <span data-bind="if: profilePicture == 1">
                   <img width="auto" height="auto"
@@ -308,14 +377,14 @@
         <!-- /ko -->
         <br>
 
-        <b>fame not editable</b> <!-- no edit -->
+        <b>Fame</b> <!-- no edit -->
         <div
           data-bind="text: loggedInUser.fame() ? loggedInUser.fame : 'No fame rating yet. Interact with other users to increase.'">
         </div>
         <br>
 
         <!-- ko if: loggedInUser.locationTracking -->
-        <b>gps implement editing</b>
+        <b>GPS</b>
         <!-- ko if: settingEditing() != 'gps'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'gps')">Edit</button>
         <table>
@@ -466,8 +535,19 @@
     // { "id": 1 }
     var body = JSON.stringify({
       id: viewModel.loggedInUser.id(),
-      filters: {},
-      sorting: {},
+      filters: {
+        ageMax: viewModel.filters.ageMax(),
+        ageMin: viewModel.filters.ageMin(),
+        fameMin: viewModel.filters.fameMin(),
+        fameMax: viewModel.filters.fameMax(),
+        distanceMin: viewModel.filters.distanceMin(),
+        distanceMax: viewModel.filters.distanceMax(),
+      },
+      sorting: {
+        category: viewModel.sortCategory(),
+        direction: viewModel.sortDirection(),
+        tagsInCommon: viewModel.sortTags(),
+      },
     })
     await fetch("http://localhost:3000/getMatchRecommendations", {
       method: "POST",
@@ -487,7 +567,10 @@
         // });
         // console.log(viewModel.recommendations())
       } else {
-        if (!alert('Unable to load matches. Please try again.')) { viewModel.selectView("notifications", null) }
+        if (!alert(data.text)) {
+          viewModel.clearSearchSettings()
+          // viewModel.selectView("match", null) 
+        }
       }
     }).catch(er => {
       document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
@@ -535,6 +618,14 @@
 
   var viewModel = {
     email: ko.observable(""),
+    filters: {
+      ageMax: ko.observable(),
+      ageMin: ko.observable(),
+      fameMin: ko.observable(),
+      fameMax: ko.observable(),
+      distanceMin: ko.observable(),
+      distanceMax: ko.observable(),
+    },
     focussedProfile: ko.observable(null),
     focussedProfileImageSources: ko.observable(null),
     focussedProfileIsSet: ko.observable(false),
@@ -559,6 +650,9 @@
     selectedView: ko.observable(""),
     settingEditing: ko.observable(""),
     settingEditingWorkspace: ko.observable(""),
+    sortCategory: ko.observable(),
+    sortDirection: ko.observable(),
+    sortTags: ko.observable(),
     token: ko.observable(),
     username: ko.observable(""),
 
@@ -589,6 +683,18 @@
       } else {
         putRecommendationsInViewModel()
       }
+    },
+
+    clearSearchSettings() {
+      viewModel.sortCategory(null)
+      viewModel.sortDirection(null)
+      viewModel.sortTags(null)
+      viewModel.filters.ageMin(null)
+      viewModel.filters.ageMax(null)
+      viewModel.filters.distanceMin(null)
+      viewModel.filters.distanceMax(null)
+      viewModel.filters.fameMin(null)
+      viewModel.filters.fameMax(null)
     },
 
     async deleteImage(id, data) {
@@ -738,7 +844,7 @@
         data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
       }
       var body = JSON.stringify(data)
-      console.log(body)
+      // console.log(body)
       await fetch("http://localhost:3000/updateUser", {
         method: "POST",
         body: body,
