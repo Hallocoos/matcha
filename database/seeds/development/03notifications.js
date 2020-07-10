@@ -6,110 +6,38 @@ exports.seed = function (knex, Promise) {
     // Inserts seed entries
     .then(async function () {
       return knex('notifications').insert({
-        receiveId: '1',
-        sendId: '2',
-        message: 'I really like food',
-        receiver: 'Hallocoos',
-        sender: 'asdfasdf'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '2',
+        receiveId: '8',
         sendId: '1',
-        message: 'I dont really like food',
-        receiver: 'asdfasdf',
+        message: 'I really like food',
+        receiver: 'Atula',
         sender: 'Hallocoos'
       });
     })
     .then(async function () {
       return knex('notifications').insert({
         receiveId: '1',
-        sendId: '3',
-        message: 'I really like food',
+        sendId: '9',
+        message: 'I like turtles.',
         receiver: 'Hallocoos',
-        sender: 'qwerqwer'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '3',
-        sendId: '1',
-        message: 'I dont really like food',
-        receiver: 'qwerqwer',
-        sender: 'Hallocoos'
+        sender: 'Jemima'
       });
     })
     .then(async function () {
       return knex('notifications').insert({
         receiveId: '1',
-        sendId: '4',
+        sendId: '10',
         message: 'I really like food',
         receiver: 'Hallocoos',
-        sender: 'zxcvzxcv'
+        sender: 'Clothild'
       });
     })
     .then(async function () {
       return knex('notifications').insert({
-        receiveId: '4',
+        receiveId: '11',
         sendId: '1',
         message: 'I dont really like food',
-        receiver: 'zxcvzxcv',
+        receiver: 'Ingeltrudis',
         sender: 'Hallocoos'
       });
     })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '2',
-        sendId: '3',
-        message: 'I really like food',
-        receiver: 'asdfasdf',
-        sender: 'qwerqwer'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '3',
-        sendId: '2',
-        message: 'I dont really like food',
-        receiver: 'qwerqwer',
-        sender: 'asdfasdf'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '2',
-        sendId: '4',
-        message: 'I really like food',
-        receiver: 'asdfasdf',
-        sender: 'zxcvzxcv'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '4',
-        sendId: '2',
-        message: 'I dont really like food',
-        receiver: 'zxcvzxcv',
-        sender: 'asdfasdf'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '3',
-        sendId: '4',
-        message: 'I really like food',
-        receiver: 'qwerqwer',
-        sender: 'zxcvzxcv'
-      });
-    })
-    .then(async function () {
-      return knex('notifications').insert({
-        receiveId: '4',
-        sendId: '3',
-        message: 'I dont really like food',
-        receiver: 'zxcvzxcv',
-        sender: 'qwerqwer'
-      });
-    });
 };

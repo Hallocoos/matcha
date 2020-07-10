@@ -9,7 +9,7 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 8,
           requestId: 1,
-          accepter: 'asdfasdf',
+          accepter: 'Atula',
           requester: 'Hallocoos',
           accepted: false,
           blocked: false,
@@ -21,7 +21,7 @@ exports.seed = function (knex, Promise) {
           acceptId: 1,
           requestId: 9,
           accepter: 'Hallocoos',
-          requester: 'oiuqvgmhoiuqh',
+          requester: 'Jemima',
           accepted: false,
           blocked: false,
         });
@@ -32,7 +32,7 @@ exports.seed = function (knex, Promise) {
           acceptId: 1,
           requestId: 10,
           accepter: 'Hallocoos',
-          requester: 'oiuqnhnuvh',
+          requester: 'Clothild',
           accepted: false,
           blocked: false,
         });
@@ -42,7 +42,7 @@ exports.seed = function (knex, Promise) {
         .insert({
           acceptId: 11,
           requestId: 1,
-          accepter: 'oiuwnhvfiuh',
+          accepter: 'Ingeltrudis',
           requester: 'Hallocoos',
           accepted: true,
           blocked: true,
