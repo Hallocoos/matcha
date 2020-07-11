@@ -21,10 +21,10 @@
       </a>
       <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
       <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
-      <a href="#" style="text-decoration: none; display:inline-block; color:black;">
+      <a href="#" style="text-decoration: none; display:inline-block; color:black;" data-bind="value: setInterval(countUnreadNotifications, 5000)">
         <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
         <!-- countNewNotifs doesn't work, or even console log so it doesn't get called? needs a fix -->
-        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;" data-bind="value: setInterval(countUnreadNotifications, 5000)"></span>
+        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;" data-bind="text: unreadNotificationsCount" ></span>
       </a>
       <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
       <hr>
