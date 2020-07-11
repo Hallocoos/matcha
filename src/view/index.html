@@ -24,7 +24,7 @@
       <a href="#" style="text-decoration: none; display:inline-block; color:black;">
         <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
         <!-- countNewNotifs doesn't work, or even console log so it doesn't get called? needs a fix -->
-        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;" data-bind="value: countNewNotifs(notifications)">3</span>
+        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;" data-bind="value: setInterval(countUnreadNotifications, 5000)"></span>
       </a>
       <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
       <hr>
@@ -484,7 +484,7 @@
 
     <div data-bind="if: selectedView() == 'notifications'" id="notifications">
       <!-- need to fix time display -->
-      <button data-bind="click: SeenNotifications(notifications)">Mark Notifications As Read</button>
+      <span data-bind="event: SeenNotifications(notifications)"></span>
       <table style="width:100%" data-bind="value: setInterval(displayNotifications, 5000)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
           <tr data-bind="if: receiver == $root.loggedInUser.username()">
@@ -688,6 +688,7 @@
     token: ko.observable(),
     username: ko.observable(""),
     notifications: ko.observable([]),
+    unreadNotificationsCount: ko.observable(""),
 
     async cancelProfile(targetProfile, data) {
       // console.log(data.id || targetProfile.id)
@@ -1188,16 +1189,28 @@
       })
     },
 
-    countNewNotifs(notifs) {
-      count = 0;
-      for (i=0;notifs[i];i++) {
-        console.log(notifs[i].id);
-        if (notifs[i].seen = 0)
-          count +=1;
-      }
-      console.log(count);
-      return count;
-    }
+    async countUnreadNotifications() {
+      var body = JSON.stringify({
+        id: viewModel.loggedInUser.id(),
+      })
+      await fetch("http://localhost:3000/getNumberOfUnreadNotifications", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        if (data.success) {
+          viewModel.unreadNotificationsCount(data.number)
+          putUserInViewModel(viewModel.loggedInUser.id())
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
+      })
+    },
 
   };
 

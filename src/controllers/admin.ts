@@ -9,7 +9,8 @@ import {
   setNotificationsAsSeenByReceiveId,
   setNotificationsAsSeenBySendId,
   retrieveNotifications,
-  retrieveAllNotificationsByUserId
+  retrieveAllNotificationsByUserId,
+  retrieveAllNewNotificationsByUserId
 } from '../models/notificationModel';
 import {
   addMatch,
@@ -96,11 +97,27 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
 });
 
 // {"id": "1"}
+router.post('/getNumberOfUnreadNotifications', async (request: Request, response: Response) => {
+  const user = await retrieveUserById(request.body.id);
+  var i;
+  var count = 0;
+  if (user) {
+    var notifications = await retrieveAllNewNotificationsByUserId(user.id);
+    for (i=0;notifications[i];i++) {
+      count++;
+    }
+    response.send({ number: count, success: true });
+  } else
+    response.send({ success: false });
+})
+
+// {"id": "1"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
   await setNotificationsAsSeenByReceiveId(request.body.id);
   await setNotificationsAsSeenBySendId(request.body.id);
   response.send({ success: true });
 });
+
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
 router.post('/createNotifications', async (request: Request, response: Response) => {
