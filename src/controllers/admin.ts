@@ -7,6 +7,7 @@ import {
   retrieveNotificationsBySendIdAndReceiveId,
   addNotification,
   setNotificationsAsSeenByReceiveId,
+  setNotificationsAsSeenBySendId,
   retrieveNotifications,
   retrieveAllNotificationsByUserId
 } from '../models/notificationModel';
@@ -65,7 +66,8 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiver: userProfile.username,
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
-        message: userViewer.username + ' had viewed your profile'
+        //message must be useable both ways e.g. user "viewed" you and you "viewed" target_user.
+        message: userViewer.username + 'viewed'
       }
       await addNotification(body);
       await incrementUsersFameRating(userProfile.id, 1);
@@ -96,6 +98,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
 // {"id": "1"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
   await setNotificationsAsSeenByReceiveId(request.body.id);
+  await setNotificationsAsSeenBySendId(request.body.id);
   response.send({ success: true });
 });
 
