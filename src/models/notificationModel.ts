@@ -91,6 +91,23 @@ export async function retrieveAllNotificationsByUserId(userId):Promise<Notificat
 };
 
 /*
+ *  Function to handle finding all users unread notifications
+ *  @Incoming Params: body = {
+ *    userId= <string>
+ *  }
+*/
+export async function retrieveAllNewNotificationsByUserId(userId):Promise<Notification[]> {
+  return knex.select()
+    .from('notifications')
+    .where('receiveId', userId)
+    .andWhere('seenReceiver', false)
+    .orWhere('sendId', userId)
+    .andWhere('seenSender', false)
+    .then(function (result) {
+      return (result);
+    });
+};
+/*
  *  Function to handle adding notifications
  *  @Incoming Params: body = {
  *    receiveId  = <string>,

@@ -9,7 +9,8 @@ import {
   setNotificationsAsSeenByReceiveId,
   setNotificationsAsSeenBySendId,
   retrieveNotifications,
-  retrieveAllNotificationsByUserId
+  retrieveAllNotificationsByUserId,
+  retrieveAllNewNotificationsByUserId
 } from '../models/notificationModel';
 import {
   addMatch,
@@ -67,7 +68,7 @@ router.post('/profile', async (request: Request, response: Response) => {
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
         //message must be useable both ways e.g. user "viewed" you and you "viewed" target_user.
-        message: userViewer.username + 'viewed'
+        message: 'viewed'
       }
       await addNotification(body);
       await incrementUsersFameRating(userProfile.id, 1);
@@ -96,11 +97,27 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
 });
 
 // {"id": "1"}
+router.post('/getNumberOfUnreadNotifications', async (request: Request, response: Response) => {
+  const user = await retrieveUserById(request.body.id);
+  var i;
+  var count = 0;
+  if (user) {
+    var notifications = await retrieveAllNewNotificationsByUserId(user.id);
+    for (i=0;notifications[i];i++) {
+      count++;
+    }
+    response.send({ number: count, success: true });
+  } else
+    response.send({ success: false });
+})
+
+// {"id": "1"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
   await setNotificationsAsSeenByReceiveId(request.body.id);
   await setNotificationsAsSeenBySendId(request.body.id);
   response.send({ success: true });
 });
+
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
 router.post('/createNotifications', async (request: Request, response: Response) => {
@@ -141,7 +158,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: requester.username,
         sendId: accepter.id,
         receiveId: requester.id,
-        message: requester.username + ' has liked you back.'
+        message: 'liked back:,'
       }
       await addNotification(body);
       await incrementUsersFameRating(accepter.id, 5);
@@ -158,7 +175,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: accepter.username,
         sendId: request.body.requestId,
         receiveId: request.body.acceptId,
-        message: requester.username + ' has liked your profile'
+        message: 'liked'
       }
       await addNotification(body);
       response.send({ text: 'The recipient will be notified.', success: true });
@@ -385,7 +402,7 @@ router.post('/blockMatch', async (request: Request, response: Response) => {
     receiver: receiver.username,
     sendId: sender.id,
     receiveId: receiver.id,
-    message: sender.username + ' has blocked you'
+    message: 'blocked'
   }
   await addNotification(body);
   response.send({ text: 'User has been blocked.', success: true });
