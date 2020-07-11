@@ -14,12 +14,18 @@
     </p>
 
     <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
-      <!-- need to make match logo and insert here so its always present -->
       <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
-      <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
+      <a href="#" style="text-decoration: none; display:inline-block; color:black;">
+        <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
+        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;">3</span>
+      </a>
       <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
       <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
-      <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
+      <a href="#" style="text-decoration: none; display:inline-block; color:black;">
+        <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
+        <!-- countNewNotifs doesn't work, or even console log so it doesn't get called? needs a fix -->
+        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;" data-bind="value: countNewNotifs(notifications)">3</span>
+      </a>
       <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
       <hr>
     </p>
@@ -477,11 +483,13 @@
     <div data-bind="if: selectedView() == 'notifications'" id="notifications">
       <!-- <h1>This will be notifications view.</h1> -->
       <!-- need to implement a loop to refresh notifications without a button and to fix time display -->
-      <button data-bind="click: displayNotifications">Fetch New Notifications</button>
-      <table style="width:100%" data-bind="visible: notifications().length > 0">
+      <!-- <button data-bind="click: displayNotifications">Fetch New Notifications</button> -->
+      <!-- need to be able to automark notifications as seen? -->
+      <button data-bind="click: SeenNotifications(notifications)">Mark Notifications As Read</button>
+      <table style="width:100%" data-bind="value: setInterval(displayNotifications, 5000)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
           <tr data-bind="if: receiver == $root.loggedInUser.username()">
-            <td style="padding:20px; border-bottom:1px solid black;">
+            <td style="padding:20px; border-bottom:1px solid black;" data-bind="style: { color: seen == 0 ? 'red' : 'black' }">
             <span data-bind="text: sender"></span>
             <span data-bind="text: message"></span>
             <span>your profile at:</span>
@@ -489,7 +497,7 @@
             </td>
           </tr>
           <tr data-bind="if: sender == $root.loggedInUser.username()">
-            <td style="padding:20px; border-bottom:1px solid black;">
+            <td style="padding:20px; border-bottom:1px solid black;" data-bind="style: { color: seen == 0 ? 'red' : 'black' }">
             <span>You</span>
             <span data-bind="text: message"></span>
             <span data-bind="text: receiver"></span>
@@ -1101,6 +1109,40 @@
         document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
       })
     },
+    //need to fix this so it auto displays again - maybe call display notifs inside? not sure
+    async SeenNotifications(notifs) {
+      var body = JSON.stringify({
+        id: viewModel.loggedInUser.id(),
+      })
+      await fetch("http://localhost:3000/setNotificationsAsSeen", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        if (data.success) {
+          viewModel.notifications(notifs)
+          putUserInViewModel(viewModel.loggedInUser.id())
+        }
+      }).catch(er => {
+        document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
+      })
+    },
+
+    countNewNotifs(notifs) {
+      count = 0;
+      for (i=0;notifs[i];i++) {
+        console.log(notifs[i].id);
+        if (notifs[i].seen = 0)
+          count +=1;
+      }
+      console.log(count);
+      return count;
+    }
 
   };
 
