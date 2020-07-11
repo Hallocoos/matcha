@@ -75,22 +75,38 @@ export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveI
 };
 
 /*
- *  Function to handle blocking a match
+ *  Function to handle finding all users notification
  *  @Incoming Params: body = {
- *    receiveId = <string>,
- *    sendId = <string>
+ *    userId= <string>
  *  }
 */
-export async function retrieveNotificationsByUserId(userId):Promise<Notification[]> {
+export async function retrieveAllNotificationsByUserId(userId):Promise<Notification[]> {
   return knex.select()
     .from('notifications')
-    .where('sendId', userId)
-    .orWhere('receiveId', userId)
+    .where('receiveId', userId)
+    .orWhere('sendId', userId)
     .then(function (result) {
       return (result);
     });
 };
 
+/*
+ *  Function to handle finding all users unread notifications
+ *  @Incoming Params: body = {
+ *    userId= <string>
+ *  }
+*/
+export async function retrieveAllNewNotificationsByUserId(userId):Promise<Notification[]> {
+  return knex.select()
+    .from('notifications')
+    .where('receiveId', userId)
+    .andWhere('seenReceiver', false)
+    .orWhere('sendId', userId)
+    .andWhere('seenSender', false)
+    .then(function (result) {
+      return (result);
+    });
+};
 /*
  *  Function to handle adding notifications
  *  @Incoming Params: body = {
@@ -117,7 +133,19 @@ export async function addNotification(body) {
 export async function setNotificationsAsSeenByReceiveId(receiveId: string) {
   return knex('notifications')
     .where('receiveId', receiveId)
-    .update('seen', true)
+    .update('seenReceiver', true)
+    .then(function () {
+      return ;
+    });
+};
+/*
+ *  Function to handle setting notifications as seen by sender
+ *  @Incoming Params: body = { receiveId = <string> }
+*/
+export async function setNotificationsAsSeenBySendId(sendId: string) {
+  return knex('notifications')
+    .andWhere('sendId', sendId)
+    .update('seenSender', true)
     .then(function () {
       return ;
     });
