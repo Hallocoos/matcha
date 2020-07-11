@@ -116,7 +116,19 @@ export async function addNotification(body) {
 export async function setNotificationsAsSeenByReceiveId(receiveId: string) {
   return knex('notifications')
     .where('receiveId', receiveId)
-    .update('seen', true)
+    .update('seenReceiver', true)
+    .then(function () {
+      return ;
+    });
+};
+/*
+ *  Function to handle setting notifications as seen by sender
+ *  @Incoming Params: body = { receiveId = <string> }
+*/
+export async function setNotificationsAsSeenBySendId(sendId: string) {
+  return knex('notifications')
+    .andWhere('sendId', sendId)
+    .update('seenSender', true)
     .then(function () {
       return ;
     });

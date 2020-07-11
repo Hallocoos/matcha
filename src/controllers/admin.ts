@@ -7,6 +7,7 @@ import {
   retrieveNotificationsBySendIdAndReceiveId,
   addNotification,
   setNotificationsAsSeenByReceiveId,
+  setNotificationsAsSeenBySendId,
   retrieveNotifications,
   retrieveAllNotificationsByUserId
 } from '../models/notificationModel';
@@ -97,6 +98,7 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
 // {"id": "1"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
   await setNotificationsAsSeenByReceiveId(request.body.id);
+  await setNotificationsAsSeenBySendId(request.body.id);
   response.send({ success: true });
 });
 
