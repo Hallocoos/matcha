@@ -21,10 +21,12 @@
       </a>
       <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
       <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
-      <a href="#" style="text-decoration: none; display:inline-block; color:black;" data-bind="value: setInterval(countUnreadNotifications, 5000)">
+      <a href="#" style="text-decoration: none; display:inline-block; color:black;"
+        data-bind="value: setInterval(countUnreadNotifications, 5000)">
         <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
         <!-- countNewNotifs doesn't work, or even console log so it doesn't get called? needs a fix -->
-        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;" data-bind="text: unreadNotificationsCount" ></span>
+        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;"
+          data-bind="text: unreadNotificationsCount"></span>
       </a>
       <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
       <hr>
@@ -137,9 +139,9 @@
           <table>
             <td id="profileImage">
               <span data-bind="foreach: images">
-                <span data-bind="if: profilePicture == 1">
+                <span data-bind="if: true">
                   <img width="auto" height="auto"
-                    data-bind="attr: {src: image}, click: $root.putFocusedProfileInViewModel.bind($data)"
+                    data-bind="attr: {src: $data}, click: $root.putFocusedProfileInViewModel.bind($data)"
                     style="float: left;">
                 </span>
               </span>
@@ -167,14 +169,19 @@
             </td>
             <td id="buttons">
               <button style="display: block; width: 100%;"
-                data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">View
-                Profile</button>
-              <!-- ko if: true  -->
-              <!-- which property can be used here to hide button -->
-              <button style="display: block; width: 100%;" data-bind="click: $root.swipeRight.bind($data)">Swipe
-                Right</button>
+                data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
+                View Profile
+              </button>
+              <!-- ko if: swipeable  -->
+              <button style="display: block; width: 100%;" data-bind="click: $root.swipeRight.bind($data)">
+                Swipe Right
+              </button>
               <!-- /ko -->
-              <button style="display: block; width: 100%;" data-bind="click: ">Cancel Profile</button>
+              <!-- ko if: blockable -->
+              <button style="display: block; width: 100%;" data-bind="click: $root.cancelProfile.bind($data, id)">
+                Cancel Profile
+              </button>
+              <!-- /ko -->
             </td>
           </table>
           <br>
@@ -185,11 +192,10 @@
 
         <div id="buttons">
           <!-- ko if: focussedProfile.swipeable  -->
-          <!-- which property can be used here to hide button -->
-          <button data-bind="click: $root.swipeRight.bind($data, ko.toJS(focussedProfile))">Swipe Right</button>
+          <button data-bind="click: swipeRight.bind($data, ko.toJS(focussedProfile))">Swipe Right</button>
           <!-- /ko -->
           <!-- ko if: focussedProfile.blockable -->
-          <button data-bind="click: cancelProfile.bind($data, ko.toJS(focussedProfile))">Cancel Profile</button>
+          <button data-bind="click: cancelProfile.bind($data, focussedProfile.id())">Cancel Profile</button>
           <!-- /ko -->
         </div>
 
@@ -488,20 +494,22 @@
       <table style="width:100%" data-bind="value: setInterval(displayNotifications, 5000)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
           <tr data-bind="if: receiver == $root.loggedInUser.username()">
-            <td style="padding:20px; border-bottom:1px solid black;" data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
-            <span data-bind="text: sender"></span>
-            <span data-bind="text: message"></span>
-            <span>your profile at:</span>
-            <span data-bind="text: createdAt"></span>
+            <td style="padding:20px; border-bottom:1px solid black;"
+              data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
+              <span data-bind="text: sender"></span>
+              <span data-bind="text: message"></span>
+              <span>your profile at:</span>
+              <span data-bind="text: createdAt"></span>
             </td>
           </tr>
           <tr data-bind="if: sender == $root.loggedInUser.username()">
-            <td style="padding:20px; border-bottom:1px solid black;" data-bind="style: { color: seenSender == 0 ? 'red' : 'black' }">
-            <span>You</span>
-            <span data-bind="text: message"></span>
-            <span data-bind="text: receiver"></span>
-            <span>at:</span>
-            <span data-bind="text: createdAt"></span>
+            <td style="padding:20px; border-bottom:1px solid black;"
+              data-bind="style: { color: seenSender == 0 ? 'red' : 'black' }">
+              <span>You</span>
+              <span data-bind="text: message"></span>
+              <span data-bind="text: receiver"></span>
+              <span>at:</span>
+              <span data-bind="text: createdAt"></span>
             </td>
           </tr>
         </tbody>
@@ -551,9 +559,9 @@
       </div>
     </div>
   </div>
-    <footer style="text-align:center; padding:30px; height:50px;">
-      <p>Authors: hde-vos jrheeder clongmor revan-wy</p>
-    </footer>
+  <footer style="text-align:center; padding:30px; height:50px;">
+    <p>Authors: hde-vos jrheeder clongmor revan-wy</p>
+  </footer>
 </body>
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
@@ -602,7 +610,7 @@
         }
       }
     }).catch(er => {
-      document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
+      document.getElementById("errordiv").innerHTML = "Error setting recommendations. Reason: " + er.message + "."
     })
     // console.log(ko.toJS(viewModel.recommendations))
     // console.log(viewModel.ownImageSources())
@@ -690,13 +698,13 @@
     notifications: ko.observable([]),
     unreadNotificationsCount: ko.observable(""),
 
-    async cancelProfile(targetProfile, data) {
-      // console.log(data.id || targetProfile.id)
+    async cancelProfile(targetProfileId, data) {
       // { "acceptId": 5, "requestId": 3 }
       var body = JSON.stringify({
-        acceptId: data.id || targetProfile.id,
+        acceptId: targetProfileId,
         requestId: viewModel.loggedInUser.id(),
       })
+      // console.log(body)
       await fetch("http://localhost:3000/blockMatch", {
         method: "POST",
         body: body,
@@ -712,11 +720,9 @@
       }).catch(er => {
         document.getElementById("errordiv").innerHTML = "Error blocking match. Reason: " + er.message + "."
       })
-      if (viewModel.focussedProfileIsSet()) {
-        viewModel.putFocusedProfileInViewModel(targetProfile)
-      } else {
-        putRecommendationsInViewModel()
-      }
+      viewModel.focussedProfileIsSet(false)
+      viewModel.focussedProfile = null
+      putRecommendationsInViewModel()
     },
 
     clearSearchSettings() {
@@ -775,7 +781,7 @@
       putUserInViewModel(viewModel.loggedInUser.id())
       // console.log("end of save tag reached")
     },
-    
+
     fileSelect(element, event) { // limit size 1000000
       // console.log(event.target.files)
       var file = event.target.files[0]
@@ -1101,14 +1107,15 @@
       ).then(data => {
         // console.log(data)
         alert(data.text)
+        // console.log(viewModel.focussedProfileIsSet())
+        if (viewModel.focussedProfileIsSet() == true) {
+          viewModel.focussedProfile.swipeable(0)
+        } else {
+          putRecommendationsInViewModel()
+        }
       }).catch(er => {
         document.getElementById("errordiv").innerHTML = "Error creating match. Reason: " + er.message + "."
       })
-      if (viewModel.focussedProfileIsSet()) {
-        viewModel.putFocusedProfileInViewModel(targetProfile)
-      } else {
-        putRecommendationsInViewModel()
-      }
     },
 
     async uploadNewImage() {
