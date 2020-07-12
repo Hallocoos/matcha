@@ -47,7 +47,8 @@ exports.up = function (knex, Promise) {
       table.string('receiver').notNullable()
       table.string('message').notNullable()
       table.timestamp('createdAt').defaultTo(knex.fn.now())
-      table.boolean('seen').defaultTo(false)
+      table.boolean('seenReceiver').defaultTo(false)
+      table.boolean('seenSender').defaultTo(false)
     })
     .createTable('tags', function (table) {
       table.increments('id').primary()
