@@ -77,7 +77,7 @@ export function reportUser(data) {
   });
   var mailOptions = {
     from: process.env["EMAILUSER"],
-    to: data.email,
+    to: process.env["EMAILUSER"],
     subject: 'Report user ' + data.email,
     text: 'Terminate this account\n' +
         'Please visit http://localhost:3000/terminate/' + data.hash + ' to kill the account.'
