@@ -9,6 +9,7 @@ export class Notification {
   message: string;
   createdAt: string;
   seen: string;
+  isChat: string;
 
   constructor(data: Partial<Notification>) {
     Object.assign(this, data);
@@ -62,7 +63,7 @@ export async function retrieveNotificationsById(id): Promise<Notification[]> {
  *    sendId = <string>
  *  }
 */
-export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveId):Promise<Notification[]> {
+export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveId): Promise<Notification[]> {
   return knex.select()
     .from('notifications')
     .where('receiveId', receiveId)
@@ -80,7 +81,7 @@ export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveI
  *    userId= <string>
  *  }
 */
-export async function retrieveAllNotificationsByUserId(userId):Promise<Notification[]> {
+export async function retrieveAllNotificationsByUserId(userId): Promise<Notification[]> {
   return knex.select()
     .from('notifications')
     .where('receiveId', userId)
@@ -96,7 +97,7 @@ export async function retrieveAllNotificationsByUserId(userId):Promise<Notificat
  *    userId= <string>
  *  }
 */
-export async function retrieveAllNewNotificationsByUserId(userId):Promise<Notification[]> {
+export async function retrieveAllNewNotificationsByUserId(userId): Promise<Notification[]> {
   return knex.select()
     .from('notifications')
     .where('receiveId', userId)
@@ -133,9 +134,10 @@ export async function addNotification(body) {
 export async function setNotificationsAsSeenByReceiveId(receiveId: string) {
   return knex('notifications')
     .where('receiveId', receiveId)
+    .andWhere('isChat', false)
     .update('seenReceiver', true)
     .then(function () {
-      return ;
+      return;
     });
 };
 /*
@@ -144,11 +146,23 @@ export async function setNotificationsAsSeenByReceiveId(receiveId: string) {
 */
 export async function setNotificationsAsSeenBySendId(sendId: string) {
   return knex('notifications')
-    .andWhere('sendId', sendId)
+    .where('sendId', sendId)
+    .andWhere('isChat', false)
     .update('seenSender', true)
     .then(function () {
-      return ;
+      return;
     });
+};
+
+export async function setChatAsSeen(receiveId: string, sendId: string) {
+  return knex('notifications')
+    .where('receiveId', receiveId)
+    .andWhere('sendId', sendId)
+    .andWhere('isChat', true)
+    .update('seenReceiver', true)
+    .then(function () {
+      return;
+    })
 };
 
 export default Notification;

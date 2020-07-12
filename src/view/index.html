@@ -6,8 +6,6 @@
 
 <body style="height:100%; margin:0;">
 
-  <div id="errordiv"></div>
-
   <div id="main" style="min-height:90%; margin-bottom:-50px;">
     <p style="display:inline-block;" id="logo">
       <img src="Matcha_logo.png" width="80" height="70" title="Matcha">
@@ -15,9 +13,11 @@
 
     <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
       <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
-      <a href="#" style="text-decoration: none; display:inline-block; color:black;">
+      <a href="#" style="text-decoration: none; display:inline-block; color:black;"
+        data-bind="value: setInterval(countUnreadChats, 5000)">
         <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
-        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;">3</span>
+        <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;"
+          data-bind="text: unreadChatsCount"></span>
       </a>
       <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
       <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
@@ -263,7 +263,30 @@
     </div>
 
     <div data-bind="if: selectedView() == 'chat'" id="chat">
-      <h1>This will be chat view.</h1>
+      <b>Users you can chat with:</b>
+      <!-- ko if: matches().length == 0 -->
+      <div>You don't yet have any mutual swipes. :(</div>
+      <!-- /ko -->
+      <!-- ko ifnot: matches().length == 0 -->
+      <div data-bind="foreach: matches">
+        <button data-bind="
+            text: (($root.loggedInUser.username() == requester) ? accepter : requester) + (hasNewMessage() ? ' *New*' : ''), 
+            click: $root.setSelectedChat.bind($data)">
+        </button>
+        <br>
+      </div>
+      <hr>
+      <!-- /ko -->
+      <!-- ko if: selectedChat() > 0 -->
+      <!-- <span data-bind="event: setTimeout(seenChats, 3000, selectedChat)"></span> -->
+      <div data-bind="foreach: notifications">
+        <!-- ko if: sendId == $root.selectedChat() || receiveId == $root.selectedChat() && isChat == 1 -->
+        <div data-bind="text: sender + ': ' + message"></div>
+        <!-- /ko -->
+      </div>
+      <input data-bind="value: $root.newChatMessage">
+      <button data-bind="click: $root.sendNewChatMessage">Send</button>
+      <!-- /ko -->
     </div>
 
     <div data-bind="if: selectedView() == 'profile'" id="profile">
@@ -498,10 +521,11 @@
 
     <div data-bind="if: selectedView() == 'notifications'" id="notifications">
       <!-- need to fix time display -->
-      <span data-bind="event: setTimeout(SeenNotifications, 3000, notifications)"></span>
+      <span data-bind="event: setTimeout(seenNotifications, 3000, notifications)"></span>
       <table style="width:100%" data-bind="value: setInterval(displayNotifications, 5000)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
-          <tr data-bind="if: receiver == $root.loggedInUser.username()">
+          <tr
+            data-bind="if: 'username' in $root.loggedInUser && receiver == $root.loggedInUser.username() && isChat == 0 ">
             <td style="padding:20px; border-bottom:1px solid black;"
               data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
               <span data-bind="text: sender"></span>
@@ -510,7 +534,8 @@
               <span data-bind="text: createdAt"></span>
             </td>
           </tr>
-          <tr data-bind="if: sender == $root.loggedInUser.username()">
+          <tr
+            data-bind="if: 'username' in $root.loggedInUser && sender == $root.loggedInUser.username() && isChat == 0 ">
             <td style="padding:20px; border-bottom:1px solid black;"
               data-bind="style: { color: seenSender == 0 ? 'red' : 'black' }">
               <span>You</span>
@@ -576,6 +601,37 @@
 <script type='text/javascript' src='knockout.mapping.js'></script>
 <script>
 
+  async function putMatchesInViewModel() {
+    // { "id": 1 }
+    var body = JSON.stringify({
+      id: viewModel.loggedInUser.id(),
+    })
+    // console.log(body)
+    await fetch("http://localhost:3000/getMatches", {
+      method: "POST",
+      body: body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + viewModel.token(),
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      // console.log(data)
+      if (data.success) {
+        data.matches.forEach(match => {
+          match.hasNewMessage = ko.observable(false)
+        });
+        viewModel.matches(data.matches)
+        // console.log(ko.toJS(viewModel.matches))
+      } else {
+        if (!alert("Couldn't grab matches. Please try again.")) { viewModel.selectView("notifications", null) }
+      }
+    }).catch(er => {
+      console.log("Error setting matches for chat. Reason: " + er.message + ".")
+    })
+  }
+
   async function putRecommendationsInViewModel() {
     // { "id": 1 }
     var body = JSON.stringify({
@@ -619,7 +675,7 @@
         }
       }
     }).catch(er => {
-      document.getElementById("errordiv").innerHTML = "Error setting recommendations. Reason: " + er.message + "."
+      console.log("Error setting recommendations. Reason: " + er.message + ".")
     })
     // console.log(ko.toJS(viewModel.recommendations))
     // console.log(viewModel.ownImageSources())
@@ -652,7 +708,7 @@
         if (!alert('Unable to complete login. Please try again.')) { window.location.replace("http://localhost:3000/matcha") }
       }
     }).catch(er => {
-      document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
+      console.log("Error setting logged in user data. Reason: " + er.message + ".")
     })
     // console.log(ko.toJS(viewModel.loggedInUser))
     // console.log(viewModel.ownImageSources())
@@ -662,6 +718,30 @@
     // console.log("reset setting editing called")
     viewModel.settingEditing('')
     viewModel.settingEditingWorkspace('')
+  }
+
+  async function sendNewNotification(data) {
+    var body = JSON.stringify(data)
+    // console.log(data)
+    await fetch("http://localhost:3000/createNotifications", {
+      method: "POST",
+      body: body,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + viewModel.token(),
+      },
+    }).then(response =>
+      response.json()
+    ).then(data => {
+      // console.log(data)
+      if (data.success) {
+        viewModel.displayNotifications(viewModel.loggedInUser.id())
+      } else {
+        if (!alert('Unable to send notification. Please try again.')) { }
+      }
+    }).catch(er => {
+      console.log("Error sending new notification. Reason: " + er.message + ".")
+    })
   }
 
   var viewModel = {
@@ -683,7 +763,9 @@
       source: ko.observable(""),
       profilePicture: ko.observable(0),
     },
-    loggedInUser: null,
+    loggedInUser: {},
+    matches: ko.observable([]),
+    newChatMessage: ko.observable(""),
     newRegistration: {
       age: ko.observable(""),
       email: ko.observable(""),
@@ -698,6 +780,7 @@
     password: ko.observable(""),
     recommendations: ko.observable([]),
     reset: ko.observable(),
+    selectedChat: ko.observable(""),
     selectedView: ko.observable(""),
     settingEditing: ko.observable(""),
     settingEditingWorkspace: ko.observable(""),
@@ -705,9 +788,10 @@
     sortDirection: ko.observable(),
     sortTags: ko.observable(),
     token: ko.observable(),
+    unreadChatsCount: ko.observable(0),
+    unreadNotificationsCount: ko.observable(0),
     username: ko.observable(""),
     notifications: ko.observable([]),
-    unreadNotificationsCount: ko.observable(""),
 
     addThisTagToFilter() {
       console.log(ko.toJS(viewModel.filters.addingTag))
@@ -715,7 +799,7 @@
       viewModel.filters.addingTag("")
       console.log(ko.toJS(viewModel.filters.tags))
     },
-    
+
     async cancelProfile(targetProfileId, data) {
       // { "acceptId": 5, "requestId": 3 }
       var body = JSON.stringify({
@@ -736,7 +820,7 @@
         console.log(data)
         alert(data.text)
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error blocking match. Reason: " + er.message + "."
+        console.log("Error blocking match. Reason: " + er.message + ".")
       })
       viewModel.focussedProfileIsSet(false)
       viewModel.focussedProfile = null
@@ -775,7 +859,7 @@
         }
         alert(data.text)
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+        console.log("Error updating own data. Reason: " + er.message + ".")
       })
     },
 
@@ -795,7 +879,7 @@
         alert(data.text)
         // console.log("end of then")
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+        console.log("Error updating own data. Reason: " + er.message + ".")
       })
       putUserInViewModel(viewModel.loggedInUser.id())
       // console.log("end of save tag reached")
@@ -804,7 +888,7 @@
     deleteThisTagFromFilter(data) {
       viewModel.filters.tags.remove(data)
     },
-    
+
     fileSelect(element, event) { // limit size 1000000
       // console.log(event.target.files)
       var file = event.target.files[0]
@@ -843,7 +927,7 @@
           return
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error logging out. Reason: " + er.message + "."
+        console.log("Error logging out. Reason: " + er.message + ".")
       })
     },
 
@@ -873,7 +957,7 @@
           if (!alert('Unable to load target profile. Please try again.')) { viewModel.selectView("notifications", null) }
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error loading target profile. Reason: " + er.message + "."
+        console.log("Error loading target profile. Reason: " + er.message + ".")
       })
       // console.log(ko.toJS(viewModel.focussedProfile))
     },
@@ -914,6 +998,10 @@
           putRecommendationsInViewModel()
           viewModel.focussedProfileIsSet(false)
           break
+        case "chat":
+          putMatchesInViewModel()
+          // viewModel.selectedChat(null)
+          break
       }
     },
 
@@ -938,7 +1026,7 @@
         alert(data.text)
         // console.log("end of then")
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+        console.log("Error updating own data. Reason: " + er.message + ".")
       })
       resetSettingEditing()
       putUserInViewModel(viewModel.loggedInUser.id())
@@ -982,9 +1070,23 @@
         }
         alert(data.text)
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+        console.log("Error updating own data. Reason: " + er.message + ".")
       })
       resetSettingEditing()
+    },
+
+    sendNewChatMessage(data) {
+      // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
+      data = {
+        receiveId: viewModel.selectedChat(),
+        sendId: viewModel.loggedInUser.id(),
+        message: viewModel.newChatMessage(),
+        isChat: 1,
+        seenSender: 1,
+      }
+      viewModel.newChatMessage("")
+      sendNewNotification(data)
+      // console.log(ko.toJS(viewModel.notifications))
     },
 
     async sendNewPassword() {
@@ -1009,7 +1111,7 @@
           alert("Please request a new reset link.")
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error sending new password. Reason: " + er.message + "."
+        console.log("Error sending new password. Reason: " + er.message + ".")
       })
     },
 
@@ -1051,7 +1153,7 @@
           }
         }).catch(er => {
           // alert('Invalid credentials')
-          document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+          console.log("Error setting token. Reason: " + er.message + " when submitting credentials")
         })
       }
     },
@@ -1075,8 +1177,19 @@
           if (!alert(data.text)) { window.location.reload(); }
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error resetting pwd. Reason: " + er.message + "."
+        console.log("Error resetting pwd. Reason: " + er.message + ".")
       })
+    },
+
+    setSelectedChat(data) {
+      match = ko.toJS(data)
+      // console.log(notification)
+      chatPartnerId = viewModel.loggedInUser.id() == match.requestId ? match.acceptId : match.requestId
+      // console.log(chatPartnerId) // goal here is 8
+      viewModel.selectedChat(chatPartnerId)
+      viewModel.newChatMessage("")
+      viewModel.seenChats(chatPartnerId)
+      // console.log(ko.toJS(viewModel.notifications))
     },
 
     async submitCreds() {
@@ -1097,13 +1210,14 @@
         if (data.token) {
           viewModel.token(data.token)
           viewModel.selectedView('notifications')
-          putUserInViewModel(data.id);
+          putUserInViewModel(data.id)
+          viewModel.displayNotifications(data.id)
         } else {
           alert(data.text)
         }
       }).catch(er => {
         // alert('Invalid credentials')
-        document.getElementById("errordiv").innerHTML = "Error setting token. Reason: " + er.message + " when submitting credentials"
+        console.log("Error setting token. Reason: " + er.message + " when submitting credentials")
       })
     },
 
@@ -1137,7 +1251,7 @@
           putRecommendationsInViewModel()
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error creating match. Reason: " + er.message + "."
+        console.log("Error creating match. Reason: " + er.message + ".")
       })
     },
 
@@ -1162,7 +1276,7 @@
         }
         alert(data.text)
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating own data. Reason: " + er.message + "."
+        console.log("Error updating own data. Reason: " + er.message + ".")
       })
       viewModel.imageWorkspace.source("")
       viewModel.imageWorkspace.profilePicture(0)
@@ -1173,9 +1287,12 @@
       viewModel.uploadNewImage()
     },
 
-    async displayNotifications() {
+    async displayNotifications(id) {
+      if ("id" in viewModel.loggedInUser)
+        targetId = viewModel.loggedInUser.id()
+      else targetId = id
       var body = JSON.stringify({
-        id: viewModel.loggedInUser.id(),
+        id: targetId,
       })
       await fetch("http://localhost:3000/getNotifications", {
         method: "POST",
@@ -1189,14 +1306,59 @@
       ).then(data => {
         if (data.success && data.notifications) {
           viewModel.notifications(data.notifications)
-          putUserInViewModel(viewModel.loggedInUser.id())
+          // putUserInViewModel(viewModel.loggedInUser.id())
+        }
+      }).then(() => {
+        if ("id" in viewModel.loggedInUser) {
+          myId = viewModel.loggedInUser.id()
+          jsMatches = viewModel.matches()
+          jsMatches.forEach(element => {
+            element.hasNewMessage(false)
+          });
+          viewModel.notifications().forEach(notification => {
+            if (notification.isChat && notification.receiveId == myId && !notification.seenReceiver) {
+              sendId = notification.sendId
+              jsMatches.forEach(element => {
+                if (element.requestId == sendId || element.acceptId == sendId) {
+                  element.hasNewMessage(true)
+                }
+              });
+            }
+          });
+          viewModel.matches(jsMatches)
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
+        console.log("Error getting notifications. Reason: " + er.message + ".")
       })
     },
+
+    async seenChats(sendId) {
+      var body = JSON.stringify({
+        id: ko.toJS(viewModel.loggedInUser.id),
+        isChat: 1,
+        sendId: ko.toJS(sendId),
+      })
+      await fetch("http://localhost:3000/setNotificationsAsSeen", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        // if (data.success) {
+        //   viewModel.notifications(notifs)
+        //   // putUserInViewModel(viewModel.loggedInUser.id())
+        // }
+      }).catch(er => {
+        console.log("Error setting chats as seen. Reason: " + er.message + ".")
+      })
+    },
+
     //need to fix this so it auto displays again - maybe call display notifs inside? not sure
-    async SeenNotifications(notifs) {
+    async seenNotifications(notifs) {
       var body = JSON.stringify({
         id: viewModel.loggedInUser.id(),
       })
@@ -1212,10 +1374,34 @@
       ).then(data => {
         if (data.success) {
           viewModel.notifications(notifs)
-          putUserInViewModel(viewModel.loggedInUser.id())
+          // putUserInViewModel(viewModel.loggedInUser.id())
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
+        console.log("Error setting notifications as seen. Reason: " + er.message + ".")
+      })
+    },
+
+    async countUnreadChats() {
+      var body = JSON.stringify({
+        id: viewModel.loggedInUser.id(),
+        isChat: 1,
+      })
+      await fetch("http://localhost:3000/getNumberOfUnreadNotifications", {
+        method: "POST",
+        body: body,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + viewModel.token(),
+        },
+      }).then(response =>
+        response.json()
+      ).then(data => {
+        if (data.success) {
+          viewModel.unreadChatsCount(data.number)
+          // putUserInViewModel(viewModel.loggedInUser.id())
+        }
+      }).catch(er => {
+        console.log("Error counting unread notifications. Reason: " + er.message + ".")
       })
     },
 
@@ -1235,10 +1421,10 @@
       ).then(data => {
         if (data.success) {
           viewModel.unreadNotificationsCount(data.number)
-          putUserInViewModel(viewModel.loggedInUser.id())
+          // putUserInViewModel(viewModel.loggedInUser.id())
         }
       }).catch(er => {
-        document.getElementById("errordiv").innerHTML = "Error updating getting notifications. Reason: " + er.message + "."
+        console.log("Error counting unread notifications. Reason: " + er.message + ".")
       })
     },
 
@@ -1272,7 +1458,7 @@
       // }
     }).catch(er => {
       // alert('Invalid credentials')
-      document.getElementById("errordiv").innerHTML = "Error verifying email. Reason: " + er.message + "."
+      console.log("Error verifying email. Reason: " + er.message + ".")
     })
   }
   ko.applyBindings(viewModel);
