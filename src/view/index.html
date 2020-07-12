@@ -366,6 +366,27 @@
     // console.log(viewModel.ownImageSources())
   }
 
+async function putChatInViewModel(id) {
+  var body = JSON.stringify({
+    id: id,
+  })
+  await fetch("http://localhost:3000/getChat", {
+    method: "POST",
+    body: body,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + viewModel.token(),
+    },
+  }).then(response =>
+    response.json()
+  ).then(data => {
+    console.log(data)
+    viewModel.chat = ko.mapping.fromJS(data)
+  }).catch(er => {
+    document.getElementById("errordiv").innerHTML = "Error setting logged in user data. Reason: " + er.message + "."
+  })
+}
+
   function resetSettingEditing() {
     // console.log("reset setting editing called")
     viewModel.settingEditing('')
@@ -396,6 +417,7 @@
     settingEditingWorkspace: ko.observable(""),
     token: ko.observable(),
     username: ko.observable(""),
+    chat: ko.observable([]),
 
     async deleteImage(id, data) {
       if (!confirm("Delete image?")) return
@@ -645,6 +667,7 @@
           viewModel.token(data.token)
           viewModel.selectedView('notifications')
           putUserInViewModel(data.id);
+          putChatInViewModel(data.id);
         } else {
           alert(data.text)
         }
