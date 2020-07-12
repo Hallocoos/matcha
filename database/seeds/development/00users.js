@@ -494,7 +494,7 @@ exports.seed = function (knex, Promise) {
                 hash: await (await hash('Syllis')).replace(/\//g, ''),
                 longitude: 1.9658,
                 latitude: -1.9234,
-                matchable: 0,
+                matchable: 1,
                 verified: 1
             });
     })
