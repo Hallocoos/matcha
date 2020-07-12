@@ -10,7 +10,8 @@ import {
   setNotificationsAsSeenBySendId,
   retrieveNotifications,
   retrieveAllNotificationsByUserId,
-  retrieveAllNewNotificationsByUserId
+  retrieveAllNewNotificationsByUserId,
+  setChatAsSeen
 } from '../models/notificationModel';
 import {
   addMatch,
@@ -97,25 +98,34 @@ router.post('/getNotifications', async (request: Request, response: Response) =>
     response.send({ success: false });
 });
 
-// {"id": "1"}
+// {"id": "1", ?"isChat": "0"}
 router.post('/getNumberOfUnreadNotifications', async (request: Request, response: Response) => {
   const user = await retrieveUserById(request.body.id);
   var i;
   var count = 0;
+  var isChat = new String(request.body.isChat)
   if (user) {
     var notifications = await retrieveAllNewNotificationsByUserId(user.id);
     for (i = 0; notifications[i]; i++) {
-      count++;
+      if (notifications[i].isChat == isChat)
+        count++;
     }
     response.send({ number: count, success: true });
   } else
     response.send({ success: false });
 })
 
-// {"id": "1"}
+// {"id": "1", ?"isChat": "0"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
-  await setNotificationsAsSeenByReceiveId(request.body.id);
-  await setNotificationsAsSeenBySendId(request.body.id);
+  var isChat = request.body.isChat == 1 ? true : false;
+  if (isChat) {
+    const receiveId = request.body.id;
+    const sendId = request.body.sendId;
+    await setChatAsSeen(receiveId, sendId)
+  } else {
+    await setNotificationsAsSeenByReceiveId(request.body.id);
+    await setNotificationsAsSeenBySendId(request.body.id);
+  }
   response.send({ success: true });
 });
 
@@ -190,7 +200,7 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
-    response.send({ matches: matches });
+    response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
 });
