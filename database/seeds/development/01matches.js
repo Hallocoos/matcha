@@ -27,25 +27,47 @@ exports.seed = function (knex, Promise) {
         });
     })
     .then(async function () {
-      return knex('matches')
-        .insert({
-          acceptId: 1,
-          requestId: 10,
-          accepter: 'Hallocoos',
-          requester: 'Clothild',
-          accepted: false,
-          blocked: false,
-        });
+        return knex('matches')
+            .insert({
+                acceptId: 14,
+                requestId: 1,
+                accepter: 'Hallocoos',
+                requester: 'Theodraded',
+                accepted: false,
+                blocked: false,
+            });
     })
     .then(async function () {
-      return knex('matches')
-        .insert({
-          acceptId: 11,
-          requestId: 1,
-          accepter: 'Ingeltrudis',
-          requester: 'Hallocoos',
-          accepted: true,
-          blocked: true,
-        });
+        return knex('matches')
+            .insert({
+                acceptId: 16,
+                requestId: 17,
+                accepter: 'Eulimenei',
+                requester: 'Eriphia',
+                accepted: true,
+                blocked: false,
+            });
     })
+      .then(async function () {
+          return knex('matches')
+              .insert({
+                  acceptId: 24,
+                  requestId: 23,
+                  accepter: 'Ingeltrudis',
+                  requester: 'Mariphine',
+                  accepted: true,
+                  blocked: false,
+              });
+      })
+      .then(async function () {
+          return knex('matches')
+              .insert({
+                  acceptId: 25,
+                  requestId: 26,
+                  accepter: 'Acotali',
+                  requester: 'Bromia',
+                  accepted: true,
+                  blocked: false,
+              });
+      })
 };
