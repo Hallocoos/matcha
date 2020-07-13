@@ -11,7 +11,7 @@ exports.seed = function (knex, Promise) {
           requestId: 1,
           accepter: 'Atula',
           requester: 'Hallocoos',
-          accepted: false,
+          accepted: true,
           blocked: false,
         });
     })

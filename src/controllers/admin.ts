@@ -1,13 +1,17 @@
 import * as express from 'express';
 import { Request, Response } from 'express';
-import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator } from '../services/validation';
+import { updateUserValidator, newNotificationValidator, newMatchValidator, idValidator, newImageValidator, deleteImageValidator, newTagValidator, deleteTagValidator, profilePictureExists } from '../services/validation';
 import { modifyUserById, retrieveUsersByGender, retrieveUserById, incrementUsersFameRating, retrieveUserByHash, deleteUsersImagesById, deleteUsersMatchesById, deleteUsersNotificationsById, deleteUserByHash, deleteUsersTagsById } from '../models/userModel';
 import {
   retrieveNotificationsByReceiveId,
   retrieveNotificationsBySendIdAndReceiveId,
   addNotification,
   setNotificationsAsSeenByReceiveId,
-  retrieveNotifications
+  setNotificationsAsSeenBySendId,
+  retrieveNotifications,
+  retrieveAllNotificationsByUserId,
+  retrieveAllNewNotificationsByUserId,
+  setChatAsSeen
 } from '../models/notificationModel';
 import {
   addMatch,
@@ -18,11 +22,12 @@ import {
   retrieveMatchByAcceptId, retrieveMatches
 } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
-import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId } from '../models/tagModel';
+import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId, retrieveTagsByMultipleTagValues } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { reportUser } from "../helpers/email";
 import { checkUserMatchability } from '../services/setUserAsMatchable';
 import * as _ from 'underscore';
+import { filter } from 'lodash';
 
 const router = express.Router();
 
@@ -43,17 +48,19 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
+  console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
-      // Find all matches related to profile user and viewing User
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
-      console.log(match);
-      // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
-      console.log(userProfile.id, match.acceptId, match.requestId);
-      if (userProfile.id == match.acceptId) {
-        userProfile.blockable = 1;
-      } else if (userProfile.id == match.requestId) {
-        userProfile.createMatch = 1;
+      if (match) {
+        if (userProfile.id == match.acceptId) {
+          userProfile.blockable = 1;
+        } else if (userProfile.id == match.requestId) {
+          userProfile.createMatch = 1;
+          userProfile.blockable = 1;
+        }
+      } else {
+        userProfile.swipeable = 1;
         userProfile.blockable = 1;
       }
       const userViewer = await retrieveUserById(request.body.viewerId);
@@ -62,7 +69,8 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiver: userProfile.username,
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
-        message: userViewer.username + ' had viewed your profile'
+        //message must be useable both ways e.g. user "viewed" you and you "viewed" target_user.
+        message: 'viewed'
       }
       await addNotification(body);
       await incrementUsersFameRating(userProfile.id, 1);
@@ -84,17 +92,43 @@ router.post('/getChat', async (request: Request, response: Response) => {
 router.post('/getNotifications', async (request: Request, response: Response) => {
   const user = await retrieveUserById(request.body.id);
   if (user) {
-    var notifications = await retrieveNotificationsByReceiveId(user.id);
+    var notifications = await retrieveAllNotificationsByUserId(user.id);
     response.send({ notifications: notifications, success: true });
   } else
     response.send({ success: false });
 });
 
-// {"id": "1"}
+// {"id": "1", ?"isChat": "0"}
+router.post('/getNumberOfUnreadNotifications', async (request: Request, response: Response) => {
+  const user = await retrieveUserById(request.body.id);
+  var i;
+  var count = 0;
+  var isChat = new String(request.body.isChat)
+  if (user) {
+    var notifications = await retrieveAllNewNotificationsByUserId(user.id);
+    for (i = 0; notifications[i]; i++) {
+      if (notifications[i].isChat == isChat)
+        count++;
+    }
+    response.send({ number: count, success: true });
+  } else
+    response.send({ success: false });
+})
+
+// {"id": "1", ?"isChat": "0"}
 router.post('/setNotificationsAsSeen', async (request: Request, response: Response) => {
-  await setNotificationsAsSeenByReceiveId(request.body.id);
+  var isChat = request.body.isChat == 1 ? true : false;
+  if (isChat) {
+    const receiveId = request.body.id;
+    const sendId = request.body.sendId;
+    await setChatAsSeen(receiveId, sendId)
+  } else {
+    await setNotificationsAsSeenByReceiveId(request.body.id);
+    await setNotificationsAsSeenBySendId(request.body.id);
+  }
   response.send({ success: true });
 });
+
 
 // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
 router.post('/createNotifications', async (request: Request, response: Response) => {
@@ -103,16 +137,16 @@ router.post('/createNotifications', async (request: Request, response: Response)
     let sender: any = await retrieveUserById(request.body.sendId);
     let receiver: any = await retrieveUserById(request.body.receiveId);
     if (!sender.username && !receiver.username) {
-      response.send({text: 'The user you have tried to match with does not exist.', success: false});
+      response.send({ text: 'The user you have tried to match with does not exist.', success: false });
     } else {
       request.body.sender = sender.username;
       request.body.receiver = receiver.username;
       let matches = await retrieveMatchByIds(request.body.receiveId, request.body.sendId);
       console.log(matches);
-        if (matches.blocked == '1') {
-          response.send({text: 'The user you have tried to match with does not exist.', success: false});
-          return ;
-        } await addNotification(request.body)
+      if (matches.blocked == '1') {
+        response.send({ text: 'The user you have tried to match with does not exist.', success: false });
+        return;
+      } await addNotification(request.body)
       response.send({ text: 'The recipient will be notified.', success: true });
     }
   } else
@@ -135,7 +169,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: requester.username,
         sendId: accepter.id,
         receiveId: requester.id,
-        message: requester.username + ' has liked you back.'
+        message: 'liked back:,'
       }
       await addNotification(body);
       await incrementUsersFameRating(accepter.id, 5);
@@ -152,7 +186,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: accepter.username,
         sendId: request.body.requestId,
         receiveId: request.body.acceptId,
-        message: requester.username + ' has liked your profile'
+        message: 'liked'
       }
       await addNotification(body);
       response.send({ text: 'The recipient will be notified.', success: true });
@@ -166,7 +200,7 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
-    response.send({ matches: matches });
+    response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
 });
@@ -191,6 +225,7 @@ router.post('/deletePicture', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
+// { "userId": 1, "tag": "food"}
 router.post('/createTag', async (request: Request, response: Response) => {
   let errors = await newTagValidator(request.body);
   if (!errors) {
@@ -200,6 +235,7 @@ router.post('/createTag', async (request: Request, response: Response) => {
     response.send({ text: errors, success: false });
 });
 
+// { "id": 1}
 router.post('/deleteTag', async (request: Request, response: Response) => {
   let errors = await deleteTagValidator(request.body);
   if (!errors) {
@@ -219,12 +255,10 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
       fameMax: integer,
       distanceMin: integer,
       distanceMax: integer,
-      ===================== Not Implemented =====================
       tags: [ cat, dog, food, apple]
-      ===================== Not Implemented =====================
     },
     sorting: {
-      category: string <"age"/"fame"/"distance"/"tags">,
+      category: string <"age"/"fame"/"distance"/"tagsInCommon">,
       direction: string <"ascending"/"descending">,
       tagsInCommon: integer,
     }
@@ -239,15 +273,28 @@ router.post('/deleteTag', async (request: Request, response: Response) => {
 */
 router.post('/getMatchRecommendations', async (request: Request, response: Response) => {
   let user = await retrieveUserById(request.body.id);
+  var j, i;
   if (!user.matchable)
     response.send({ text: "Please make sure that all information in your profile is filled out, in order for you to match with other users.", success: false });
   else {
-    let matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
+    if (request.body.filters.tags && request.body.filters.tags[0]) {
+      var tags = await retrieveTagsByMultipleTagValues(request.body.filters.tags);
+      var matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
+      let recommendedUsers = [];
+      for (i = 0; matchableUsers[i]; i++) {
+        for (j = 0; tags[j]; j++) {
+          if (matchableUsers[i].id == tags[j].userId)
+            recommendedUsers.push(matchableUsers[i]);
+        }
+      }
+      matchableUsers = recommendedUsers;
+      console.log('matchableUsers: ', matchableUsers);
+    } else
+      var matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
     // Distance Calculations
     matchableUsers = await calculateDistance(user, request.body.sort, matchableUsers);
     // Adding tags to user Objects
     var userIds = new Array;
-    var j, i;
     for (i = 0; matchableUsers[i]; i++) {
       userIds.push(matchableUsers[i].id);
       matchableUsers[i].tags = new Array;
@@ -265,14 +312,14 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     count = 0;
     var adminTags = await retrieveTagsByUserId(request.body.id)
     for (i = 0; matchableUsers[i]; i++) {
-      matchableUsers[i].tagCount = new Array;
+      matchableUsers[i].tagsInCommon = new Array;
       for (j = 0; matchableUsers[i].tags[j]; j++) {
         for (k = 0; adminTags[k]; k++) {
           if (adminTags[k].tag.toLowerCase() == matchableUsers[i].tags[j].toLowerCase())
             count += 1;
         }
       }
-      matchableUsers[i].tagCount.push(count);
+      matchableUsers[i].tagsInCommon.push(count);
       count = 0;
     }
     // Append Images to users
@@ -283,7 +330,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     let userImages = await retrieveImagesByMultipleUserIds(userIds);
     for (i = 0; matchableUsers[i]; i++) {
       for (j = 0; userImages[j]; j++) {
-        if (matchableUsers[i].id == userImages[j].userId) {
+        if (matchableUsers[i].id == userImages[j].userId && userImages[j].profilePicture) {
           matchableUsers[i].images.push(userImages[j].image);
         }
       }
@@ -305,6 +352,9 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       !obj.accepted && !obj.blocked));
     // set Matchable user as blockable, matchable or swipeable based on match history with logged in user
     for (i = 0; matchableUsers[i]; i++) {
+      matchableUsers[i].createMatch = 0;
+      matchableUsers[i].blockable = 0;
+      matchableUsers[i].swipeable = 0;
       for (j = 0; matches[j]; j++) {
         if (matchableUsers[i].id == matches[j].acceptId) {
           matchableUsers[i].blockable = 1;
@@ -312,6 +362,10 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
           matchableUsers[i].createMatch = 1;
           matchableUsers[i].blockable = 1;
         }
+      }
+      if (!matchableUsers[i].createMatch && !matchableUsers[i].blockable) {
+        matchableUsers[i].swipeable = 1;
+        matchableUsers[i].blockable = 1;
       }
     }
     // Filter out users by distance
@@ -323,7 +377,7 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
     var tagsInCommon = request.body.sorting.tagsInCommon || 0;
     // Filter out by amount of correlation tags
     matchableUsers = matchableUsers.filter(obj => (
-      obj.tagCount[0] >= tagsInCommon));
+      obj.tagsInCommon[0] >= tagsInCommon));
     // Sort by category is specified direction
     if (request.body.sorting.direction == 'ascending')
       matchableUsers = _.sortBy(matchableUsers, request.body.sorting.category);
@@ -373,13 +427,22 @@ router.post('/terminate/:hash', async (request: Request, response: Response) => 
 router.post('/blockMatch', async (request: Request, response: Response) => {
   const sender = await retrieveUserById(request.body.requestId);
   const receiver = await retrieveUserById(request.body.acceptId);;
-  await blockMatch(request.body.acceptId, request.body.requestId);
+  const result = await blockMatch(request.body.acceptId, request.body.requestId);
+  if (!result) {
+    await addMatch({
+      acceptId: request.body.acceptId,
+      requestId: request.body.requestId,
+      accepter: receiver.username,
+      requester: sender.username,
+      blocked: 1,
+    });
+  }
   let body = {
     sender: sender.username,
     receiver: receiver.username,
     sendId: sender.id,
     receiveId: receiver.id,
-    message: sender.username + ' has blocked you'
+    message: 'blocked'
   }
   await addNotification(body);
   response.send({ text: 'User has been blocked.', success: true });

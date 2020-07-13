@@ -75,7 +75,7 @@ export async function newTagValidator(tag) {
 }
 
 export async function deleteTagValidator(tag) {
-  if (!tag.id || !isString(tag.id))
+  if (!tag.id || typeof (tag.id) != "number")
     return ('Invalid tag.');
   var hashtag = await retrieveTagById(tag.id);
   if (!hashtag)
@@ -160,11 +160,11 @@ export function setUserAsMatchableValidator(user, images, tags) {
   } else
     return ('User does not exist.');
   if (images) {
-    if (!profilePictureExists(images))
-      return ('User has not set a profile picture.');
+    if (!images[0])
+      return ('User does not have any images.');
   } else
     return ('User has no images.');
-  if (!tags)
+  if (!tags[0])
     return ('User has no tags.');
   return undefined;
 }

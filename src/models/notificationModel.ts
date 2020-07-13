@@ -9,6 +9,7 @@ export class Notification {
   message: string;
   createdAt: string;
   seen: string;
+  isChat: string;
 
   constructor(data: Partial<Notification>) {
     Object.assign(this, data);
@@ -62,7 +63,7 @@ export async function retrieveNotificationsById(id): Promise<Notification[]> {
  *    sendId = <string>
  *  }
 */
-export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveId):Promise<Notification[]> {
+export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveId): Promise<Notification[]> {
   return knex.select()
     .from('notifications')
     .where('receiveId', receiveId)
@@ -74,6 +75,39 @@ export async function retrieveNotificationsBySendIdAndReceiveId(sendId, receiveI
     });
 };
 
+/*
+ *  Function to handle finding all users notification
+ *  @Incoming Params: body = {
+ *    userId= <string>
+ *  }
+*/
+export async function retrieveAllNotificationsByUserId(userId): Promise<Notification[]> {
+  return knex.select()
+    .from('notifications')
+    .where('receiveId', userId)
+    .orWhere('sendId', userId)
+    .then(function (result) {
+      return (result);
+    });
+};
+
+/*
+ *  Function to handle finding all users unread notifications
+ *  @Incoming Params: body = {
+ *    userId= <string>
+ *  }
+*/
+export async function retrieveAllNewNotificationsByUserId(userId): Promise<Notification[]> {
+  return knex.select()
+    .from('notifications')
+    .where('receiveId', userId)
+    .andWhere('seenReceiver', false)
+    .orWhere('sendId', userId)
+    .andWhere('seenSender', false)
+    .then(function (result) {
+      return (result);
+    });
+};
 /*
  *  Function to handle adding notifications
  *  @Incoming Params: body = {
@@ -100,10 +134,35 @@ export async function addNotification(body) {
 export async function setNotificationsAsSeenByReceiveId(receiveId: string) {
   return knex('notifications')
     .where('receiveId', receiveId)
-    .update('seen', true)
+    .andWhere('isChat', false)
+    .update('seenReceiver', true)
     .then(function () {
-      return ;
+      return;
     });
+};
+/*
+ *  Function to handle setting notifications as seen by sender
+ *  @Incoming Params: body = { receiveId = <string> }
+*/
+export async function setNotificationsAsSeenBySendId(sendId: string) {
+  return knex('notifications')
+    .where('sendId', sendId)
+    .andWhere('isChat', false)
+    .update('seenSender', true)
+    .then(function () {
+      return;
+    });
+};
+
+export async function setChatAsSeen(receiveId: string, sendId: string) {
+  return knex('notifications')
+    .where('receiveId', receiveId)
+    .andWhere('sendId', sendId)
+    .andWhere('isChat', true)
+    .update('seenReceiver', true)
+    .then(function () {
+      return;
+    })
 };
 
 export default Notification;

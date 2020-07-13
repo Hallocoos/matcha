@@ -46,8 +46,10 @@ router.post('/login', async (request: Request, response: Response) => {
 
 // { id: 1 }
 router.post('/logout', async (request: Request, response: Response) => {
-  await setUserAsOnlineStatus(request.body.id, false);
+  if (request.body.id) {
+    await setUserAsOnlineStatus(request.body.id, false);
   response.send({ text: 'User has been logged out.', success: true });
+  }
 });
  
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6
