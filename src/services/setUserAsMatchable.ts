@@ -7,7 +7,7 @@ export async function checkUserMatchability(id) {
   let matchable = false;
   let user = await retrieveUserById(id);
   let images = await retrieveImagesByUserId(id);
-  let tags = retrieveTagsByUserId(id);
+  let tags = await retrieveTagsByUserId(id);
   let errors = await setUserAsMatchableValidator(user, images, tags);
   if (!errors)
     matchable = true;

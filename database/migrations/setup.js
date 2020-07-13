@@ -49,6 +49,7 @@ exports.up = function (knex, Promise) {
       table.timestamp('createdAt').defaultTo(knex.fn.now())
       table.boolean('seenReceiver').defaultTo(false)
       table.boolean('seenSender').defaultTo(false)
+      table.boolean('isChat').defaultTo(false)
     })
     .createTable('tags', function (table) {
       table.increments('id').primary()

@@ -10,7 +10,8 @@ exports.seed = function (knex, Promise) {
         sendId: '1',
         message: 'I really like food',
         receiver: 'Atula',
-        sender: 'Hallocoos'
+        sender: 'Hallocoos',
+        isChat: true
       });
     })
     .then(async function () {
@@ -19,7 +20,8 @@ exports.seed = function (knex, Promise) {
         sendId: '9',
         message: 'I like turtles.',
         receiver: 'Hallocoos',
-        sender: 'Jemima'
+        sender: 'Jemima',
+        isChat: true
       });
     })
     .then(async function () {
@@ -28,7 +30,8 @@ exports.seed = function (knex, Promise) {
         sendId: '10',
         message: 'I really like food',
         receiver: 'Hallocoos',
-        sender: 'Clothild'
+        sender: 'Clothild',
+        isChat: true
       });
     })
     .then(async function () {
@@ -37,7 +40,8 @@ exports.seed = function (knex, Promise) {
         sendId: '1',
         message: 'I dont really like food',
         receiver: 'Ingeltrudis',
-        sender: 'Hallocoos'
+        sender: 'Hallocoos',
+        isChat: true
       });
     })
 };
