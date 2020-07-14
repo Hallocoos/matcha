@@ -149,7 +149,7 @@
               <span data-bind="foreach: images">
                 <span data-bind="if: true">
                   <img width="auto" height="auto"
-                    data-bind="attr: {src: $data}, click: $root.putFocusedProfileInViewModel.bind($data)"
+                    data-bind="attr: {src: $data}"
                     style="float: left;">
                 </span>
               </span>
@@ -215,7 +215,7 @@
           </span>
         </div>
 
-        <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
+        <span data-bind="foreach: {data: focussedProfileImageSources, as: 'image'}" id="otherImages">
           <span data-bind="if: profilePicture == 0">
             <img width="18%" height="auto" data-bind="attr: {src: image}">
           </span>
