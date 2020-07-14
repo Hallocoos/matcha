@@ -148,9 +148,7 @@
             <td id="profileImage">
               <span data-bind="foreach: images">
                 <span data-bind="if: true">
-                  <img width="auto" height="auto"
-                    data-bind="attr: {src: $data}"
-                    style="float: left;">
+                  <img width="auto" height="auto" data-bind="attr: {src: $data}" style="float: left;">
                 </span>
               </span>
             </td>
@@ -960,7 +958,10 @@
     },
 
     async logOut() {
-      var body = JSON.stringify({ id: viewModel.loggedInUser.id() })
+      var data = {}
+      if ("id" in viewModel.loggedInUser)
+        data = { id: viewModel.loggedInUser.id() }
+      var body = JSON.stringify(data)
       // console.log(body)
       await fetch("http://localhost:3000/logout", {
         method: "POST",
@@ -1145,7 +1146,7 @@
     async sendNewPassword() {
       var body = JSON.stringify({
         password: viewModel.password(),
-        hash: viewModel.reset() | viewModel.settingEditingWorkspace(),
+        hash: viewModel.settingEditingWorkspace().length ? viewModel.settingEditingWorkspace() : viewModel.reset(),
       })
       // console.log(body)
       await fetch("http://localhost:3000/resetPassword", {
