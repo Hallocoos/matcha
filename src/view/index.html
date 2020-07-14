@@ -165,7 +165,7 @@
               <b>Gender</b>
               <div data-bind="text: gender"></div>
               <b>Online</b>
-              <div data-bind="text: ($data.online ? online : 'Last seen at ' + lastSeen)"></div>
+              <div data-bind="text: ($data.online ? 'Active now' : 'Last seen ' + moment(lastSeen.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar())"></div>
               <b>Tags</b>
               <ul data-bind="foreach: tags">
                 <li data-bind="text: $data"></li>
@@ -225,6 +225,9 @@
           <div data-bind="text: focussedProfile.username"></div>
           <br>
 
+          <b>Online</b>
+          <div data-bind="text: (focussedProfile.online() ? 'Active now' : 'Last seen ' + moment(focussedProfile.lastSeen().substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar())"></div>
+          <br>
           <b>Firstname</b>
           <div data-bind="text: focussedProfile.firstname"></div>
           <br>
@@ -245,6 +248,10 @@
           <div data-bind="text: focussedProfile.interest"></div>
           <br>
 
+          <b>City</b>
+          <div data-bind="text: focussedProfile.city() + ', ' + focussedProfile.countryName()"></div>
+          <br>
+          
           <b>Biography</b>
           <div data-bind="text: focussedProfile.biography() ? focussedProfile.biography : 'Not yet completed.'"></div>
           <br>
@@ -626,6 +633,7 @@
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script type='text/javascript' src='knockout.mapping.js'></script>
+<script type='text/javascript' src='moment.min.js'></script>
 <script>
 
   async function putMatchesInViewModel() {
