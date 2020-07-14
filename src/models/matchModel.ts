@@ -152,7 +152,6 @@ export async function retrieveMatchesByUserId(userId) {
     .from('matches')
     .where('acceptId', userId)
     .orWhere('requestId', userId)
-    .andWhere('blocked', true)
     .then(function (result) {
       return result;
     });

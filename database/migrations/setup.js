@@ -11,7 +11,6 @@ exports.up = function (knex, Promise) {
       table.string('gender').defaultTo('')
       table.string('biography').defaultTo('')
       table.string('interest').defaultTo('')
-      table.string('tags').defaultTo('')
       table.string('countryName').defaultTo('')
       table.string('city').defaultTo('')
       table.string('longitude').defaultTo('')

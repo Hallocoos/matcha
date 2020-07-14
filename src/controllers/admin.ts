@@ -198,7 +198,7 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
-    matches = matches.filter(obj => ( obj.blocked == 0 && obj.accepted == 1 ));
+    // matches = matches.filter(obj => ( obj.blocked == 0 && obj.accepted == 1 ));
     response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
