@@ -68,7 +68,6 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiver: userProfile.username,
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
-        //message must be useable both ways e.g. user "viewed" you and you "viewed" target_user.
         message: 'viewed'
       }
       await addNotification(body);
@@ -168,7 +167,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: requester.username,
         sendId: accepter.id,
         receiveId: requester.id,
-        message: 'liked back:,'
+        message: 'also liked'
       }
       await addNotification(body);
       await incrementUsersFameRating(accepter.id, 5);

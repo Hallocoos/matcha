@@ -22,15 +22,15 @@ exports.seed = function (knex, Promise) {
           requestId: 9,
           accepter: 'Hallocoos',
           requester: 'Jemima',
-          accepted: false,
+          accepted: true,
           blocked: false,
         });
     })
     .then(async function () {
         return knex('matches')
             .insert({
-                acceptId: 14,
-                requestId: 1,
+                acceptId: 1,
+                requestId: 14,
                 accepter: 'Hallocoos',
                 requester: 'Theodraded',
                 accepted: false,
