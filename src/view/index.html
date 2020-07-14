@@ -544,7 +544,7 @@
               <span data-bind="text: sender"></span>
               <span data-bind="text: message"></span>
               <span>your profile at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
@@ -555,7 +555,7 @@
               <span data-bind="text: message"></span>
               <span data-bind="text: receiver"></span>
               <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
@@ -566,7 +566,7 @@
               <span data-bind="text: message"></span>
               <span>You</span>
               <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
@@ -577,7 +577,7 @@
               <span data-bind="text: message"></span>
               <span data-bind="text: sender"></span>
               <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
         </tbody>
