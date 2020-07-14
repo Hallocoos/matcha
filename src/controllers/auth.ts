@@ -48,10 +48,12 @@ router.post('/login', async (request: Request, response: Response) => {
 router.post('/logout', async (request: Request, response: Response) => {
   if (request.body.id) {
     await setUserAsOnlineStatus(request.body.id, false);
-  response.send({ text: 'User has been logged out.', success: true });
+    response.send({ text: 'User has been logged out.', success: true });
+  } else {
+    response.send({ text: 'No active session. Returning to log in.', success: true });
   }
 });
- 
+
 // GET - localhost:3000/verify/$2b$04$wCMG3qANQu1Ck.E5uDv3JejX8SmqzTdb.gZO3rxhbOrh6Kd2oiU6
 router.get('/verify/:hash', async (request: Request, response: Response) => {
   const user = await verifyUserByHash(request.params.hash);
@@ -78,8 +80,9 @@ router.post('/resetPassword', async (request: Request, response: Response) => {
       response.send({ text: 'Password has been reset.', success: true });
     else
       response.send({ text: 'Password has not been reset.', success: false });
-  } else
+  } else {
     response.send({ text: errors, success: false });
+  }
 });
 
 export default router;
