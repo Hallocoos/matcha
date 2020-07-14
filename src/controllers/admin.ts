@@ -48,7 +48,6 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
-  console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
@@ -136,17 +135,17 @@ router.post('/createNotifications', async (request: Request, response: Response)
     let sender: any = await retrieveUserById(request.body.sendId);
     let receiver: any = await retrieveUserById(request.body.receiveId);
     if (!sender.username && !receiver.username) {
-      response.send({ text: 'The user you have tried to match with does not exist.', success: false });
+      response.send({ text: 'The user does not exist.', success: false });
     } else {
       request.body.sender = sender.username;
       request.body.receiver = receiver.username;
       let matches = await retrieveMatchByIds(request.body.receiveId, request.body.sendId);
-      console.log(matches);
       if (matches.blocked == '1') {
-        response.send({ text: 'The user you have tried to match with does not exist.', success: false });
-        return;
-      } await addNotification(request.body)
-      response.send({ text: 'The recipient will be notified.', success: true });
+        response.send({ text: 'This match has been blocked.', success: false });
+      } else {
+        await addNotification(request.body)
+        response.send({ text: 'The recipient will be notified.', success: true });
+      }
     }
   } else
     response.send({ text: errors, success: false });
@@ -199,8 +198,7 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
-    matches = matches.filter(obj => (
-      obj.blocked == 0));
+    // matches = matches.filter(obj => ( obj.blocked == 0 && obj.accepted == 1 ));
     response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
@@ -289,7 +287,6 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
         }
       }
       matchableUsers = recommendedUsers;
-      console.log('matchableUsers: ', matchableUsers);
     } else
       var matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
     // Distance Calculations

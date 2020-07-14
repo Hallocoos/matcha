@@ -148,9 +148,7 @@
             <td id="profileImage">
               <span data-bind="foreach: images">
                 <span data-bind="if: true">
-                  <img width="auto" height="auto"
-                    data-bind="attr: {src: $data}, click: $root.putFocusedProfileInViewModel.bind($data)"
-                    style="float: left;">
+                  <img width="auto" height="auto" data-bind="attr: {src: $data}" style="float: left;">
                 </span>
               </span>
             </td>
@@ -167,7 +165,7 @@
               <b>Gender</b>
               <div data-bind="text: gender"></div>
               <b>Online</b>
-              <div data-bind="text: ($data.online ? online : 'Last seen at ' + lastSeen)"></div>
+              <div data-bind="text: ($data.online ? 'Active now' : 'Last seen ' + moment(lastSeen.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar())"></div>
               <b>Tags</b>
               <ul data-bind="foreach: tags">
                 <li data-bind="text: $data"></li>
@@ -215,7 +213,7 @@
           </span>
         </div>
 
-        <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
+        <span data-bind="foreach: {data: focussedProfileImageSources, as: 'image'}" id="otherImages">
           <span data-bind="if: profilePicture == 0">
             <img width="18%" height="auto" data-bind="attr: {src: image}">
           </span>
@@ -227,6 +225,9 @@
           <div data-bind="text: focussedProfile.username"></div>
           <br>
 
+          <b>Online</b>
+          <div data-bind="text: (focussedProfile.online() ? 'Active now' : 'Last seen ' + moment(focussedProfile.lastSeen().substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar())"></div>
+          <br>
           <b>Firstname</b>
           <div data-bind="text: focussedProfile.firstname"></div>
           <br>
@@ -247,6 +248,10 @@
           <div data-bind="text: focussedProfile.interest"></div>
           <br>
 
+          <b>City</b>
+          <div data-bind="text: focussedProfile.city() + ', ' + focussedProfile.countryName()"></div>
+          <br>
+          
           <b>Biography</b>
           <div data-bind="text: focussedProfile.biography() ? focussedProfile.biography : 'Not yet completed.'"></div>
           <br>
@@ -629,6 +634,7 @@
 
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js'></script>
 <script type='text/javascript' src='knockout.mapping.js'></script>
+<script type='text/javascript' src='moment.min.js'></script>
 <script>
 
   async function putMatchesInViewModel() {
@@ -961,7 +967,10 @@
     },
 
     async logOut() {
-      var body = JSON.stringify({ id: viewModel.loggedInUser.id() })
+      var data = {}
+      if ("id" in viewModel.loggedInUser)
+        data = { id: viewModel.loggedInUser.id() }
+      var body = JSON.stringify(data)
       // console.log(body)
       await fetch("http://localhost:3000/logout", {
         method: "POST",
@@ -1146,7 +1155,7 @@
     async sendNewPassword() {
       var body = JSON.stringify({
         password: viewModel.password(),
-        hash: viewModel.reset() | viewModel.settingEditingWorkspace(),
+        hash: viewModel.settingEditingWorkspace().length ? viewModel.settingEditingWorkspace() : viewModel.reset(),
       })
       // console.log(body)
       await fetch("http://localhost:3000/resetPassword", {
