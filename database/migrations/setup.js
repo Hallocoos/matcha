@@ -15,6 +15,7 @@ exports.up = function (knex, Promise) {
       table.string('city').defaultTo('')
       table.string('longitude').defaultTo('')
       table.string('latitude').defaultTo('')
+      table.string('tags').defaultTo('')
       table.boolean('verified').defaultTo(false)
       table.integer('fame').defaultTo(0)
       table.string('hash').notNullable()
