@@ -199,6 +199,7 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
+    matches = matches.filter(obj => ( obj.blocked !== 1));
     response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
@@ -321,18 +322,18 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
       count = 0;
     }
     // Append Images to users
-    // for (i = 0; matchableUsers[i]; i++) {
-    //   userIds.push(matchableUsers[i].id);
-    //   matchableUsers[i].images = new Array;
-    // }
-    // let userImages = await retrieveImagesByMultipleUserIds(userIds);
-    // for (i = 0; matchableUsers[i]; i++) {
-    //   for (j = 0; userImages[j]; j++) {
-    //     if (matchableUsers[i].id == userImages[j].userId && userImages[j].profilePicture) {
-    //       matchableUsers[i].images.push(userImages[j].image);
-    //     }
-    //   }
-    // }
+    for (i = 0; matchableUsers[i]; i++) {
+      userIds.push(matchableUsers[i].id);
+      matchableUsers[i].images = new Array;
+    }
+    let userImages = await retrieveImagesByMultipleUserIds(userIds);
+    for (i = 0; matchableUsers[i]; i++) {
+      for (j = 0; userImages[j]; j++) {
+        if (matchableUsers[i].id == userImages[j].userId && userImages[j].profilePicture) {
+          matchableUsers[i].images.push(userImages[j].image);
+        }
+      }
+    }
     // Find all matches related to loggin in user
     let matches = await retrieveMatchesByUserId(user.id);
     // Filters out all matches where blocked and accepted == 0
