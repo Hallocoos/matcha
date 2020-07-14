@@ -69,7 +69,6 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiver: userProfile.username,
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
-        //message must be useable both ways e.g. user "viewed" you and you "viewed" target_user.
         message: 'viewed'
       }
       await addNotification(body);
@@ -169,7 +168,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: requester.username,
         sendId: accepter.id,
         receiveId: requester.id,
-        message: 'liked back:,'
+        message: 'also liked'
       }
       await addNotification(body);
       await incrementUsersFameRating(accepter.id, 5);
@@ -200,6 +199,8 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
+    matches = matches.filter(obj => (
+      obj.blocked == 0));
     response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
