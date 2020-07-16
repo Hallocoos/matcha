@@ -24,7 +24,6 @@
       <a href="#" style="text-decoration: none; display:inline-block; color:black;"
         data-bind="value: setInterval(countUnreadNotifications, 5000)">
         <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
-        <!-- countNewNotifs doesn't work, or even console log so it doesn't get called? needs a fix -->
         <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;"
           data-bind="text: unreadNotificationsCount"></span>
       </a>
@@ -1071,7 +1070,7 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        // console.log(data)
+        console.log(data)
         if (data.user && data.images) {
           viewModel.selectView('match')
           viewModel.focussedProfile = ko.mapping.fromJS(data.user)
@@ -1373,7 +1372,10 @@
         alert(data.text)
         // console.log(viewModel.focussedProfileIsSet())
         if (viewModel.focussedProfileIsSet() == true) {
-          viewModel.focussedProfile.swipeable(0)
+          if (viewModel.focussedProfile.swipeable)
+            viewModel.focussedProfile.swipeable(0)
+          else
+            viewModel.focussedProfile.createMatch(0)
         } else {
           putRecommendationsInViewModel()
         }
