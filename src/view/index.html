@@ -533,8 +533,9 @@
 
     <div data-bind="if: selectedView() == 'notifications'" id="notifications">
       <!-- need to fix time display -->
-      <span data-bind="event: setTimeout(seenNotifications, 6000, notifications)"></span>
-      <table style="width:100%" data-bind="value: setInterval(displayNotifications, 5000)">
+      <span data-bind="event: displayNotifications()"></span>
+      <span data-bind="event: setTimeout(seenNotifications, 5000, notifications)"></span>
+      <table style="width:100%" data-bind="value: setTimeout(displayNotifications, 5000)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
           <tr
             data-bind="if: 'username' in $root.loggedInUser && receiver == $root.loggedInUser.username() && isChat == 0 && message != 'also liked'">
@@ -543,7 +544,7 @@
               <span data-bind="text: sender"></span>
               <span data-bind="text: message"></span>
               <span>your profile at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
@@ -554,7 +555,7 @@
               <span data-bind="text: message"></span>
               <span data-bind="text: receiver"></span>
               <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
@@ -565,7 +566,7 @@
               <span data-bind="text: message"></span>
               <span>You</span>
               <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
@@ -576,7 +577,7 @@
               <span data-bind="text: message"></span>
               <span data-bind="text: sender"></span>
               <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
         </tbody>
