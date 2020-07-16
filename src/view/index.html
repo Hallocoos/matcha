@@ -568,8 +568,9 @@
 
     <div data-bind="if: selectedView() == 'notifications'" id="notifications">
       <!-- need to fix time display -->
-      <span data-bind="event: setTimeout(seenNotifications, 6000, notifications)"></span>
-      <table style="width:100%" data-bind="value: setInterval(displayNotifications, 5000)">
+      <span data-bind="event: displayNotifications()"></span>
+      <span data-bind="event: setTimeout(seenNotifications, 5000, notifications)"></span>
+      <table style="width:100%" data-bind="value: setTimeout(displayNotifications, 5000)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
           <tr
             data-bind="if: 'username' in $root.loggedInUser && receiver == $root.loggedInUser.username() && isChat == 0 && message != 'also liked'">
