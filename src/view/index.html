@@ -173,9 +173,7 @@
                   $data.online ? 
                   'Active now' : 
                   'Last seen ' + 
-                  moment(lastSeen.substring(0, 19).
-                  replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').
-                  calendar())">
+                  moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')">
               </div>
               <b>Tags</b>
               <ul data-bind="foreach: tags">
@@ -241,9 +239,7 @@
             text: (focussedProfile.online() ? 
             'Active now' : 
             'Last seen ' + 
-            moment(focussedProfile.lastSeen().substring(0, 19).
-            replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').
-            calendar())">
+            moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')">
           </div>
           <br>
           <b>Firstname</b>
@@ -569,7 +565,7 @@
       <!-- need to fix time display -->
       <span data-bind="event: displayNotifications()"></span>
       <span data-bind="event: setTimeout(seenNotifications, 5000, notifications)"></span>
-      <table style="width:100%" data-bind="value: setTimeout(displayNotifications, 5000)">
+      <table style="width:100%" data-bind="value: setTimeout(displayNotifications, 5500)">
         <tbody data-bind="foreach: {data:notifications, as: 'notif'}">
           <tr
             data-bind="if: 'username' in $root.loggedInUser && receiver == $root.loggedInUser.username() && isChat == 0 && message != 'also liked'">
@@ -582,7 +578,7 @@
               <span data-bind="text: message"></span>
               <span>your profile</span>
               <span
-                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
+                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
           <tr
@@ -596,7 +592,7 @@
               <span data-bind="text: message"></span>
               <span data-bind="text: receiver"></span>
               <span
-                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
+                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
           <tr
@@ -610,7 +606,7 @@
               <span data-bind="text: message"></span>
               <span>You</span>
               <span
-                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
+                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
           <tr
@@ -624,7 +620,7 @@
               <span data-bind="text: message"></span>
               <span data-bind="text: sender"></span>
               <span
-                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
+                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
         </tbody>
