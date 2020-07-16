@@ -22,18 +22,4 @@ Create Notifications Route
 match information
 
 
-NB tags on front end to be multiple - profile page only allows one editing field i.e. only one tag can be created and edited.
-NB fame rating is cheated by refreshing the page once logged in.
-no empty password allowed in settings change.
-need to be mobile friendly
-need to be able to "edit uploaded pictures" buttons cannot dissappear e.g. upload new profile picture or delete old pictures
-fame rating is on public profile page
-
-need to be able to view other profiles - search bar needed?
-all info except email and password on profile - incl currently online/offline and date and time of last connection, also if liked/connected, and can unlike person.
-need to be able to like profiles, only if at least one picture. both like eachother == can chat.
-
-report fake account.
-blocked users do not generate notifications.
-
-notifs: liked, you viewed, people viewed you, new message, liked back, unliked - unread notifs/chat messages visible from any page (up to 10 second delay)
+chats new no longer works

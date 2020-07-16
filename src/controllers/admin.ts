@@ -52,9 +52,12 @@ router.post('/profile', async (request: Request, response: Response) => {
     if (request.body.viewerId) {
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
       if (match) {
-        if (userProfile.id == match.acceptId) {
+        if (match.accepted) {
           userProfile.blockable = 1;
-        } else if (userProfile.id == match.requestId) {
+        }
+        else if (userProfile.id == match.acceptId && !match.accepted) {
+          userProfile.blockable = 1;
+        } else if (userProfile.id == match.requestId && !match.accepted) {
           userProfile.createMatch = 1;
           userProfile.blockable = 1;
         }
