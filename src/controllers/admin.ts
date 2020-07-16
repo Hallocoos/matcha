@@ -200,7 +200,7 @@ router.post('/getMatches', async (request: Request, response: Response) => {
   let errors = idValidator(request.body.id);
   if (!errors) {
     let matches = await retrieveMatchesByUserId(request.body.id);
-    matches = matches.filter(obj => ( obj.blocked == 0 && obj.accepted == 1 ));
+    matches = matches.filter(obj => (obj.blocked == 0 && obj.accepted == 1));
     response.send({ matches: matches, success: true, text: 'Here are your matches.' });
   } else
     response.send({ text: 'Id is Invalid.', success: false });
@@ -429,24 +429,28 @@ router.post('/blockMatch', async (request: Request, response: Response) => {
   const sender = await retrieveUserById(request.body.requestId);
   const receiver = await retrieveUserById(request.body.acceptId);;
   const result = await blockMatch(request.body.acceptId, request.body.requestId);
-  if (!result) {
-    await addMatch({
-      acceptId: request.body.acceptId,
-      requestId: request.body.requestId,
-      accepter: receiver.username,
-      requester: sender.username,
-      blocked: 1,
-    });
+  if (result.blocked)
+    response.send({ text: 'User has been blocked.', success: true });
+  else {
+    if (!result) {
+      await addMatch({
+        acceptId: request.body.acceptId,
+        requestId: request.body.requestId,
+        accepter: receiver.username,
+        requester: sender.username,
+        blocked: 1,
+      });
+    }
+    let body = {
+      sender: sender.username,
+      receiver: receiver.username,
+      sendId: sender.id,
+      receiveId: receiver.id,
+      message: 'blocked'
+    }
+    await addNotification(body);
+    response.send({ text: 'User has been blocked.', success: true });
   }
-  let body = {
-    sender: sender.username,
-    receiver: receiver.username,
-    sendId: sender.id,
-    receiveId: receiver.id,
-    message: 'blocked'
-  }
-  await addNotification(body);
-  response.send({ text: 'User has been blocked.', success: true });
 });
 
 export default router;
