@@ -10,7 +10,9 @@ exports.seed = function (knex, Promise) {
           sendId: '1',
           message: 'I really like food',
           receiver: 'Atula',
-          sender: 'Hallocoos'
+          sender: 'Hallocoos',
+          seenSender: true,
+          isChat: true
         });
       })
       .then(async function () {
@@ -19,16 +21,20 @@ exports.seed = function (knex, Promise) {
           sendId: '9',
           message: 'I really like food',
           receiver: 'Hallocoos',
-          sender: 'Jemima'
+          sender: 'Jemima',
+          seenSender: true,
+          isChat: true
         });
       })
       .then(async function () {
         return knex('notifications').insert({
           receiveId: '1',
-          sendId: '14',
+          sendId: '8',
           message: 'I like turtles.',
           receiver: 'Hallocoos',
-          sender: 'Theodraded'
+          sender: 'Atula',
+          seenSender: true,
+          isChat: true
         });
       })
       .then(async function () {
@@ -37,7 +43,9 @@ exports.seed = function (knex, Promise) {
           sendId: '17',
           message: 'I dont really like food',
           receiver: 'Eulimenei',
-          sender: 'Eriphia'
+          sender: 'Eriphia',
+          seenSender: true,
+          isChat: true
         });
       })
       .then(async function () {
@@ -46,7 +54,9 @@ exports.seed = function (knex, Promise) {
           sendId: '23',
           message: 'I dont really like food',
           receiver: 'Ingeltrudis',
-          sender: 'Mariphine'
+          sender: 'Mariphine',
+          seenSender: true,
+          isChat: true
         });
       })
       .then(async function () {
@@ -55,7 +65,9 @@ exports.seed = function (knex, Promise) {
           sendId: '26',
           message: 'I dont really like food',
           receiver: 'Acotali',
-          sender: 'Bromia'
+          sender: 'Bromia',
+          seenSender: true,
+          isChat: true
         });
       })
 };

@@ -48,7 +48,6 @@ router.post('/updateUser', async (request: Request, response: Response) => {
 // {"profileId": "1", "viewerId": 2}
 router.post('/profile', async (request: Request, response: Response) => {
   const userProfile = await retrieveUserById(request.body.profileId);
-  console.log(request.body)
   if (userProfile) {
     if (request.body.viewerId) {
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
@@ -69,7 +68,6 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiver: userProfile.username,
         sendId: request.body.viewerId,
         receiveId: request.body.profileId,
-        //message must be useable both ways e.g. user "viewed" you and you "viewed" target_user.
         message: 'viewed'
       }
       await addNotification(body);
@@ -137,17 +135,17 @@ router.post('/createNotifications', async (request: Request, response: Response)
     let sender: any = await retrieveUserById(request.body.sendId);
     let receiver: any = await retrieveUserById(request.body.receiveId);
     if (!sender.username && !receiver.username) {
-      response.send({ text: 'The user you have tried to match with does not exist.', success: false });
+      response.send({ text: 'The user does not exist.', success: false });
     } else {
       request.body.sender = sender.username;
       request.body.receiver = receiver.username;
       let matches = await retrieveMatchByIds(request.body.receiveId, request.body.sendId);
-      console.log(matches);
       if (matches.blocked == '1') {
-        response.send({ text: 'The user you have tried to match with does not exist.', success: false });
-        return;
-      } await addNotification(request.body)
-      response.send({ text: 'The recipient will be notified.', success: true });
+        response.send({ text: 'This match has been blocked.', success: false });
+      } else {
+        await addNotification(request.body)
+        response.send({ text: 'The recipient will be notified.', success: true });
+      }
     }
   } else
     response.send({ text: errors, success: false });
@@ -169,7 +167,7 @@ router.post('/createMatch', async (request: Request, response: Response) => {
         receiver: requester.username,
         sendId: accepter.id,
         receiveId: requester.id,
-        message: 'liked back:,'
+        message: 'also liked'
       }
       await addNotification(body);
       await incrementUsersFameRating(accepter.id, 5);
@@ -289,7 +287,6 @@ router.post('/getMatchRecommendations', async (request: Request, response: Respo
         }
       }
       matchableUsers = recommendedUsers;
-      console.log('matchableUsers: ', matchableUsers);
     } else
       var matchableUsers = await retrieveUsersByGender(request.body.filters, request.body.id, user.interest, user.gender);
     // Distance Calculations
