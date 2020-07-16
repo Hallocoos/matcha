@@ -62,6 +62,11 @@
       </h3>
     </div>
 
+    <div data-bind="if: selectedView() == 'welcome'" id="welcome">
+      <b>Thanks for visiting.</b>
+      <div>May the matching be ever in your favour.</div>
+    </div>
+
     <div data-bind="if: selectedView() == 'match'" id="match">
 
       <div data-bind="ifnot: focussedProfileIsSet" id="recommendationsView">
@@ -165,7 +170,14 @@
               <b>Gender</b>
               <div data-bind="text: gender"></div>
               <b>Online</b>
-              <div data-bind="text: ($data.online ? 'Active now' : 'Last seen ' + moment(lastSeen.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar())"></div>
+              <div data-bind="text: (
+                  $data.online ? 
+                  'Active now' : 
+                  'Last seen ' + 
+                  moment(lastSeen.substring(0, 19).
+                  replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').
+                  calendar())">
+              </div>
               <b>Tags</b>
               <ul data-bind="foreach: tags">
                 <li data-bind="text: $data"></li>
@@ -226,7 +238,14 @@
           <br>
 
           <b>Online</b>
-          <div data-bind="text: (focussedProfile.online() ? 'Active now' : 'Last seen ' + moment(focussedProfile.lastSeen().substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar())"></div>
+          <div data-bind="
+            text: (focussedProfile.online() ? 
+            'Active now' : 
+            'Last seen ' + 
+            moment(focussedProfile.lastSeen().substring(0, 19).
+            replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').
+            calendar())">
+          </div>
           <br>
           <b>Firstname</b>
           <div data-bind="text: focussedProfile.firstname"></div>
@@ -251,7 +270,7 @@
           <b>City</b>
           <div data-bind="text: focussedProfile.city() + ', ' + focussedProfile.countryName()"></div>
           <br>
-          
+
           <b>Biography</b>
           <div data-bind="text: focussedProfile.biography() ? focussedProfile.biography : 'Not yet completed.'"></div>
           <br>
@@ -280,6 +299,10 @@
       <!-- ko ifnot: matches().length == 0 -->
       <div data-bind="foreach: matches">
         <div data-bind="if: accepted">
+          <button style="width: auto;" data-bind="click: 
+              $root.putFocusedProfileInViewModel.bind($data)">
+            View Profile
+          </button>
           <button data-bind="
               text: (($root.loggedInUser.username() == requester) ? accepter : requester) + (hasNewMessage() ? ' *New*' : ''), 
               click: $root.setSelectedChat.bind($data)">
@@ -333,11 +356,13 @@
         <br>
 
         <b>First Name</b>
-        <!-- ko if: settingEditing() != 'firstname'-->
+        <!-- ko if: 'firstname' in loggedInUser && 
+          settingEditing() != 'firstname'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'firstname')">Edit</button>
         <div data-bind="text: loggedInUser.firstname"></div>
         <!-- /ko -->
-        <!-- ko if: settingEditing() == 'firstname'-->
+        <!-- ko if: 'firstname' in loggedInUser && 
+          settingEditing() == 'firstname'-->
         <button data-bind="click: saveChangesToLoggedInUser">Save</button>
         <div>
           <input data-bind="value: settingEditingWorkspace">
@@ -346,11 +371,13 @@
         <br>
 
         <b>Last Name</b>
-        <!-- ko if: settingEditing() != 'lastname'-->
+        <!-- ko if: 'lastname' in loggedInUser && 
+          settingEditing() != 'lastname'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'lastname')">Edit</button>
         <div data-bind="text: loggedInUser.lastname"></div>
         <!-- /ko -->
-        <!-- ko if: settingEditing() == 'lastname'-->
+        <!-- ko if: 'lastname' in loggedInUser && 
+          settingEditing() == 'lastname'-->
         <button data-bind="click: saveChangesToLoggedInUser">Save</button>
         <div>
           <input data-bind="value: settingEditingWorkspace">
@@ -359,11 +386,13 @@
         <br>
 
         <b>Age</b>
-        <!-- ko if: settingEditing() != 'age'-->
+        <!-- ko if: 'age' in loggedInUser && 
+          settingEditing() != 'age'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'age')">Edit</button>
         <div type="number" data-bind="text: loggedInUser.age"></div>
         <!-- /ko -->
-        <!-- ko if: settingEditing() == 'age'-->
+        <!-- ko if: 'age' in loggedInUser && 
+          settingEditing() == 'age'-->
         <button data-bind="click: saveChangesToLoggedInUser">Save</button>
         <div>
           <input data-bind="value: settingEditingWorkspace">
@@ -372,11 +401,13 @@
         <br>
 
         <b>Gender</b>
-        <!-- ko if: settingEditing() != 'gender'-->
+        <!-- ko if: 'gender' in loggedInUser && 
+          settingEditing() != 'gender'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'gender')">Edit</button>
         <div data-bind="text: loggedInUser.gender"></div>
         <!-- /ko -->
-        <!-- ko if: settingEditing() == 'gender'-->
+        <!-- ko if: 'gender' in loggedInUser && 
+          settingEditing() == 'gender'-->
         <button data-bind="click: saveChangesToLoggedInUser">Save</button>
         <div>
           <select id="genderList" data-bind="value: settingEditingWorkspace" list="genderList">
@@ -389,11 +420,13 @@
         <br>
 
         <b>Biography</b>
-        <!-- ko if: settingEditing() != 'biography'-->
+        <!-- ko if: 'biography' in loggedInUser && 
+          settingEditing() != 'biography'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'biography')">Edit</button>
         <div data-bind="text: loggedInUser.biography() ? loggedInUser.biography : 'Not yet completed.'"></div>
         <!-- /ko -->
-        <!-- ko if: settingEditing() == 'biography'-->
+        <!-- ko if: 'biography' in loggedInUser && 
+          settingEditing() == 'biography'-->
         <button data-bind="click: saveChangesToLoggedInUser">Save</button>
         <div>
           <input data-bind="value: settingEditingWorkspace">
@@ -402,11 +435,13 @@
         <br>
 
         <b>Interest</b>
-        <!-- ko if: settingEditing() != 'interest'-->
+        <!-- ko if: 'interest' in loggedInUser && 
+          settingEditing() != 'interest'-->
         <button data-bind="click: selectSettingEditing.bind($data, 'interest')">Edit</button>
         <div data-bind="text: loggedInUser.interest"></div>
         <!-- /ko -->
-        <!-- ko if: settingEditing() == 'interest'-->
+        <!-- ko if: 'interest' in loggedInUser && 
+          settingEditing() == 'interest'-->
         <button data-bind="click: saveChangesToLoggedInUser">Save</button>
         <div>
           <select id="genderList" data-bind="value: settingEditingWorkspace" list="genderList">
@@ -540,43 +575,56 @@
             data-bind="if: 'username' in $root.loggedInUser && receiver == $root.loggedInUser.username() && isChat == 0 && message != 'also liked'">
             <td style="padding:20px; border-bottom:1px solid black;"
               data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
+              <button style="width: auto;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
+                View Profile
+              </button>
               <span data-bind="text: sender"></span>
               <span data-bind="text: message"></span>
-              <span>your profile at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span>your profile</span>
+              <span
+                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
             data-bind="if: 'username' in $root.loggedInUser && sender == $root.loggedInUser.username() && isChat == 0 && message != 'also liked'">
             <td style="padding:20px; border-bottom:1px solid black;"
               data-bind="style: { color: seenSender == 0 ? 'red' : 'black' }">
+              <button style="width: auto;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
+                View Profile
+              </button>
               <span>You</span>
               <span data-bind="text: message"></span>
               <span data-bind="text: receiver"></span>
-              <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span
+                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
             data-bind="if: 'username' in $root.loggedInUser && sender == $root.loggedInUser.username() && isChat == 0 && message == 'also liked'">
             <td style="padding:20px; border-bottom:1px solid black;"
               data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
+              <button style="width: auto;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
+                View Profile
+              </button>
               <span data-bind="text: receiver"></span>
               <span data-bind="text: message"></span>
               <span>You</span>
-              <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span
+                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
           <tr
             data-bind="if: 'username' in $root.loggedInUser && receiver == $root.loggedInUser.username() && isChat == 0 && message == 'also liked'">
             <td style="padding:20px; border-bottom:1px solid black;"
               data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
+              <button style="width: auto;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
+                View Profile
+              </button>
               <span>You</span>
               <span data-bind="text: message"></span>
               <span data-bind="text: sender"></span>
-              <span>at:</span>
-              <span data-bind="text: createdAt"></span>
+              <span
+                data-bind="text: moment(createdAt.substring(0, 19).replace('T', ' '), 'YYYY-MM-DD hh:mm:ss').calendar()"></span>
             </td>
           </tr>
         </tbody>
@@ -660,7 +708,7 @@
         viewModel.matches(data.matches)
         // console.log(ko.toJS(viewModel.matches))
       } else {
-        if (!alert("Couldn't grab matches. Please try again.")) { viewModel.selectView("notifications", null) }
+        if (!alert("Couldn't grab matches. Please try again.")) { viewModel.selectView("welcome", null) }
       }
     }).catch(er => {
       console.log("Error setting matches for chat. Reason: " + er.message + ".")
@@ -994,10 +1042,23 @@
     },
 
     async putFocusedProfileInViewModel(data) {
-      var body = JSON.stringify({
-        profileId: data.userId || data.id,
-        viewerId: viewModel.loggedInUser.id(),
-      })
+      // console.log(data)
+      if ("sendId" in data) {
+        var body = JSON.stringify({
+          profileId: viewModel.loggedInUser.username() == data.sender ? data.receiveId : data.sendId,
+          viewerId: viewModel.loggedInUser.id(),
+        })
+      } else if ("acceptId" in data) {
+        var body = JSON.stringify({
+          profileId: viewModel.loggedInUser.username() == data.requester ? data.acceptId : data.requestId,
+          viewerId: viewModel.loggedInUser.id(),
+        })
+      } else {
+        var body = JSON.stringify({
+          profileId: data.userId || data.id,
+          viewerId: viewModel.loggedInUser.id(),
+        })
+      }
       // console.log(body)
       await fetch("http://localhost:3000/profile", {
         method: "POST",
@@ -1009,14 +1070,15 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
+        // console.log(data)
         if (data.user && data.images) {
+          viewModel.selectView('match')
           viewModel.focussedProfile = ko.mapping.fromJS(data.user)
           viewModel.focussedProfileImageSources = data.images
           viewModel.focussedProfile.tags(data.tags)
           viewModel.focussedProfileIsSet(true)
         } else {
-          if (!alert('Unable to load target profile. Please try again.')) { viewModel.selectView("notifications", null) }
+          if (!alert('Unable to load target profile. Please try again.')) { viewModel.selectView("welcome", null) }
         }
       }).catch(er => {
         console.log("Error loading target profile. Reason: " + er.message + ".")
@@ -1052,6 +1114,7 @@
       // if unsure, use console.log to verify
       // console.log(data)
       // console.log(view)
+      scroll(0, 0)
       viewModel.selectedView(view)
       resetSettingEditing()
       // console.log(viewModel.selectedView())
@@ -1065,6 +1128,7 @@
           // viewModel.selectedChat(null)
           break
       }
+      // console.log(viewModel.selectedView())
     },
 
     async saveTag() {
@@ -1271,7 +1335,7 @@
         // console.log(data)
         if (data.token) {
           viewModel.token(data.token)
-          viewModel.selectedView('notifications')
+          viewModel.selectedView("welcome")
           putUserInViewModel(data.id)
           viewModel.displayNotifications(data.id)
         } else {
@@ -1368,6 +1432,7 @@
       ).then(data => {
         if (data.success && data.notifications) {
           viewModel.notifications(data.notifications)
+          // console.log(viewModel.notifications())
           // putUserInViewModel(viewModel.loggedInUser.id())
         }
       }).then(() => {
