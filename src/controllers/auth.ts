@@ -15,7 +15,7 @@ router.post('/createUser', async (request: Request, response: Response) => {
   let errors = await createUserValidator(request);
   if (!errors) {
     request.body.password = await hashing(request.body.password);
-    request.body.hash = await (await hashing(request.body.username)).replace('/', '');
+    request.body.hash = await (await hashing(request.body.username)).replace(/\//g, '');
     var user = await addUser(request.body);
     await sendNewUserEmail(user);
     await locateUser(user).catch(e => response.send({ text: e, success: false }));
