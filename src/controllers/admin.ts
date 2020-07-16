@@ -428,10 +428,12 @@ router.post('/terminate/:hash', async (request: Request, response: Response) => 
 router.post('/blockMatch', async (request: Request, response: Response) => {
   const sender = await retrieveUserById(request.body.requestId);
   const receiver = await retrieveUserById(request.body.acceptId);;
-  const result = await blockMatch(request.body.acceptId, request.body.requestId);
-  if (result.blocked)
+  let result = await retrieveMatchByIds(sender.id, receiver.id);
+  console.log(result);
+  if (result && result.blocked == 1)
     response.send({ text: 'User has been blocked.', success: true });
   else {
+    result = await blockMatch(request.body.acceptId, request.body.requestId);
     if (!result) {
       await addMatch({
         acceptId: request.body.acceptId,
