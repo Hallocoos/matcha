@@ -202,7 +202,7 @@
       </div>
 
       <div data-bind="if: focussedProfileIsSet" id="focussedProfile">
-        <div data-bind="if: focussedProfile.matchAccepted"><b>You've matched with this user!</b></div>
+        <div data-bind="if: 'matchAccepted' in focussedProfile && focussedProfile.matchAccepted"><b>You've matched with this user!</b></div>
         <div id="buttons">
           <!-- ko if: focussedProfile.swipeable || focussedProfile.createMatch -->
           <button data-bind="click: swipeRight.bind($data, ko.toJS(focussedProfile))">Swipe Right</button>
