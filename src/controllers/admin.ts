@@ -11,7 +11,8 @@ import {
   retrieveNotifications,
   retrieveAllNotificationsByUserId,
   retrieveAllNewNotificationsByUserId,
-  setChatAsSeen
+  setChatAsSeen,
+  setBlockedChatAsSeen
 } from '../models/notificationModel';
 import {
   addMatch,
@@ -435,6 +436,7 @@ router.post('/blockMatch', async (request: Request, response: Response) => {
     response.send({ text: 'User has been blocked.', success: true });
   else {
     result = await blockMatch(request.body.acceptId, request.body.requestId);
+    await setBlockedChatAsSeen(request.body.acceptId, request.body.requestId);
     if (!result) {
       await addMatch({
         acceptId: request.body.acceptId,

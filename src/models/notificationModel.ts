@@ -165,4 +165,18 @@ export async function setChatAsSeen(receiveId: string, sendId: string) {
     })
 };
 
+export async function setBlockedChatAsSeen(receiveId: string, sendId: string) {
+  return knex('notifications')
+    .where('receiveId', receiveId)
+    .andWhere('sendId', sendId)
+    .andWhere('isChat', true)
+    .orWhere('receiveId', sendId)
+    .andWhere('sendId', receiveId)
+    .andWhere('isChat', true)
+    .update('seenReceiver', true)
+    .then(function () {
+      return;
+    })
+};
+
 export default Notification;

@@ -591,7 +591,7 @@
           <tr
             data-bind="if: 'username' in $root.loggedInUser && sender == $root.loggedInUser.username() && isChat == 0 && message == 'also liked'">
             <td style="padding:20px; border-bottom:1px solid black;"
-              data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
+              data-bind="style: { color: seenSender == 0 ? 'red' : 'black' }">
               <button style="width: auto;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
                 View Profile
               </button>
@@ -1166,7 +1166,7 @@
         data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
       }
       var body = JSON.stringify(data)
-      // console.log(body)
+      console.log(body)
       await fetch("http://localhost:3000/updateUser", {
         method: "POST",
         body: body,
@@ -1178,6 +1178,7 @@
         response.json()
       ).then(data => {
         if (data.success) {
+          console.log(data)
           if (viewModel.settingEditing() == "gps") {
             var gps = viewModel.settingEditingWorkspace().replace(" ", "").split(",")
             viewModel.loggedInUser.latitude(gps[0])
