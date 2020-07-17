@@ -1195,6 +1195,10 @@
 
     sendNewChatMessage(data) {
       // { "sendId": 1, "receiveId": 2, "message": "New Message!" }
+      if (viewModel.newChatMessage().length > 255) {
+        alert("Messages longer than 255 char cannot be sent.")
+        return
+      }
       data = {
         receiveId: viewModel.selectedChat(),
         sendId: viewModel.loggedInUser.id(),
