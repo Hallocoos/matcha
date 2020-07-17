@@ -741,7 +741,6 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      // console.log(data.matches)
       if (data.success) {
         viewModel.recommendations(data.matches)
         // viewModel.recommendations().forEach(recommendation => {

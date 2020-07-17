@@ -9,8 +9,10 @@ export async function checkUserMatchability(id) {
   let images = await retrieveImagesByUserId(id);
   let tags = await retrieveTagsByUserId(id);
   let errors = await setUserAsMatchableValidator(user, images, tags);
+  console.log(errors)
   if (!errors)
     matchable = true;
   user = await modifyUserById( {'id': id, 'matchable': matchable} );
+  console.log(user)
   return (user);
 }

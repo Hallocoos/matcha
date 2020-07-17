@@ -23,7 +23,7 @@ import {
   retrieveMatchByAcceptId, retrieveMatches
 } from '../models/matchModel';
 import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById, retrieveImageById } from '../models/imageModel';
-import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId, retrieveTagsByMultipleTagValues } from '../models/tagModel';
+import { createTag, retrieveTagById, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId, retrieveTagsByMultipleTagValues } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { reportUser } from "../helpers/email";
 import { checkUserMatchability } from '../services/setUserAsMatchable';
@@ -238,6 +238,7 @@ router.post('/createTag', async (request: Request, response: Response) => {
   let errors = await newTagValidator(request.body);
   if (!errors) {
     await createTag(request.body);
+    await checkUserMatchability(request.body.userId);
     response.send({ text: 'Tag Successfully created.', success: true });
   } else
     response.send({ text: errors, success: false });
@@ -247,7 +248,9 @@ router.post('/createTag', async (request: Request, response: Response) => {
 router.post('/deleteTag', async (request: Request, response: Response) => {
   let errors = await deleteTagValidator(request.body);
   if (!errors) {
+    let tag = await retrieveTagById(request.body.id);
     await deleteTagById(request.body);
+    await checkUserMatchability(tag.userId);
     response.send({ text: 'Tag successfully deleted.', success: true });
   } else
     response.send({ text: errors, success: false });
