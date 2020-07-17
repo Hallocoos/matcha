@@ -51,8 +51,8 @@ router.post('/profile', async (request: Request, response: Response) => {
   if (userProfile) {
     if (request.body.viewerId) {
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
-      if (match) {
-        if (match.accepted) {
+      if (match && !match.blocked) {
+        if (match.accepted ) {
           userProfile.blockable = 1;
         }
         else if (userProfile.id == match.acceptId && !match.accepted) {
@@ -61,7 +61,7 @@ router.post('/profile', async (request: Request, response: Response) => {
           userProfile.createMatch = 1;
           userProfile.blockable = 1;
         }
-      } else {
+      } else if (!match) {
         userProfile.swipeable = 1;
         userProfile.blockable = 1;
       }
@@ -73,7 +73,9 @@ router.post('/profile', async (request: Request, response: Response) => {
         receiveId: request.body.profileId,
         message: 'viewed'
       }
-      await addNotification(body);
+      if (userProfile.blockable) {
+        await addNotification(body);
+      }
       await incrementUsersFameRating(userProfile.id, 1);
     }
     const tags = await retrieveTagsByUserId(userProfile.id);
