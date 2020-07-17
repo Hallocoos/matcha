@@ -287,6 +287,10 @@
     </div>
 
     <div data-bind="if: selectedView() == 'chat'" id="chat">
+
+      <span data-bind="value: setTimeout(displayNotifications, 0)"></span>
+      <span data-bind="event: chatInterval = setInterval(displayNotifications, 3000)"></span>
+
       <b>Users you can chat with:</b>
       <!-- ko if: matches().length == 0 -->
       <div>You don't yet have any mutual swipes. :(</div>
@@ -308,7 +312,7 @@
       <hr>
       <!-- /ko -->
       <!-- ko if: selectedChat() > 0 -->
-      <!-- <span data-bind="event: setTimeout(seenChats, 3000, selectedChat)"></span> -->
+      <span data-bind="event: chatSeenInterval = setInterval(seenChats, 3000, selectedChat)"></span>
       <div data-bind="foreach: notifications">
         <!-- ko if: (sendId == $root.selectedChat() || receiveId == $root.selectedChat()) && isChat == 1 -->
         <div data-bind="text: sender + ': ' + message"></div>
@@ -577,8 +581,7 @@
               <span data-bind="text: sender"></span>
               <span data-bind="text: message"></span>
               <span>your profile</span>
-              <span
-                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
+              <span data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
           <tr
@@ -591,8 +594,7 @@
               <span>You</span>
               <span data-bind="text: message"></span>
               <span data-bind="text: receiver"></span>
-              <span
-                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
+              <span data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
           <tr
@@ -605,8 +607,7 @@
               <span data-bind="text: receiver"></span>
               <span data-bind="text: message"></span>
               <span>You</span>
-              <span
-                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
+              <span data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
           <tr
@@ -619,8 +620,7 @@
               <span>You</span>
               <span data-bind="text: message"></span>
               <span data-bind="text: sender"></span>
-              <span
-                data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
+              <span data-bind="text: moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')"></span>
             </td>
           </tr>
         </tbody>
@@ -825,6 +825,8 @@
 
   var viewModel = {
     email: ko.observable(""),
+    chatInterval: 0,
+    chatSeenInterval: 0,
     filters: {
       ageMax: ko.observable(),
       ageMin: ko.observable(),
@@ -1111,6 +1113,9 @@
       // console.log(data)
       // console.log(view)
       scroll(0, 0)
+      clearInterval(viewModel.chatInterval)
+      clearInterval(viewModel.chatSeenInterval)
+      viewModel.selectedChat("")
       viewModel.selectedView(view)
       resetSettingEditing()
       // console.log(viewModel.selectedView())
@@ -1445,7 +1450,9 @@
             if (notification.isChat && notification.receiveId == myId && !notification.seenReceiver) {
               sendId = notification.sendId
               jsMatches.forEach(element => {
+                // console.log(element.requestId + " " + sendId + " " + element.acceptId)
                 if (element.requestId == sendId || element.acceptId == sendId) {
+                  // console.log('unread detected')
                   element.hasNewMessage(true)
                 }
               });
