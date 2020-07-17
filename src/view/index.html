@@ -601,7 +601,7 @@
           <tr
             data-bind="if: 'username' in $root.loggedInUser && sender == $root.loggedInUser.username() && isChat == 0 && message == 'also liked'">
             <td style="padding:20px; border-bottom:1px solid black;"
-              data-bind="style: { color: seenReceiver == 0 ? 'red' : 'black' }">
+              data-bind="style: { color: seenSender == 0 ? 'red' : 'black' }">
               <button style="width: auto;" data-bind="click: $root.putFocusedProfileInViewModel.bind($data)">
                 View Profile
               </button>
@@ -741,7 +741,6 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      // console.log(data.matches)
       if (data.success) {
         viewModel.recommendations(data.matches)
         // viewModel.recommendations().forEach(recommendation => {
@@ -1176,7 +1175,6 @@
         data[viewModel.settingEditing()] = viewModel.settingEditingWorkspace()
       }
       var body = JSON.stringify(data)
-      // console.log(body)
       await fetch("http://localhost:3000/updateUser", {
         method: "POST",
         body: body,
