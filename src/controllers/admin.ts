@@ -54,6 +54,7 @@ router.post('/profile', async (request: Request, response: Response) => {
       let match = await retrieveMatchByIds(request.body.viewerId, userProfile.id);
       if (match && !match.blocked) {
         if (match.accepted ) {
+          userProfile.matchAccepted = 1;
           userProfile.blockable = 1;
         }
         else if (userProfile.id == match.acceptId && !match.accepted) {
