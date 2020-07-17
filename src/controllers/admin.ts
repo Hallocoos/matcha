@@ -21,7 +21,7 @@ import {
   retrieveMatchesByUserId,
   retrieveMatchByAcceptId, retrieveMatches
 } from '../models/matchModel';
-import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById } from '../models/imageModel';
+import { retrieveImagesByUserId, createImage, retrieveImagesByMultipleUserIds, deleteImageById, retrieveImageById } from '../models/imageModel';
 import { createTag, deleteTagById, retrieveTagsByMultipleUserIds, retrieveTagsByUserId, retrieveTagsByMultipleTagValues } from '../models/tagModel';
 import { calculateDistance } from '../helpers/locator';
 import { reportUser } from "../helpers/email";
@@ -214,6 +214,7 @@ router.post('/uploadPicture', async (request: Request, response: Response) => {
   let errors = await newImageValidator(request.body);
   if (!errors) {
     await createImage(request.body);
+    await checkUserMatchability(request.body.userId);
     response.send({ text: 'Image successfully uploaded.', success: true });
   } else
     response.send({ text: errors, success: false });
@@ -223,7 +224,9 @@ router.post('/uploadPicture', async (request: Request, response: Response) => {
 router.post('/deletePicture', async (request: Request, response: Response) => {
   let errors = await deleteImageValidator(request.body);
   if (!errors) {
+    let image = await retrieveImageById(request.body.id); 
     await deleteImageById(request.body);
+    await checkUserMatchability(image.userId);
     response.send({ text: 'Image successfully deleted.', success: true });
   } else
     response.send({ text: errors, success: false });

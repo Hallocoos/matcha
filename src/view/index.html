@@ -1281,7 +1281,7 @@
           if (!data.success) {
             alert(data.text)
           } else {
-            if (!alert(data.text + " . Please confirm email address.")) { window.location.replace("http://localhost:3000/matcha") }
+            if (!alert(data.text + " Please confirm email address.")) { window.location.replace("http://localhost:3000/matcha") }
           }
         }).catch(er => {
           // alert('Invalid credentials')
