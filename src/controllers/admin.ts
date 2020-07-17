@@ -74,8 +74,8 @@ router.post('/profile', async (request: Request, response: Response) => {
       await incrementUsersFameRating(userProfile.id, 1);
     }
     const tags = await retrieveTagsByUserId(userProfile.id);
-    const images = await retrieveImagesByUserId(userProfile.id);
-    response.send({ user: userProfile, images: images, tags: tags });
+    // const images = await retrieveImagesByUserId(userProfile.id);
+    response.send({ user: userProfile/*, images: images*/, tags: tags });
   } else
     response.send({ text: 'Failed to retrieve user and their associated images.', success: false });
 });
