@@ -173,7 +173,7 @@
                   $data.online ? 
                   'Active now' : 
                   'Last seen ' + 
-                  moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')">
+                  moment(lastSeen).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss'))">
               </div>
               <b>Tags</b>
               <ul data-bind="foreach: tags">
@@ -239,7 +239,7 @@
             text: (focussedProfile.online() ? 
             'Active now' : 
             'Last seen ' + 
-            moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')">
+            moment(focussedProfile.lastSeen()).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss'))">
           </div>
           <br>
           <b>Firstname</b>
@@ -740,7 +740,7 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      // console.log(data)
+      // console.log(data.matches)
       if (data.success) {
         viewModel.recommendations(data.matches)
         // viewModel.recommendations().forEach(recommendation => {
@@ -1066,13 +1066,13 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
         if (data.user && data.images) {
           viewModel.selectView('match')
           viewModel.focussedProfile = ko.mapping.fromJS(data.user)
           viewModel.focussedProfileImageSources = data.images
           viewModel.focussedProfile.tags(data.tags)
           viewModel.focussedProfileIsSet(true)
+          // console.log(data.user)
         } else {
           if (!alert('Unable to load target profile. Please try again.')) { viewModel.selectView("welcome", null) }
         }
