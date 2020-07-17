@@ -875,10 +875,10 @@
     notifications: ko.observable([]),
 
     addThisTagToFilter() {
-      console.log(ko.toJS(viewModel.filters.addingTag))
+      // console.log(ko.toJS(viewModel.filters.addingTag))
       viewModel.filters.tags.push(viewModel.filters.addingTag())
       viewModel.filters.addingTag("")
-      console.log(ko.toJS(viewModel.filters.tags))
+      // console.log(ko.toJS(viewModel.filters.tags))
     },
 
     async cancelProfile(targetProfileId, data) {
@@ -898,7 +898,7 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
+        // console.log(data)
         alert(data.text)
       }).catch(er => {
         console.log("Error blocking match. Reason: " + er.message + ".")
@@ -1234,7 +1234,7 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
+        // console.log(data)
         if (data.success) {
           if (!alert(data.text)) { window.location.replace("http://localhost:3000/matcha") }
         } else {
@@ -1302,7 +1302,7 @@
       }).then(response =>
         response.json()
       ).then(data => {
-        console.log(data)
+        // console.log(data)
         if (data.success == true) {
           if (!alert(data.text)) { window.location.reload(); }
         }
@@ -1589,7 +1589,7 @@
     }).then(response =>
       response.json()
     ).then(data => {
-      console.log(data)
+      // console.log(data)
       // if (!data.success) {
       //   alert(data.text)
       // } else {
