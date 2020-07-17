@@ -229,7 +229,7 @@
             text: (focussedProfile.online() ? 
             'Active now' : 
             'Last seen ' + 
-            moment(focussedProfile.lastSeen).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss'))">
+            moment(focussedProfile.lastSeen()).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss'))">
           </div>
           <br>
           <b>Firstname</b>
