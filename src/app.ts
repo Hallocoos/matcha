@@ -26,7 +26,7 @@ import auth from './controllers/auth';
 import admin from './controllers/admin';
 
 app.use('/matcha', express.static('src/view'))
-
+app.use('/favicon.ico', express.static('src/view'))
 
 // app.get('/matcha', async (request: Request, response: Response) => {
 //   validation();
