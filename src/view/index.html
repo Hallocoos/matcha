@@ -2,63 +2,63 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .navbar-item {
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+  </style>
 </head>
 
-<body style="height:100%; margin:0;">
+<body style="height:100%; margin:0; width:100%;">
 
   <div id="main" style="min-height:90%; margin-bottom:-50px;">
-    <p style="display:inline-block;" id="logo">
+    <div style="display:inline-block;" id="logo">
       <img src="Matcha_logo.png" width="80" height="70" title="Matcha">
-    </p>
+    </div>
 
-    <p data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
-      <span data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
-      <a href="#" style="text-decoration: none; display:inline-block; color:black;"
+    <nav data-bind="if: token()" style="padding: 10; display:inline-block;" id="navbar">
+      <span class="navbar-item" data-bind="click: selectView.bind($data, 'match'), style: {padding: 14}">Match</span>
+      <a class="navbar-item" href="#" style="text-decoration: none; display:inline-block; color:black;"
         data-bind="value: setInterval(countUnreadChats, 5000)">
         <span data-bind="click: selectView.bind($data, 'chat'), style: {padding: 14}">Chat</span>
         <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;"
           data-bind="text: unreadChatsCount"></span>
       </a>
-      <span data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
-      <span data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
-      <a href="#" style="text-decoration: none; display:inline-block; color:black;"
+      <span class="navbar-item" data-bind="click: selectView.bind($data, 'profile'), style: {padding: 14}">Profile</span>
+      <span class="navbar-item" data-bind="click: selectView.bind($data, 'settings'), style: {padding: 14}">Settings</span>
+      <a class="navbar-item" href="#" style="text-decoration: none; display:inline-block; color:black;"
         data-bind="value: setInterval(countUnreadNotifications, 5000)">
         <span data-bind="click: selectView.bind($data, 'notifications'), style: {padding: 14}">Notifications</span>
         <span style="padding: 5px 10px; border-radius:50%; background-color:red; color:white;"
           data-bind="text: unreadNotificationsCount"></span>
       </a>
-      <span data-bind="click: logOut, style: {padding: 14}">Log Out</span>
-      <hr>
-    </p>
+      <span class="navbar-item" data-bind="click: logOut, style: {padding: 14}">Log Out</span>
+    </nav>
+    <hr>
 
-    <div data-bind="if: selectedView() == 'login'" id="login">
+    <div style="width:90%;" data-bind="if: selectedView() == 'login'" id="login">
       <h3>Enter credentials to log in</h3>
-      <table>
-        <tr>
-          <td>Username:</td>
-          <td>Password:</td>
-        </tr>
-        <tr>
-          <td>
-            <input data-bind="value: username">
-          </td>
-          <td>
-            <input type="password" data-bind="value: password">
-          </td>
-          <td>
-            <button data-bind="click: submitCreds">Log In</button>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>
-            <h6>Oops. I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my
-                password</a>.</h6>
-          </td>
-        </tr>
-      </table>
-      <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.
-      </h3>
+      <div style="display:inline-block">
+        <div>Username:</div>
+        <div><input data-bind="value: username"></div>
+      </div>
+      <div style="display:inline-block">
+        <div>Password:</div>
+        <div><input type="password" data-bind="value: password"></div>
+      </div>
+      <div style="display:inline-block">
+        <button data-bind="click: submitCreds">Log In</button>
+      </div>
+      <div>
+        <h6>Oops, I need to <a href="" data-bind="click: selectView.bind($data, 'resetrequest')">reset my
+          password</a>.</h6>
+      </div>
+      <div>
+        <h3>New user? Click here to <a href="" data-bind="click: selectView.bind($data, 'register')">register</a>.
+        </h3>
+      </div>
     </div>
 
     <div data-bind="if: selectedView() == 'welcome'" id="welcome">
@@ -173,7 +173,7 @@
                   $data.online ? 
                   'Active now' : 
                   'Last seen ' + 
-                  moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')">
+                  moment(focussedProfile.lastSeen).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss'))">
               </div>
               <b>Tags</b>
               <ul data-bind="foreach: tags">
@@ -239,7 +239,7 @@
             text: (focussedProfile.online() ? 
             'Active now' : 
             'Last seen ' + 
-            moment(createdAt).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss')">
+            moment(focussedProfile.lastSeen).utcOffset('+02:00').format('YYYY-MM-DD HH:mm:ss'))">
           </div>
           <br>
           <b>Firstname</b>
@@ -288,6 +288,7 @@
 
     <div data-bind="if: selectedView() == 'chat'" id="chat">
       <b>Users you can chat with:</b>
+      <!-- <span data-bind="event: displayNotifications($root.loggedInUser.id)"></span> -->
       <!-- ko if: matches().length == 0 -->
       <div>You don't yet have any mutual swipes. :(</div>
       <!-- /ko -->
@@ -331,18 +332,18 @@
         </div>
       </div>
 
-      <div data-bind="foreach: {data: ownImageSources, as: 'image'}" id="profileImage">
+      <div style="max-width:700px" data-bind="foreach: {data: ownImageSources, as: 'image'}" id="profileImage">
         <span data-bind="if: profilePicture == 1">
           <div>Profile Image:</div>
-          <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
+          <img  width="40%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
         </span>
       </div>
 
-      <span data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
+      <div style="max-width:700px" data-bind="foreach: {data: ownImageSources, as: 'image'}" id="otherImages">
         <span data-bind="if: profilePicture == 0">
-          <img width="18%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
+          <img width="40%" height="auto" data-bind="attr: {src: image}, click: $root.deleteImage.bind($data, id)">
         </span>
-      </span>
+      </div>
       <br>
 
       <div>
@@ -670,7 +671,7 @@
       </div>
     </div>
   </div>
-  <footer style="text-align:center; padding:30px; height:50px;">
+  <footer style="text-align:center; padding:30px; height:50px; margin-top:10px;">
     <p>Authors: hde-vos jrheeder clongmor revan-wy</p>
   </footer>
 </body>
@@ -1442,11 +1443,13 @@
             element.hasNewMessage(false)
           });
           viewModel.notifications().forEach(notification => {
+            // console.log(notification)
             if (notification.isChat && notification.receiveId == myId && !notification.seenReceiver) {
               sendId = notification.sendId
               jsMatches.forEach(element => {
                 if (element.requestId == sendId || element.acceptId == sendId) {
                   element.hasNewMessage(true)
+                  // console.log(hasNewMessage)
                 }
               });
             }
