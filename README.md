@@ -83,4 +83,4 @@ The source code of the project is laid out as follows in the repository:
 
     testImages: contains contains images used in our test case users in the seeds.
 
-for testing the programme, see the testing pdf linked here: tests, and you can make use of the seeds created with verious users to test almost every possible scenario.
+for testing the programme, see the testing pdf linked here: [tests](https://github.com/Hallocoos/matcha/blob/master/matcha.markingsheet.pdf), and you can make use of the seeds created with verious users to test almost every possible scenario.
