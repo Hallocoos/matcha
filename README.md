@@ -1,4 +1,4 @@
-First group web project for the web based semester at WeThinkCode_ , using TypseScript, Knex, KnockoutJS and some base HTML and CSS. You can find the project brief here: instructions.
+First group web project for the web based semester at WeThinkCode_ , using TypseScript, Knex, KnockoutJS and some base HTML and CSS. You can find the project brief here: [instructions](https://github.com/Hallocoos/matcha/blob/master/matcha.en.pdf).
 
 This Project is about creating a basic online dating website. It is inspired largely by Tinder, and involves creating a profile with some general info about yourself and your interests, matching with people using "likes" and once both users have liked eachother they can chat.
 
