@@ -18,7 +18,7 @@ To install the project:
 
     create a .env file and it in place the following text (please note some sensitive info has been left out for security reasons, emailing function will not work correctly without this):
     
-\# .environmental variable file to store and configure various variables
+    \# .environmental variable file to store and configure various variables
 
     ACTIVEDB = "mysql"
     DBFOLDER = "./database/"
@@ -28,17 +28,17 @@ To install the project:
     DBUSER = "root"
     NODE_ENV = "development"
 
-\# Set port for the API service
+    \# Set port for the API service
     PORT = 3000
 
-\# Set the secret key to be used by JSON Web Token Authentication
+    \# Set the secret key to be used by JSON Web Token Authentication
     SECRETKEY = 'secret'
 
-\# Set logging status 
+    \# Set logging status 
     CONSOLELOG = 'true'
     LOGFILE = 'true'
 
-\# Initial admin properties
+    \# Initial admin properties
     ADMINNAME = 'admin'
     ADMINPASSWORD = 'admin'
 
