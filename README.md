@@ -16,7 +16,7 @@ To install the project:
 
     go into the matcha folder
 
-    create a .env file and it in place the following text (please note some sensitive info has been left out for security reasons, emailing function will not work correctly without this):
+create a .env file and it in place the following text (please note some sensitive info has been left out for security reasons, emailing function will not work correctly without this):
     
     \# .environmental variable file to store and configure various variables
 
