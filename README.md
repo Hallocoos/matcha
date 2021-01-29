@@ -1,6 +1,6 @@
-First group web project for the web based semester at WeThinkCode_ , using TypseScript, Knex, KnockoutJS and some base HTML and CSS. You can find the project brief here: [instructions](https://github.com/Hallocoos/matcha/blob/master/matcha.en.pdf).
+First group web project for the web based semester at WeThinkCode_ , using TypeScript, Knex, KnockoutJS and some base HTML and CSS. You can find the project brief here: [instructions](https://github.com/Hallocoos/matcha/blob/master/matcha.en.pdf).
 
-This Project is about creating a basic online dating website. It is inspired largely by Tinder, and involves creating a profile with some general info about yourself and your interests, matching with people using "likes" and once both users have liked eachother they can chat.
+This Project is about creating a basic online dating website. It is inspired largely by Tinder, and involves creating a profile with some general info about yourself and your interests, matching with people using "likes" and once both users have liked each other they can chat.
 
 To install the project you need to have the following dependencies installed before cloning:
 
@@ -16,35 +16,31 @@ To install the project:
 
     go into the matcha folder
 
-    create a .env file and it in place the following (please note DBPASSWORD is your own mysql password and email and email password have been left out for safety reasons):
+    create a .env file and it in place the following text (please note some sensitive info has been left out for security reasons, emailing function will not work correctly without this):
     
 \# .environmental variable file to store and configure various variables
 
-ACTIVEDB = "mysql"
-DBFOLDER = "./database/"
-DBNAME = "matcha"
-DBPASSWORD = ""
-DBHOST = "localhost"
-DBUSER = "root"
-NODE_ENV = "development"
+    ACTIVEDB = "mysql"
+    DBFOLDER = "./database/"
+    DBNAME = "matcha"
+    DBPASSWORD = ""
+    DBHOST = "localhost"
+    DBUSER = "root"
+    NODE_ENV = "development"
 
 \# Set port for the API service
-PORT = 3000
+    PORT = 3000
 
 \# Set the secret key to be used by JSON Web Token Authentication
-SECRETKEY = 'secret'
+    SECRETKEY = 'secret'
 
 \# Set logging status 
-CONSOLELOG = 'true'
-LOGFILE = 'true'
+    CONSOLELOG = 'true'
+    LOGFILE = 'true'
 
 \# Initial admin properties
-ADMINNAME = 'admin'
-ADMINPASSWORD = 'admin'
-
-\# Emailer
-EMAILUSER = ""
-EMAILPASS = ""
+    ADMINNAME = 'admin'
+    ADMINPASSWORD = 'admin'
 
 To run the site:
 
