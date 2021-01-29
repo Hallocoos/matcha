@@ -2,17 +2,6 @@ First group web project for the web based semester at WeThinkCode_ , using Typse
 
 This Project is about creating a basic online dating website. It is inspired largely by Tinder, and involves creating a profile with some general info about yourself and your interests, matching with people using "likes" and once both users have liked eachother they can chat.
 
-
-
-To run this project:
-    npm i
-    nodemon redb (this creates seed data in mySQL database)
-    nodemon start
-    Connect to: http://localhost:3000/matcha/
-    You should now be able to use all functionality.
-
-run npm install in the root directory of project to install all the package dependencies for the project
-
 To install the project you need to have the following dependencies installed before cloning:
 
     npm package
@@ -86,7 +75,7 @@ The source code of the project is laid out as follows in the repository:
 
     - models contains all the information about how an object is set up and what information it can contain e.g.  user, image, notification
 
-    - services contains input validation functions and base sql (in the form of knex) queries which are reused in otehr functions.
+    - services contains input validation functions and base sql (in the form of knex) queries which are reused in other functions.
 
     - view contains front end pertaining files.  the html page in use, the knockout file required, the logo image for our design. 
 
