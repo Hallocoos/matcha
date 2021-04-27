@@ -45,7 +45,7 @@
     "mysql": "^2.18.1",
     "nodemailer": "^6.4.10",
     "promisify": "0.0.3",
-    "redis": "^2.8.0",
+    "redis": "^3.1.1",
     "redis-server": "^1.2.2",
     "rx": "^4.1.0",
     "s3-proxy": "^1.2.1",
